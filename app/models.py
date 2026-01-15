@@ -49,5 +49,21 @@ class Vendor(db.Model):
     average_rating = db.Column(db.Float, default=0.0, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     
+    # Relationship to images
+    images = db.relationship('VendorImage', backref='vendor', lazy=True, cascade='all, delete-orphan')
+    
     def __repr__(self):
         return f'<Vendor {self.business_name}>'
+
+
+class VendorImage(db.Model):
+    """Model for storing vendor property/washroom images."""
+    __tablename__ = 'vendor_images'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    
+    def __repr__(self):
+        return f'<VendorImage {self.image_url}>'

@@ -2,9 +2,113 @@
 
 {% block title %}Home - SheSafe{% endblock %}
 
+{% block styles %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        border-radius: 0 0 2rem 2rem;
+    }
+
+    .vendor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 0 2rem;
+        max-width: 1200px;
+        margin: 0 auto 4rem;
+    }
+
+    .vendor-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .vendor-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .vendor-image-container {
+        position: relative;
+        height: 200px;
+        background: #f0f0f0;
+    }
+
+    .vendor-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .vendor-details {
+        padding: 1.5rem;
+    }
+
+    .safety-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="text-align: center; padding: 50px;">
-    <h1>Welcome to SheSafe</h1>
-    <p>Flask application is running successfully!</p>
+<div class="hero">
+    <h1>Safe Spaces for Women</h1>
+    <p>Discover verified properties and services with safety features you can trust.</p>
+</div>
+
+<div class="vendor-grid">
+    {% for vendor in vendors %}
+    <div class="vendor-card">
+        <div class="vendor-image-container">
+            {% if vendor.images %}
+            <img src="{{ url_for('static', filename=vendor.images[0].image_url) }}" class="vendor-image"
+                alt="{{ vendor.business_name }}">
+            {% else %}
+            <div style="height: 100%; display: flex; align-items: center; justify-content: center; color: #999;">No
+                Image Available</div>
+            {% endif %}
+        </div>
+        <div class="vendor-details">
+            <h3 style="margin: 0 0 0.5rem 0;">{{ vendor.business_name }}</h3>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{{ vendor.address }}</p>
+
+            <div style="margin-bottom: 1rem;">
+                {% if vendor.has_cctv %}
+                <span class="safety-badge">📹 CCTV</span>
+                {% endif %}
+                {% if vendor.has_female_staff %}
+                <span class="safety-badge">👥 Female Staff</span>
+                {% endif %}
+            </div>
+
+            {% if vendor.images|length > 1 %}
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
+                {% for img in vendor.images %}
+                <img src="{{ url_for('static', filename=img.image_url) }}"
+                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer;"
+                    onclick="window.open(this.src)">
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: #666;">
+        <h2>No verified vendors yet.</h2>
+        <p>Stay tuned as we audit and verify safe spaces in your area.</p>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

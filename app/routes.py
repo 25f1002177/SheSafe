@@ -1,16 +1,19 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.models import User
 from app.decorators import admin_required, vendor_required, user_required
+import os
 
 main = Blueprint('main', __name__)
 
 
 @main.route('/')
 def index():
-    """Home page route."""
-    return render_template('index.html')
+    """Home page route displaying verified vendors."""
+    from app.models import Vendor
+    verified_vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+    return render_template('index.html', vendors=verified_vendors)
 
 
 @main.route('/register', methods=['GET', 'POST'])
@@ -269,3 +272,52 @@ def disable_vendor(vendor_id):
     
     flash(f'Vendor "{vendor.business_name}" has been disabled.', 'info')
     return redirect(url_for('main.admin_dashboard'))
+
+
+@main.route('/vendor/upload-images', methods=['POST'])
+@vendor_required
+def upload_images():
+    """Handle multi-image uploads for vendors."""
+    from werkzeug.utils import secure_filename
+    from app.models import VendorImage
+    import uuid
+    
+    if not current_user.vendor_profile:
+        flash('Please complete your onboarding first.', 'error')
+        return redirect(url_for('main.vendor_onboard'))
+
+    if 'images' not in request.files:
+        flash('No images provided.', 'error')
+        return redirect(url_for('main.vendor_dashboard'))
+    
+    files = request.files.getlist('images')
+    if not files or files[0].filename == '':
+        flash('No images selected.', 'error')
+        return redirect(url_for('main.vendor_dashboard'))
+
+    uploaded_count = 0
+    for file in files:
+        if file and '.' in file.filename and \
+           file.filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'webp'}:
+            
+            # Create unique filename to avoid collisions
+            filename = secure_filename(file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            
+            # Save file
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(file_path)
+            
+            # Save to database (store the relative URL for easy serving)
+            img_url = f"uploads/{unique_filename}"
+            new_image = VendorImage(vendor_id=current_user.vendor_profile.id, image_url=img_url)
+            db.session.add(new_image)
+            uploaded_count += 1
+            
+    if uploaded_count > 0:
+        db.session.commit()
+        flash(f'Successfully uploaded {uploaded_count} images.', 'success')
+    else:
+        flash('No valid images uploaded.', 'error')
+        
+    return redirect(url_for('main.vendor_dashboard'))
