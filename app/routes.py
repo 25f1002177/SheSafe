@@ -380,3 +380,81 @@ def booking_confirmation(booking_id):
         return redirect(url_for('main.index'))
         
     return render_template('booking_confirmation.html', booking=booking)
+
+
+@main.route('/booking/<int:booking_id>/feedback', methods=['GET', 'POST'])
+@user_required
+def submit_feedback(booking_id):
+    """Submit feedback for a completed booking."""
+    from app.models import Booking, Feedback, Vendor
+    
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # 1. Verification: Only the owner can review
+    if booking.user_id != current_user.id:
+        flash('Unauthorized.', 'error')
+        return redirect(url_for('main.user_dashboard'))
+    
+    # 2. Verification: Only COMPLETED bookings
+    if booking.status != 'completed':
+        flash('Feedback can only be submitted for completed visits.', 'error')
+        return redirect(url_for('main.user_dashboard'))
+    
+    # 3. Verification: Only one feedback per booking
+    if booking.feedback:
+        flash('Feedback has already been submitted for this visit.', 'info')
+        return redirect(url_for('main.user_dashboard'))
+    
+    if request.method == 'POST':
+        try:
+            hygiene = int(request.form.get('hygiene_rating', 5))
+            safety = int(request.form.get('safety_rating', 5))
+            staff = int(request.form.get('staff_behavior_rating', 5))
+            comments = request.form.get('comments', '')
+            
+            overall = (hygiene + safety + staff) / 3.0
+            
+            new_feedback = Feedback(
+                booking_id=booking.id,
+                vendor_id=booking.vendor_id,
+                hygiene_rating=hygiene,
+                safety_rating=safety,
+                staff_behavior_rating=staff,
+                overall_rating=overall,
+                comments=comments
+            )
+            
+            db.session.add(new_feedback)
+            
+            # Recalculate Vendor Average Rating
+            vendor = booking.vendor
+            all_feedbacks = Feedback.query.filter_by(vendor_id=vendor.id).all()
+            total_rating = sum([f.overall_rating for f in all_feedbacks]) + overall
+            vendor.average_rating = total_rating / (len(all_feedbacks) + 1)
+            
+            db.session.commit()
+            flash('Thank you for your feedback! It helps keep SheSafe reliable.', 'success')
+            return redirect(url_for('main.user_dashboard'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error submitting feedback: {str(e)}', 'error')
+            
+    return render_template('feedback_form.html', booking=booking)
+@main.route('/booking/<int:booking_id>/complete', methods=['POST'])
+@vendor_required
+def complete_booking(booking_id):
+    """Mark a booking as completed (Vendor only)."""
+    from app.models import Booking
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # Ensure vendor owns this booking
+    if booking.vendor_id != current_user.vendor_profile.id:
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('main.vendor_dashboard'))
+    
+    booking.status = 'completed'
+    db.session.commit()
+    
+    flash('Booking marked as completed. The user can now leave a review!', 'success')
+    return redirect(url_for('main.vendor_dashboard'))

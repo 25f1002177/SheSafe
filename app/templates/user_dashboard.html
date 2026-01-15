@@ -228,6 +228,12 @@
                     <div style="font-size: 0.8rem; color: #666;">📅 {{ booking.visit_date.strftime('%b %d, %H:%M') }}
                     </div>
                     <div style="font-size: 0.8rem; color: #666;">💰 ₹{{ "%.2f"|format(booking.amount) }}</div>
+
+                    {% if booking.status == 'completed' and not booking.feedback %}
+                    <a href="{{ url_for('main.submit_feedback', booking_id=booking.id) }}" class="book-btn"
+                        style="display: block; text-align: center; text-decoration: none; margin-top: 0.5rem;">Rate
+                        Experience</a>
+                    {% endif %}
                 </div>
                 {% else %}
                 <div style="padding: 2rem; text-align: center; color: #999;">You have no bookings yet.</div>

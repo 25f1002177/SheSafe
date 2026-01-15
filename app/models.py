@@ -87,6 +87,26 @@ class Booking(db.Model):
     def __repr__(self):
         return f'<Booking {self.id} for Vendor {self.vendor_id}>'
 
+class Feedback(db.Model):
+    __tablename__ = 'feedbacks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    booking_id = db.Column(db.Integer, db.ForeignKey('bookings.id'), unique=True, nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    hygiene_rating = db.Column(db.Integer, nullable=False)
+    safety_rating = db.Column(db.Integer, nullable=False)
+    staff_behavior_rating = db.Column(db.Integer, nullable=False)
+    overall_rating = db.Column(db.Float, nullable=False)
+    comments = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    booking = db.relationship('Booking', backref=db.backref('feedback', uselist=False))
+    vendor = db.relationship('Vendor', backref=db.backref('feedbacks', lazy=True))
+    
+    def __repr__(self):
+        return f'<Feedback {self.id} for Booking {self.booking_id}>'
+
 
 class VendorImage(db.Model):
     """Model for storing vendor property/washroom images."""
