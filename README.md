@@ -96,16 +96,16 @@ Key principles:
 ---
 
 ## Project Architecture
-
+```
 /shesafe
 │
 ├── app/
-│ ├── init.py
-│ ├── models.py
-│ ├── routes/
-│ ├── templates/
-│ ├── static/
-│ └── utils/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routes/
+│   ├── templates/
+│   ├── static/
+│   └── utils/
 │
 ├── migrations/
 ├── config.py
@@ -113,7 +113,7 @@ Key principles:
 ├── manifest.json
 ├── service-worker.js
 └── README.md
-
+```
 
 ---
 
