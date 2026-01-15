@@ -40,6 +40,12 @@ def create_app(config_name='default'):
     from app.routes import main
     app.register_blueprint(main)
     
+    # Register error handlers
+    @app.errorhandler(403)
+    def forbidden(e):
+        from flask import render_template
+        return render_template('error_403.html'), 403
+    
     # Create database tables
     with app.app_context():
         # Import models to register them with SQLAlchemy

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.models import User
+from app.decorators import admin_required, vendor_required, user_required
 
 main = Blueprint('main', __name__)
 
@@ -98,5 +99,44 @@ def logout():
 @main.route('/dashboard')
 @login_required
 def dashboard():
-    """User dashboard (protected route)."""
-    return render_template('dashboard.html', user=current_user)
+    """Main dashboard route - redirects to role-specific dashboard."""
+    if current_user.role == 'admin':
+        return redirect(url_for('main.admin_dashboard'))
+    elif current_user.role == 'vendor':
+        return redirect(url_for('main.vendor_dashboard'))
+    else:
+        return redirect(url_for('main.user_dashboard'))
+
+
+@main.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    """Admin dashboard (admin only)."""
+    # Get all users for admin overview
+    all_users = User.query.all()
+    user_count = User.query.count()
+    admin_count = User.query.filter_by(role='admin').count()
+    vendor_count = User.query.filter_by(role='vendor').count()
+    regular_user_count = User.query.filter_by(role='user').count()
+    
+    return render_template('admin_dashboard.html', 
+                         user=current_user,
+                         all_users=all_users,
+                         user_count=user_count,
+                         admin_count=admin_count,
+                         vendor_count=vendor_count,
+                         regular_user_count=regular_user_count)
+
+
+@main.route('/vendor/dashboard')
+@vendor_required
+def vendor_dashboard():
+    """Vendor dashboard (vendor only)."""
+    return render_template('vendor_dashboard.html', user=current_user)
+
+
+@main.route('/user/dashboard')
+@user_required
+def user_dashboard():
+    """User dashboard (regular users only)."""
+    return render_template('user_dashboard.html', user=current_user)

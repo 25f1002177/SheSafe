@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Dashboard - SheSafe{% endblock %}
+
+{% block styles %}
+<style>
+    .vendor-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+    }
+
+    .vendor-header {
+        background: linear-gradient(135deg, #1e5bc4 0%, #2d7dd2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .vendor-header h2 {
+        margin-bottom: 0.5rem;
+    }
+
+    .vendor-header .role-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .vendor-info {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .vendor-info h3 {
+        color: #1e5bc4;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        padding: 1rem;
+        background: #f5f9ff;
+        border-radius: 4px;
+        border-left: 3px solid #1e5bc4;
+    }
+
+    .info-item label {
+        display: block;
+        font-size: 0.875rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .info-item .value {
+        font-size: 1.125rem;
+        color: #333;
+    }
+
+    .vendor-features {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .vendor-features h3 {
+        color: #1e5bc4;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .feature-list li {
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: #f5f9ff;
+        border-radius: 4px;
+        border-left: 3px solid #1e5bc4;
+    }
+
+    .feature-list li::before {
+        content: "✓ ";
+        color: #1e5bc4;
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="vendor-container">
+    <div class="vendor-header">
+        <h2>Vendor Dashboard</h2>
+        <p>Welcome, {{ user.name }} <span class="role-badge">{{ user.role }}</span></p>
+    </div>
+
+    <div class="vendor-info">
+        <h3>Your Profile</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Name</label>
+                <div class="value">{{ user.name }}</div>
+            </div>
+            <div class="info-item">
+                <label>Email</label>
+                <div class="value">{{ user.email }}</div>
+            </div>
+            <div class="info-item">
+                <label>Role</label>
+                <div class="value">{{ user.role }}</div>
+            </div>
+            <div class="info-item">
+                <label>Vendor ID</label>
+                <div class="value">#{{ user.id }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="vendor-features">
+        <h3>Vendor Features</h3>
+        <ul class="feature-list">
+            <li>Manage your products and services</li>
+            <li>View customer inquiries and orders</li>
+            <li>Update vendor profile and business information</li>
+            <li>Access vendor-specific analytics and reports</li>
+            <li>Communicate with customers through messaging</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
