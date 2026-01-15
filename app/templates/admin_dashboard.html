@@ -148,6 +148,165 @@
         </div>
     </div>
 
+    <div class="users-table-container" style="margin-bottom: 2rem;">
+        <h3>Pending Vendor Approvals ({{ pending_vendors|length }})</h3>
+
+        {% if pending_vendors %}
+        <div style="display: grid; gap: 1.5rem; margin-top: 1.5rem;">
+            {% for vendor in pending_vendors %}
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; background: #f9f9f9;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <div>
+                        <h4 style="margin: 0 0 0.5rem 0; color: #1e5bc4;">{{ vendor.business_name }}</h4>
+                        <p style="margin: 0; color: #666; font-size: 0.875rem;">
+                            Owner: {{ vendor.user.name }} ({{ vendor.user.email }})
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <form method="POST" action="{{ url_for('main.approve_vendor', vendor_id=vendor.id) }}"
+                            style="display: inline;">
+                            <button type="submit"
+                                style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                ✓ Approve
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('main.reject_vendor', vendor_id=vendor.id) }}"
+                            style="display: inline;"
+                            onsubmit="return confirm('Are you sure you want to reject this vendor? This will delete their profile.');">
+                            <button type="submit"
+                                style="padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                ✗ Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong style="color: #333;">Location:</strong>
+                        <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.875rem;">{{ vendor.address }}</p>
+                        <p style="margin: 0.25rem 0 0 0; color: #999; font-size: 0.75rem;">
+                            Coordinates: {{ vendor.latitude }}, {{ vendor.longitude }}
+                        </p>
+                    </div>
+                    <div>
+                        <strong style="color: #333;">Safety Features:</strong>
+                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            {% if vendor.has_cctv %}
+                            <span
+                                style="display: inline-block; padding: 0.25rem 0.75rem; background: #d4edda; color: #155724; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                📹 CCTV Available
+                            </span>
+                            {% endif %}
+                            {% if vendor.has_female_staff %}
+                            <span
+                                style="display: inline-block; padding: 0.25rem 0.75rem; background: #d1ecf1; color: #0c5460; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                👥 Female Staff
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if vendor.has_female_staff and vendor.female_staff_start_time %}
+                        <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.75rem;">
+                            Staff Hours: {{ vendor.female_staff_start_time.strftime('%H:%M') }} - {{
+                            vendor.female_staff_end_time.strftime('%H:%M') }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if vendor.description %}
+                <div>
+                    <strong style="color: #333;">Description:</strong>
+                    <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.875rem;">{{ vendor.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: #666; margin-top: 1rem;">No pending vendor approvals.</p>
+        {% endif %}
+    </div>
+
+    <div class="users-table-container" style="margin-bottom: 2rem;">
+        <h3>All Vendors ({{ all_vendors|length }})</h3>
+
+        {% if all_vendors %}
+        <table style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Business Name</th>
+                    <th>Owner</th>
+                    <th>Safety Features</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vendor in all_vendors %}
+                <tr>
+                    <td>
+                        <strong>{{ vendor.business_name }}</strong>
+                        <br>
+                        <small style="color: #999;">{{ vendor.address[:50] }}...</small>
+                    </td>
+                    <td>{{ vendor.user.name }}</td>
+                    <td>
+                        {% if vendor.has_cctv %}
+                        <span
+                            style="display: inline-block; padding: 0.25rem 0.5rem; background: #d4edda; color: #155724; border-radius: 4px; font-size: 0.75rem; margin-right: 0.25rem;">
+                            📹 CCTV
+                        </span>
+                        {% endif %}
+                        {% if vendor.has_female_staff %}
+                        <span
+                            style="display: inline-block; padding: 0.25rem 0.5rem; background: #d1ecf1; color: #0c5460; border-radius: 4px; font-size: 0.75rem;">
+                            👥 Female Staff
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if vendor.is_verified %}
+                        <span style="color: #28a745; font-weight: 600;">✓ Verified</span>
+                        {% else %}
+                        <span style="color: #ffc107; font-weight: 600;">⏳ Pending</span>
+                        {% endif %}
+                        <br>
+                        {% if vendor.is_active %}
+                        <span style="color: #28a745;">Active</span>
+                        {% else %}
+                        <span style="color: #dc3545;">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if vendor.is_active %}
+                        <form method="POST" action="{{ url_for('main.disable_vendor', vendor_id=vendor.id) }}"
+                            style="display: inline;">
+                            <button type="submit"
+                                style="padding: 0.25rem 0.75rem; background: #ffc107; color: #333; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                                Disable
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% if not vendor.is_verified %}
+                        <form method="POST" action="{{ url_for('main.approve_vendor', vendor_id=vendor.id) }}"
+                            style="display: inline;">
+                            <button type="submit"
+                                style="padding: 0.25rem 0.75rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+                                Approve
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #666; margin-top: 1rem;">No vendors registered yet.</p>
+        {% endif %}
+    </div>
+
     <div class="users-table-container">
         <h3>All Users</h3>
         <table>

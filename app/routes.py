@@ -112,6 +112,8 @@ def dashboard():
 @admin_required
 def admin_dashboard():
     """Admin dashboard (admin only)."""
+    from app.models import Vendor
+    
     # Get all users for admin overview
     all_users = User.query.all()
     user_count = User.query.count()
@@ -119,13 +121,21 @@ def admin_dashboard():
     vendor_count = User.query.filter_by(role='vendor').count()
     regular_user_count = User.query.filter_by(role='user').count()
     
+    # Get all vendors
+    all_vendors = Vendor.query.all()
+    pending_vendors = Vendor.query.filter_by(is_verified=False).all()
+    verified_vendors = Vendor.query.filter_by(is_verified=True).all()
+    
     return render_template('admin_dashboard.html', 
                          user=current_user,
                          all_users=all_users,
                          user_count=user_count,
                          admin_count=admin_count,
                          vendor_count=vendor_count,
-                         regular_user_count=regular_user_count)
+                         regular_user_count=regular_user_count,
+                         all_vendors=all_vendors,
+                         pending_vendors=pending_vendors,
+                         verified_vendors=verified_vendors)
 
 
 @main.route('/vendor/dashboard')
@@ -212,3 +222,50 @@ def vendor_onboard():
         return redirect(url_for('main.vendor_dashboard'))
     
     return render_template('vendor_onboard.html')
+
+
+@main.route('/admin/vendor/<int:vendor_id>/approve', methods=['POST'])
+@admin_required
+def approve_vendor(vendor_id):
+    """Approve a vendor (admin only)."""
+    from app.models import Vendor
+    
+    vendor = Vendor.query.get_or_404(vendor_id)
+    vendor.is_verified = True
+    vendor.is_active = True
+    
+    db.session.commit()
+    
+    flash(f'Vendor "{vendor.business_name}" has been approved and activated.', 'success')
+    return redirect(url_for('main.admin_dashboard'))
+
+
+@main.route('/admin/vendor/<int:vendor_id>/reject', methods=['POST'])
+@admin_required
+def reject_vendor(vendor_id):
+    """Reject a vendor (admin only)."""
+    from app.models import Vendor
+    
+    vendor = Vendor.query.get_or_404(vendor_id)
+    business_name = vendor.business_name
+    
+    db.session.delete(vendor)
+    db.session.commit()
+    
+    flash(f'Vendor "{business_name}" has been rejected and removed.', 'warning')
+    return redirect(url_for('main.admin_dashboard'))
+
+
+@main.route('/admin/vendor/<int:vendor_id>/disable', methods=['POST'])
+@admin_required
+def disable_vendor(vendor_id):
+    """Disable a vendor (admin only)."""
+    from app.models import Vendor
+    
+    vendor = Vendor.query.get_or_404(vendor_id)
+    vendor.is_active = False
+    
+    db.session.commit()
+    
+    flash(f'Vendor "{vendor.business_name}" has been disabled.', 'info')
+    return redirect(url_for('main.admin_dashboard'))
