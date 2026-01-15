@@ -30,11 +30,11 @@ def create_app(config_name='default'):
     login_manager.login_view = 'main.login'
     login_manager.login_message = 'Please log in to access this page.'
     
-    # User loader callback (placeholder until models are added)
+    # User loader callback
     @login_manager.user_loader
     def load_user(user_id):
-        # This will be implemented when User model is added
-        return None
+        from app.models import User
+        return User.query.get(int(user_id))
     
     # Register blueprints
     from app.routes import main
@@ -42,6 +42,8 @@ def create_app(config_name='default'):
     
     # Create database tables
     with app.app_context():
+        # Import models to register them with SQLAlchemy
+        from app import models
         db.create_all()
     
     return app
