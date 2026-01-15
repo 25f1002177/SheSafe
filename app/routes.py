@@ -160,6 +160,14 @@ def user_dashboard():
     return render_template('user_dashboard.html', user=current_user, vendors=verified_vendors, vendors_json=vendors_json)
 
 
+@main.route('/vendor/<int:vendor_id>')
+def vendor_detail(vendor_id):
+    """Detailed view for a specific vendor."""
+    from app.models import Vendor
+    vendor = Vendor.query.get_or_404(vendor_id)
+    return render_template('vendor_details.html', vendor=vendor)
+
+
 @main.route('/vendor/onboard', methods=['GET', 'POST'])
 @vendor_required
 def vendor_onboard():

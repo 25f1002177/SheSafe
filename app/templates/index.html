@@ -5,67 +5,241 @@
 {% block styles %}
 <style>
     .hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=2070');
+        background-size: cover;
+        background-position: center;
         color: white;
-        padding: 4rem 2rem;
+        padding: 8rem 2rem;
         text-align: center;
-        margin-bottom: 3rem;
-        border-radius: 0 0 2rem 2rem;
+        margin-bottom: 4rem;
+        border-radius: 0 0 3rem 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero h1 {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        letter-spacing: -2px;
+        line-height: 1.1;
+    }
+
+    .hero p {
+        font-size: 1.4rem;
+        max-width: 700px;
+        opacity: 0.9;
+        font-weight: 400;
+        margin-bottom: 2.5rem;
+    }
+
+    .hero-btn {
+        background: white;
+        color: var(--primary);
+        padding: 1rem 2.5rem;
+        border-radius: 99px;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: var(--transition);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 3.5rem;
+    }
+
+    .section-title h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 1rem;
     }
 
     .vendor-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2.5rem;
         padding: 0 2rem;
-        max-width: 1200px;
-        margin: 0 auto 4rem;
+        max-width: 1250px;
+        margin: 0 auto 6rem;
     }
 
     .vendor-card {
-        background: white;
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
     }
 
     .vendor-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+        background: white;
     }
 
     .vendor-image-container {
         position: relative;
-        height: 200px;
-        background: #f0f0f0;
+        height: 220px;
+        overflow: hidden;
     }
 
     .vendor-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .vendor-card:hover .vendor-image {
+        transform: scale(1.1);
     }
 
     .vendor-details {
-        padding: 1.5rem;
+        padding: 1.75rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .vendor-details h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--text-main);
+    }
+
+    .vendor-address {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .safety-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
     }
 
     .safety-badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
         font-size: 0.75rem;
-        margin-right: 0.5rem;
-        background: #eef2ff;
+        font-weight: 600;
+        background: #f0f4ff;
         color: #4f46e5;
+        border: 1px solid #e0e7ff;
+    }
+
+    .view-btn {
+        width: 100%;
+        padding: 0.9rem;
+        background: var(--bg-light);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+        transition: var(--transition);
+        margin-top: auto;
+    }
+
+    .view-btn:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    .stats-section {
+        background: white;
+        padding: 5rem 2rem;
+        margin-bottom: 6rem;
+    }
+
+    .stats-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        text-align: center;
+    }
+
+    .stat-item h3 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-item p {
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+        }
+
+        .vendor-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="hero">
-    <h1>Safe Spaces for Women</h1>
-    <p>Discover verified properties and services with safety features you can trust.</p>
+    <h1>Safe. Clean. Verified.</h1>
+    <p>Empowering women with dignified sanitation access across India.</p>
+    <a href="#explore" class="hero-btn">Explore Nearby Spaces</a>
+</div>
+
+<div class="stats-section">
+    <div class="stats-container">
+        <div class="stat-item">
+            <h3>500+</h3>
+            <p>Verified Spaces</p>
+        </div>
+        <div class="stat-item">
+            <h3>20k+</h3>
+            <p>Happy Users</p>
+        </div>
+        <div class="stat-item">
+            <h3>100%</h3>
+            <p>Safety Audited</p>
+        </div>
+    </div>
+</div>
+
+<div id="explore" class="section-title">
+    <h2>Verified Locations</h2>
+    <p style="color: var(--text-muted);">Hand-picked and audited spaces for your peace of mind.</p>
 </div>
 
 <div class="vendor-grid">
@@ -76,38 +250,43 @@
             <img src="{{ url_for('static', filename=vendor.images[0].image_url) }}" class="vendor-image"
                 alt="{{ vendor.business_name }}">
             {% else %}
-            <div style="height: 100%; display: flex; align-items: center; justify-content: center; color: #999;">No
-                Image Available</div>
+            <div
+                style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--primary); background: #f0f4ff; font-weight: 600;">
+                Safe Space
+            </div>
             {% endif %}
+            <div style="position: absolute; top: 1rem; right: 1rem;">
+                <span
+                    style="background: white; color: #92400e; padding: 0.4rem 0.8rem; border-radius: 99px; font-weight: 700; font-size: 0.8rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    ⭐ {{ "%.1f"|format(vendor.average_rating) }}
+                </span>
+            </div>
         </div>
         <div class="vendor-details">
-            <h3 style="margin: 0 0 0.5rem 0;">{{ vendor.business_name }}</h3>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{{ vendor.address }}</p>
+            <h3>{{ vendor.business_name }}</h3>
+            <div class="vendor-address">
+                📍 {{ vendor.address[:50] }}{% if vendor.address|length > 50 %}...{% endif %}
+            </div>
 
-            <div style="margin-bottom: 1rem;">
+            <div class="safety-badges">
                 {% if vendor.has_cctv %}
                 <span class="safety-badge">📹 CCTV</span>
                 {% endif %}
                 {% if vendor.has_female_staff %}
-                <span class="safety-badge">👥 Female Staff</span>
+                <span class="safety-badge">👩‍💼 Female Staff</span>
                 {% endif %}
+                <span class="safety-badge">✨ Clean</span>
             </div>
 
-            {% if vendor.images|length > 1 %}
-            <div style="display: flex; gap: 0.5rem; margin-top: 1rem; overflow-x: auto; padding-bottom: 0.5rem;">
-                {% for img in vendor.images %}
-                <img src="{{ url_for('static', filename=img.image_url) }}"
-                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer;"
-                    onclick="window.open(this.src)">
-                {% endfor %}
-            </div>
-            {% endif %}
+            <a href="{{ url_for('main.vendor_detail', vendor_id=vendor.id) }}" class="view-btn">View Details</a>
         </div>
     </div>
     {% else %}
-    <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: #666;">
-        <h2>No verified vendors yet.</h2>
-        <p>Stay tuned as we audit and verify safe spaces in your area.</p>
+    <div
+        style="grid-column: 1/-1; text-align: center; padding: 4rem; background: white; border-radius: 24px; box-shadow: var(--shadow);">
+        <h2 style="color: var(--text-muted);">No verified spaces found yet.</h2>
+        <p style="color: var(--text-muted); margin-top: 1rem;">We are currently auditing new dhabas and hotels. Check
+            back soon!</p>
     </div>
     {% endfor %}
 </div>
