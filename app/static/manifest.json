@@ -1,0 +1,23 @@
+{
+    "name": "SheSafe - Verified Sanitation",
+    "short_name": "SheSafe",
+    "description": "Safe, clean, and verified sanitation access for women.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8faff",
+    "theme_color": "#4f46e5",
+    "icons": [
+        {
+            "src": "/static/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

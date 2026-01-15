@@ -202,6 +202,9 @@
             font-size: 0.9rem;
         }
     </style>
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
     {% block styles %}{% endblock %}
 </head>
 
@@ -268,6 +271,15 @@
     </footer>
 
     {% block scripts %}{% endblock %}
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

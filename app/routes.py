@@ -168,6 +168,16 @@ def vendor_detail(vendor_id):
     return render_template('vendor_details.html', vendor=vendor)
 
 
+@main.route('/manifest.json')
+def manifest():
+    return current_app.send_static_file('manifest.json')
+
+
+@main.route('/service-worker.js')
+def service_worker():
+    return current_app.send_static_file('service-worker.js')
+
+
 @main.route('/vendor/onboard', methods=['GET', 'POST'])
 @vendor_required
 def vendor_onboard():
