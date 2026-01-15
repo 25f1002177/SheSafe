@@ -68,6 +68,25 @@ class Vendor(db.Model):
     def __repr__(self):
         return f'<Vendor {self.business_name}>'
 
+class Booking(db.Model):
+    __tablename__ = 'bookings'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
+    booking_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    visit_date = db.Column(db.DateTime, nullable=False)
+    payment_mode = db.Column(db.String(20), nullable=False) # 'app' or 'pay_at_location'
+    amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), default='pending', nullable=False) # 'pending', 'confirmed', 'cancelled', 'completed'
+    
+    # Relationships
+    user = db.relationship('User', backref=db.backref('bookings', lazy=True))
+    vendor = db.relationship('Vendor', backref=db.backref('bookings', lazy=True))
+    
+    def __repr__(self):
+        return f'<Booking {self.id} for Vendor {self.vendor_id}>'
+
 
 class VendorImage(db.Model):
     """Model for storing vendor property/washroom images."""

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmation - SheSafe{% endblock %}
+
+{% block styles %}
+<style>
+    .confirmation-container {
+        max-width: 600px;
+        margin: 4rem auto;
+        padding: 2.5rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .success-icon {
+        font-size: 4rem;
+        color: #1e8c1e;
+        margin-bottom: 1.5rem;
+    }
+
+    .receipt {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: #f8faff;
+        border-radius: 12px;
+        text-align: left;
+        border: 1px dashed #ced4da;
+    }
+
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .receipt-row:last-child {
+        border-bottom: none;
+    }
+
+    .label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .value {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="success-icon">✅</div>
+    <h2 style="color: #1e8c1e; margin-bottom: 0.5rem;">Booking Confirmed!</h2>
+    <p style="color: #666;">Your request has been sent to the vendor.</p>
+
+    <div class="receipt">
+        <div class="receipt-row">
+            <span class="label">Booking ID</span>
+            <span class="value">#S-{{ booking.id }}</span>
+        </div>
+        <div class="receipt-row">
+            <span class="label">Business</span>
+            <span class="value">{{ booking.vendor.business_name }}</span>
+        </div>
+        <div class="receipt-row">
+            <span class="label">Visit Date</span>
+            <span class="value">{{ booking.visit_date.strftime('%B %d, %Y at %H:%M') }}</span>
+        </div>
+        <div class="receipt-row">
+            <span class="label">Payment Mode</span>
+            <span class="value">{{ booking.payment_mode.replace('_', ' ').capitalize() }}</span>
+        </div>
+        <div class="receipt-row">
+            <span class="label">Amount</span>
+            <span class="value">₹{{ "%.2f"|format(booking.amount) }}</span>
+        </div>
+        <div class="receipt-row">
+            <span class="label">Status</span>
+            <span class="value"><span class="badge badge-{{ booking.status }}">{{ booking.status }}</span></span>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <a href="{{ url_for('main.user_dashboard') }}" class="btn"
+            style="background: #4f46e5; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Back
+            to Dashboard</a>
+        <a href="javascript:window.print()" class="btn"
+            style="background: white; color: #333; border: 1px solid #ddd; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Print
+            Receipt</a>
+    </div>
+</div>
+{% endblock %}

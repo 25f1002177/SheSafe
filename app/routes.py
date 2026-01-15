@@ -326,3 +326,57 @@ def upload_images():
         flash('No valid images uploaded.', 'error')
         
     return redirect(url_for('main.vendor_dashboard'))
+
+
+@main.route('/book/<int:vendor_id>', methods=['POST'])
+@user_required
+def book_vendor(vendor_id):
+    """Handle vendor booking for users."""
+    from app.models import Vendor, Booking
+    from datetime import datetime
+    
+    vendor = Vendor.query.get_or_404(vendor_id)
+    
+    visit_date_str = request.form.get('visit_date')
+    payment_mode = request.form.get('payment_mode', 'pay_at_location')
+    amount = float(request.form.get('amount', 0))
+    
+    if not visit_date_str:
+        flash('Please select a visit date.', 'error')
+        return redirect(url_for('main.user_dashboard'))
+    
+    try:
+        visit_date = datetime.strptime(visit_date_str, '%Y-%m-%dT%H:%M')
+    except ValueError:
+        flash('Invalid date format.', 'error')
+        return redirect(url_for('main.user_dashboard'))
+
+    new_booking = Booking(
+        user_id=current_user.id,
+        vendor_id=vendor.id,
+        visit_date=visit_date,
+        payment_mode=payment_mode,
+        amount=amount,
+        status='pending'
+    )
+    
+    db.session.add(new_booking)
+    db.session.commit()
+    
+    flash('Booking request sent successfully!', 'success')
+    return redirect(url_for('main.booking_confirmation', booking_id=new_booking.id))
+
+
+@main.route('/booking/confirmation/<int:booking_id>')
+@login_required
+def booking_confirmation(booking_id):
+    """Show booking confirmation/receipt."""
+    from app.models import Booking
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # Ensure user can only see their own booking (unless admin)
+    if booking.user_id != current_user.id and current_user.role != 'admin':
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('main.index'))
+        
+    return render_template('booking_confirmation.html', booking=booking)
