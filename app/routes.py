@@ -140,3 +140,75 @@ def vendor_dashboard():
 def user_dashboard():
     """User dashboard (regular users only)."""
     return render_template('user_dashboard.html', user=current_user)
+
+
+@main.route('/vendor/onboard', methods=['GET', 'POST'])
+@vendor_required
+def vendor_onboard():
+    """Vendor onboarding form."""
+    from app.models import Vendor
+    from datetime import datetime, time
+    
+    # Check if vendor already has a profile
+    if current_user.vendor_profile:
+        flash('You have already completed vendor onboarding.', 'info')
+        return redirect(url_for('main.vendor_dashboard'))
+    
+    if request.method == 'POST':
+        business_name = request.form.get('business_name')
+        description = request.form.get('description')
+        latitude = request.form.get('latitude')
+        longitude = request.form.get('longitude')
+        address = request.form.get('address')
+        has_cctv = request.form.get('has_cctv') == 'on'
+        has_female_staff = request.form.get('has_female_staff') == 'on'
+        female_staff_start_time = request.form.get('female_staff_start_time')
+        female_staff_end_time = request.form.get('female_staff_end_time')
+        
+        # Validation
+        if not all([business_name, latitude, longitude, address]):
+            flash('Business name, latitude, longitude, and address are required.', 'error')
+            return render_template('vendor_onboard.html')
+        
+        try:
+            latitude = float(latitude)
+            longitude = float(longitude)
+        except ValueError:
+            flash('Latitude and longitude must be valid numbers.', 'error')
+            return render_template('vendor_onboard.html')
+        
+        # Parse time fields if female staff is available
+        start_time = None
+        end_time = None
+        if has_female_staff and female_staff_start_time and female_staff_end_time:
+            try:
+                start_time = datetime.strptime(female_staff_start_time, '%H:%M').time()
+                end_time = datetime.strptime(female_staff_end_time, '%H:%M').time()
+            except ValueError:
+                flash('Invalid time format for staff timing.', 'error')
+                return render_template('vendor_onboard.html')
+        
+        # Create vendor profile
+        vendor = Vendor(
+            user_id=current_user.id,
+            business_name=business_name,
+            description=description if description else None,
+            latitude=latitude,
+            longitude=longitude,
+            address=address,
+            has_cctv=has_cctv,
+            has_female_staff=has_female_staff,
+            female_staff_start_time=start_time,
+            female_staff_end_time=end_time,
+            is_verified=False,
+            is_active=False,
+            average_rating=0.0
+        )
+        
+        db.session.add(vendor)
+        db.session.commit()
+        
+        flash('Vendor profile created successfully! Your profile is pending verification.', 'success')
+        return redirect(url_for('main.vendor_dashboard'))
+    
+    return render_template('vendor_onboard.html')
