@@ -16,12 +16,11 @@ def create_app(config_name='default'):
     # Load configuration
     app.config.from_object(config[config_name])
     
-    # Create instance and upload folders if possible (might fail on read-only filesystems)
-    try:
-        os.makedirs(app.instance_path, exist_ok=True)
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    except Exception as e:
-        app.logger.warning(f"Could not create directories: {e}")
+    # Create instance folder if it doesn't exist
+    os.makedirs(app.instance_path, exist_ok=True)
+    
+    # Create upload folder if it doesn't exist
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Initialize extensions with app
     db.init_app(app)
@@ -47,11 +46,10 @@ def create_app(config_name='default'):
         from flask import render_template
         return render_template('error_403.html'), 403
     
-    # Create database tables (only if not in production or Vercel)
-    if not app.config.get('TESTING') and not os.environ.get('VERCEL'):
-        with app.app_context():
-            # Import models to register them with SQLAlchemy
-            from app import models
-            db.create_all()
+    # Create database tables
+    with app.app_context():
+        # Import models to register them with SQLAlchemy
+        from app import models
+        db.create_all()
     
     return app
