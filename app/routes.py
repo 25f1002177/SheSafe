@@ -151,8 +151,13 @@ def vendor_dashboard():
 @main.route('/user/dashboard')
 @user_required
 def user_dashboard():
-    """User dashboard (regular users only)."""
-    return render_template('user_dashboard.html', user=current_user)
+    """User dashboard (regular users only) - Shows nearby verified vendors."""
+    from app.models import Vendor
+    # Fetch verified and active vendors to show on the map/list
+    verified_vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+    # Serialize for JS
+    vendors_json = [v.to_dict() for v in verified_vendors]
+    return render_template('user_dashboard.html', user=current_user, vendors=verified_vendors, vendors_json=vendors_json)
 
 
 @main.route('/vendor/onboard', methods=['GET', 'POST'])

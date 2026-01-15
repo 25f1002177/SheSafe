@@ -52,6 +52,19 @@ class Vendor(db.Model):
     # Relationship to images
     images = db.relationship('VendorImage', backref='vendor', lazy=True, cascade='all, delete-orphan')
     
+    def to_dict(self):
+        """Convert vendor profile to dictionary for JSON serialization."""
+        return {
+            'id': self.id,
+            'business_name': self.business_name,
+            'address': self.address,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'has_cctv': self.has_cctv,
+            'has_female_staff': self.has_female_staff,
+            'average_rating': self.average_rating
+        }
+
     def __repr__(self):
         return f'<Vendor {self.business_name}>'
 
