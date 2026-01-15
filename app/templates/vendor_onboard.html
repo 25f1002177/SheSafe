@@ -149,7 +149,38 @@
     .btn:hover {
         transform: translateY(-2px);
     }
+
+    .location-btn {
+        background: #f8faff;
+        color: #1e5bc4;
+        border: 2px solid #1e5bc4;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .location-btn:hover {
+        background: #eef2ff;
+    }
+
+    .location-btn.loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    #mini-map {
+        height: 200px;
+        width: 100%;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: none;
+        border: 1px solid #ddd;
+    }
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 {% endblock %}
 
 {% block content %}
@@ -178,7 +209,18 @@
 
         <!-- Location Information -->
         <div class="form-section">
-            <h3>Location Information</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0;">Location Information</h3>
+                <button type="button" id="share-location-btn" class="btn location-btn"
+                    style="width: auto; margin-bottom: 0;">
+                    📍 Share Browser Location
+                </button>
+            </div>
+
+            <div id="location-status-text" class="help-text"
+                style="margin-bottom: 1rem; color: #1e5bc4; font-weight: 500; display: none;"></div>
+
+            <div id="mini-map"></div>
 
             <div class="form-row">
                 <div class="form-group">
@@ -237,7 +279,93 @@
     </form>
 </div>
 
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
+    // Geolocation and Reverse Geocoding
+    const shareLocationBtn = document.getElementById('share-location-btn');
+    const latInput = document.getElementById('latitude');
+    const lonInput = document.getElementById('longitude');
+    const addressInput = document.getElementById('address');
+    const statusText = document.getElementById('location-status-text');
+    const miniMapDiv = document.getElementById('mini-map');
+    let miniMap;
+    let marker;
+
+    function initMiniMap(lat, lon) {
+        miniMapDiv.style.display = 'block';
+        if (!miniMap) {
+            miniMap = L.map('mini-map').setView([lat, lon], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(miniMap);
+            marker = L.marker([lat, lon]).addTo(miniMap);
+        } else {
+            miniMap.setView([lat, lon], 15);
+            marker.setLatLng([lat, lon]);
+        }
+    }
+
+    shareLocationBtn.addEventListener('click', function () {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser.');
+            return;
+        }
+
+        shareLocationBtn.disabled = true;
+        shareLocationBtn.classList.add('loading');
+        shareLocationBtn.innerText = '⌛ Detecting...';
+        statusText.style.display = 'block';
+        statusText.innerText = 'Requesting browser location...';
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                latInput.value = lat.toFixed(6);
+                lonInput.value = lon.toFixed(6);
+
+                statusText.innerText = 'Location detected! Fetching address...';
+                initMiniMap(lat, lon);
+
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                    const data = await response.json();
+                    if (data && data.display_name) {
+                        addressInput.value = data.display_name;
+                        statusText.innerText = 'Location and address updated successfully!';
+                    } else {
+                        statusText.innerText = 'Location detected, but address could not be fetched.';
+                    }
+                } catch (error) {
+                    console.error('Error fetching address:', error);
+                    statusText.innerText = 'Location detected, but address fetch failed.';
+                } finally {
+                    shareLocationBtn.disabled = false;
+                    shareLocationBtn.classList.remove('loading');
+                    shareLocationBtn.innerText = '📍 Update Location';
+                }
+            },
+            (error) => {
+                console.error('Geolocation error:', error);
+                let msg = 'Failed to get location.';
+                if (error.code === 1) msg = 'Location permission denied.';
+                else if (error.code === 2) msg = 'Location unavailable.';
+                else if (error.code === 3) msg = 'Location request timed out.';
+
+                statusText.innerText = msg;
+                statusText.style.color = '#c41e3a';
+                shareLocationBtn.disabled = false;
+                shareLocationBtn.classList.remove('loading');
+                shareLocationBtn.innerText = '📍 Share Browser Location';
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    });
+
     // Toggle staff timing fields based on has_female_staff checkbox
     const hasFemaleStaffCheckbox = document.getElementById('has_female_staff');
     const staffTimingFields = document.getElementById('staff-timing-fields');
