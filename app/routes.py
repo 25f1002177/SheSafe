@@ -11,9 +11,35 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def index():
     """Home page route displaying verified vendors."""
+    """Home page route displaying verified vendors."""
     from app.models import Vendor
-    verified_vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
-    return render_template('index.html', vendors=verified_vendors)
+    from flask import make_response
+    
+    # Base query
+    query = Vendor.query.filter_by(is_verified=True, is_active=True)
+    
+    # Get unique cities for filter
+    # This is a simple way; for large datasets, distinct() query would be better
+    all_vendors = query.all()
+    cities = sorted(list(set([v.address.split(',')[-2].strip() if len(v.address.split(',')) > 1 else 'Unknown' for v in all_vendors])))
+    
+    # Apply filter
+    selected_city = request.args.get('city')
+    if selected_city and selected_city != 'All Cities':
+        # Simple string matching for now, reliant on consistent address format
+        # Ideal: Store city in a separate column
+        vendors = [v for v in all_vendors if (v.address.split(',')[-2].strip() if len(v.address.split(',')) > 1 else 'Unknown') == selected_city]
+    else:
+        vendors = all_vendors
+
+    response = make_response(render_template('index.html', vendors=vendors, cities=cities, selected_city=selected_city))
+    
+    # Prevent caching to ensure dynamic updates
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
+    return response
 
 
 @main.route('/register', methods=['GET', 'POST'])
