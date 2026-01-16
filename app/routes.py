@@ -29,6 +29,10 @@ def register():
         confirm_password = request.form.get('confirm_password')
         role = request.form.get('role', 'user')
         
+        # Security: Prevent admin registration via form
+        if role not in ['user', 'vendor']:
+            role = 'user'
+        
         # Validation
         if not all([name, email, password, confirm_password]):
             flash('All fields are required.', 'error')
