@@ -225,6 +225,79 @@ def admin_vendors():
 
 
 
+@main.route('/admin/users')
+@admin_required
+def admin_users():
+    """Admin user management page (admin only)."""
+    from app.models import Booking, Feedback
+    
+    # Get search query and filter
+    search_query = request.args.get('search', '').strip()
+    filter_type = request.args.get('filter', 'all')
+    
+    # Base query
+    query = User.query
+    
+    # Apply search filter
+    if search_query:
+        query = query.filter(
+            (User.name.ilike(f'%{search_query}%')) |
+            (User.email.ilike(f'%{search_query}%'))
+        )
+    
+    # Apply type filter
+    if filter_type == 'flagged':
+        # For now, just show all users. You can add flagging logic later
+        pass
+    
+    # Get all users
+    users = query.all()
+    
+    # Add booking count and average rating to each user
+    for user in users:
+        user.bookings_count = Booking.query.filter_by(user_id=user.id).count()
+        
+        # Get average rating safely - join through bookings since Feedback doesn't have user_id
+        avg_result = db.session.query(db.func.avg(Feedback.overall_rating)).\
+            join(Booking, Feedback.booking_id == Booking.id).\
+            filter(Booking.user_id == user.id).scalar()
+        user.average_rating = round(float(avg_result), 1) if avg_result else 0
+    
+    return render_template('admin_users.html',
+                         user=current_user,
+                         all_users=User.query.all(),
+                         users=users,
+                         search_query=search_query,
+                         filter_type=filter_type)
+
+
+@main.route('/admin/users/<int:user_id>')
+@admin_required
+def admin_user_detail(user_id):
+    """Admin user detail page (admin only)."""
+    from app.models import Booking, Feedback
+    
+    target_user = User.query.get_or_404(user_id)
+    # Use booking_time instead of created_at
+    bookings = Booking.query.filter_by(user_id=user_id).order_by(Booking.booking_time.desc()).all()
+    
+    # Get feedbacks for this user
+    feedbacks = Feedback.query.join(Booking).filter(Booking.user_id == user_id).all()
+    
+    # Calculate average rating
+    avg_rating = 0
+    if feedbacks:
+        avg_rating = sum([f.overall_rating for f in feedbacks]) / len(feedbacks)
+        avg_rating = round(avg_rating, 1)
+    
+    return render_template('admin_user_detail.html',
+                         user=current_user,
+                         target_user=target_user,
+                         bookings=bookings,
+                         feedbacks=feedbacks,
+                         average_rating=avg_rating)
+
+
 @main.route('/vendor/dashboard')
 @vendor_required
 def vendor_dashboard():
