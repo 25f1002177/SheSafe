@@ -6,8 +6,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
+    DATABASE_URL = os.environ.get('TURSO_DATABASE_URL') or os.environ.get('DATABASE_URL')
+    if DATABASE_URL:
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    else:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Upload Settings

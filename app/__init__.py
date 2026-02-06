@@ -52,15 +52,16 @@ def create_app(config_name='default'):
         from flask import render_template
         return render_template('error_403.html'), 403
     
-    # Create database tables (skip on serverless without writable filesystem)
+    # Create database tables (only if using a writable database)
     with app.app_context():
         from app import models
-        if not app.config.get('SQLALCHEMY_DATABASE_URI', '').startswith('sqlite:'):
-            db.create_all()
-        else:
+        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+        if db_uri.startswith('sqlite:'):
             try:
                 db.create_all()
             except OSError:
                 pass
+        else:
+            db.create_all()
     
     return app
