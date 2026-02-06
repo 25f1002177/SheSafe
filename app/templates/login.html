@@ -1,102 +1,74 @@
 {% extends "base.html" %}
 
-{% block title %}Login - SheSafe{% endblock %}
-
-{% block styles %}
-<style>
-    .form-container {
-        max-width: 450px;
-        margin: 2rem auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-container h2 {
-        margin-bottom: 1.5rem;
-        color: #667eea;
-        text-align: center;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: #333;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        transition: border-color 0.3s;
-    }
-
-    .form-group input:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 0.75rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .form-footer {
-        margin-top: 1.5rem;
-        text-align: center;
-        color: #666;
-    }
-
-    .form-footer a {
-        color: #667eea;
-        text-decoration: none;
-    }
-
-    .form-footer a:hover {
-        text-decoration: underline;
-    }
-</style>
-{% endblock %}
+{% block title %}Sign In - SheSafe{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Welcome Back</h2>
-    <form method="POST" action="{{ url_for('main.login') }}">
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
+<div
+    class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-white dark:bg-background-dark px-5">
+    <!-- Hero / Branding -->
+    <div class="pt-20 pb-12 flex flex-col items-center text-center">
+        <div
+            class="size-16 rounded-[22px] bg-primary flex items-center justify-center text-white mb-6 shadow-xl shadow-primary/20">
+            <span class="material-symbols-outlined text-3xl font-black">shield_with_heart</span>
+        </div>
+        <h1 class="text-navy-trust dark:text-white text-3xl font-black tracking-tight mb-2">Welcome Back</h1>
+        <p class="text-slate-400 text-sm font-medium">Continue your journey to a safer space</p>
+    </div>
+
+    <!-- Login Form -->
+    <form method="POST" action="{{ url_for('main.login') }}" class="space-y-6">
+        <div class="space-y-4">
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">mail</span>
+                <input type="email" name="email" required placeholder="Email Address"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-12 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-primary shadow-sm">
+            </div>
+
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">lock</span>
+                <input type="password" name="password" required placeholder="Password"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-12 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-primary shadow-sm">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+        <div class="flex justify-end px-1">
+            <a href="#" class="text-[11px] font-black text-primary uppercase tracking-wider">Forgot Password?</a>
         </div>
 
-        <button type="submit" class="btn">Login</button>
+        <button type="submit"
+            class="w-full bg-navy-trust text-white py-5 rounded-2xl font-bold text-base shadow-xl shadow-navy-trust/20 active:scale-[0.98] transition-all">
+            Sign In
+        </button>
     </form>
 
-    <div class="form-footer">
-        Don't have an account? <a href="{{ url_for('main.register') }}">Register here</a>
+    <!-- Social Login (Visual) -->
+    <div class="mt-12 space-y-6">
+        <div class="flex items-center gap-4">
+            <div class="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Or Continue with</span>
+            <div class="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+        </div>
+
+        <div class="flex gap-4">
+            <button
+                class="flex-1 flex items-center justify-center py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="size-5">
+            </button>
+            <button
+                class="flex-1 flex items-center justify-center py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all">
+                <img src="https://www.svgrepo.com/show/475631/apple-black.svg" class="size-5 dark:invert">
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-auto pt-10 text-center">
+        <p class="text-slate-400 text-sm font-medium">
+            New here?
+            <a href="{{ url_for('main.register') }}" class="text-primary font-black ml-1">Create Account</a>
+        </p>
     </div>
 </div>
 {% endblock %}

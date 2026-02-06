@@ -1,383 +1,203 @@
 {% extends "base.html" %}
 
-{% block title %}Vendor Onboarding - SheSafe{% endblock %}
-
-{% block styles %}
-<style>
-    .onboard-container {
-        max-width: 800px;
-        margin: 2rem auto;
-    }
-
-    .onboard-header {
-        background: linear-gradient(135deg, #1e5bc4 0%, #2d7dd2 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .onboard-header h2 {
-        margin-bottom: 0.5rem;
-    }
-
-    .onboard-form {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-section {
-        margin-bottom: 2rem;
-        padding-bottom: 2rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    .form-section:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .form-section h3 {
-        color: #1e5bc4;
-        margin-bottom: 1.5rem;
-        font-size: 1.25rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-group label.required::after {
-        content: " *";
-        color: #c41e3a;
-    }
-
-    .form-group input[type="text"],
-    .form-group input[type="number"],
-    .form-group input[type="time"],
-    .form-group textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        transition: border-color 0.3s;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #1e5bc4;
-    }
-
-    .form-group textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        padding: 1rem;
-        background: #f5f9ff;
-        border-radius: 4px;
-        margin-bottom: 1rem;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        margin-right: 0.75rem;
-        cursor: pointer;
-    }
-
-    .checkbox-group label {
-        margin: 0;
-        cursor: pointer;
-        font-weight: 500;
-    }
-
-    .conditional-fields {
-        margin-top: 1rem;
-        padding: 1rem;
-        background: #fff9e6;
-        border-left: 3px solid #ffc107;
-        border-radius: 4px;
-        display: none;
-    }
-
-    .conditional-fields.show {
-        display: block;
-    }
-
-    .help-text {
-        font-size: 0.875rem;
-        color: #666;
-        margin-top: 0.25rem;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 0.75rem;
-        background: linear-gradient(135deg, #1e5bc4 0%, #2d7dd2 100%);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .location-btn {
-        background: #f8faff;
-        color: #1e5bc4;
-        border: 2px solid #1e5bc4;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .location-btn:hover {
-        background: #eef2ff;
-    }
-
-    .location-btn.loading {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-
-    #mini-map {
-        height: 200px;
-        width: 100%;
-        border-radius: 8px;
-        margin-top: 1rem;
-        display: none;
-        border: 1px solid #ddd;
-    }
-</style>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-{% endblock %}
+{% block title %}Partner Onboarding - SheSafe{% endblock %}
 
 {% block content %}
-<div class="onboard-container">
-    <div class="onboard-header">
-        <h2>Vendor Onboarding</h2>
-        <p>Complete your vendor profile to start offering your services on SheSafe</p>
+<div
+    class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-white dark:bg-background-dark">
+    <!-- Header -->
+    <div class="px-5 pt-10 pb-6 border-b border-slate-50 dark:border-slate-800">
+        <h1 class="text-navy-trust dark:text-white text-3xl font-black tracking-tight mb-2">Partner with us</h1>
+        <p class="text-slate-400 text-sm font-medium">Help us build a safer world for women, one space at a time.</p>
     </div>
 
-    <form method="POST" action="{{ url_for('main.vendor_onboard') }}" class="onboard-form">
-        <!-- Business Information -->
-        <div class="form-section">
-            <h3>Business Information</h3>
-
-            <div class="form-group">
-                <label for="business_name" class="required">Business Name</label>
-                <input type="text" id="business_name" name="business_name" required>
+    <!-- Progress Stepper (Visual) -->
+    <div class="px-5 py-8">
+        <div class="flex items-center justify-between mb-10 px-2">
+            <div class="flex flex-col items-center gap-2">
+                <div
+                    class="size-8 rounded-full bg-navy-trust text-white flex items-center justify-center text-xs font-bold ring-4 ring-navy-trust/10">
+                    1</div>
+                <span
+                    class="text-[9px] font-bold text-navy-trust dark:text-white uppercase tracking-widest">Business</span>
             </div>
-
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" placeholder="Tell us about your business..."></textarea>
-                <div class="help-text">Provide a brief description of your services</div>
+            <div class="h-0.5 flex-1 bg-slate-100 dark:bg-slate-800 mx-4 -mt-6"></div>
+            <div class="flex flex-col items-center gap-2">
+                <div
+                    class="size-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold">
+                    2</div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Verification</span>
             </div>
-        </div>
-
-        <!-- Location Information -->
-        <div class="form-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 style="margin-bottom: 0;">Location Information</h3>
-                <button type="button" id="share-location-btn" class="btn location-btn"
-                    style="width: auto; margin-bottom: 0;">
-                    📍 Share Browser Location
-                </button>
-            </div>
-
-            <div id="location-status-text" class="help-text"
-                style="margin-bottom: 1rem; color: #1e5bc4; font-weight: 500; display: none;"></div>
-
-            <div id="mini-map"></div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="latitude" class="required">Latitude</label>
-                    <input type="number" id="latitude" name="latitude" step="any" required placeholder="e.g., 28.7041">
-                    <div class="help-text">Decimal degrees format</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="longitude" class="required">Longitude</label>
-                    <input type="number" id="longitude" name="longitude" step="any" required
-                        placeholder="e.g., 77.1025">
-                    <div class="help-text">Decimal degrees format</div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="address" class="required">Full Address</label>
-                <textarea id="address" name="address" required
-                    placeholder="Enter your complete business address..."></textarea>
+            <div class="h-0.5 flex-1 bg-slate-100 dark:bg-slate-800 mx-4 -mt-6"></div>
+            <div class="flex flex-col items-center gap-2">
+                <div
+                    class="size-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold">
+                    3</div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Review</span>
             </div>
         </div>
 
-        <!-- Safety Features -->
-        <div class="form-section">
-            <h3>Safety Features</h3>
+        <form method="POST" action="{{ url_for('main.vendor_onboard') }}" class="space-y-8">
+            <!-- Business Section -->
+            <div class="space-y-6">
+                <div>
+                    <label
+                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Business
+                        Presence</label>
+                    <input type="text" name="business_name" required placeholder="Enter business or shop name"
+                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
+                </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="has_cctv" name="has_cctv">
-                <label for="has_cctv">This location has CCTV surveillance</label>
+                <div>
+                    <label
+                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Short
+                        Bio</label>
+                    <textarea name="description" placeholder="Briefly describe your space..."
+                        class="w-full h-32 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
+                </div>
             </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="has_female_staff" name="has_female_staff">
-                <label for="has_female_staff">Female staff available</label>
+            <!-- Location Section -->
+            <div class="space-y-6 pt-4">
+                <div class="flex justify-between items-center mb-1">
+                    <label
+                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block">Precise
+                        Location</label>
+                    <button type="button" id="get-location"
+                        class="text-brand-pink text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">my_location</span>
+                        Auto-Detect
+                    </button>
+                </div>
+
+                <div id="mini-map-container"
+                    class="hidden h-40 w-full rounded-[32px] overflow-hidden border-2 border-slate-50 dark:border-slate-800">
+                    <div id="mini-map" class="h-full w-full"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="latitude" name="latitude" step="any" required placeholder="Latitude"
+                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
+                    <input type="number" id="longitude" name="longitude" step="any" required placeholder="Longitude"
+                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
+                </div>
+
+                <div>
+                    <label
+                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Postal
+                        Address</label>
+                    <textarea id="address" name="address" required placeholder="Full physical address"
+                        class="w-full h-24 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
+                </div>
             </div>
 
-            <div id="staff-timing-fields" class="conditional-fields">
-                <h4 style="margin-top: 0; margin-bottom: 1rem; color: #1e5bc4;">Female Staff Availability</h4>
+            <!-- Features -->
+            <div class="space-y-4 pt-4">
+                <label
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Safety
+                    Amenities</label>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="female_staff_start_time">Start Time</label>
-                        <input type="time" id="female_staff_start_time" name="female_staff_start_time">
+                <label
+                    class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
+                    <div
+                        class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-brand-pink">
+                        <span class="material-symbols-outlined">videocam</span>
                     </div>
+                    <div class="flex-1">
+                        <p class="text-[13px] font-bold text-navy-trust dark:text-white">CCTV Coverage</p>
+                        <p class="text-[10px] text-slate-400">Indoor and entry surveillance</p>
+                    </div>
+                    <input type="checkbox" name="has_cctv"
+                        class="size-5 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
+                </label>
 
-                    <div class="form-group">
-                        <label for="female_staff_end_time">End Time</label>
-                        <input type="time" id="female_staff_end_time" name="female_staff_end_time">
+                <div class="space-y-3">
+                    <label
+                        class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
+                        <div
+                            class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-brand-pink">
+                            <span class="material-symbols-outlined">woman</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[13px] font-bold text-navy-trust dark:text-white">Female Assistance</p>
+                            <p class="text-[10px] text-slate-400">Attendants available on site</p>
+                        </div>
+                        <input type="checkbox" id="has_female_staff" name="has_female_staff"
+                            class="size-5 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
+                    </label>
+
+                    <div id="staff-timings"
+                        class="hidden bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                        <p class="text-[10px] font-black text-brand-pink uppercase tracking-widest">Availability Hours
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[8px] font-bold text-slate-400 uppercase block mb-1">From</label>
+                                <input type="time" name="female_staff_start_time"
+                                    class="w-full bg-white dark:bg-slate-900 border-none rounded-xl p-3 text-xs font-bold text-navy-trust dark:text-white">
+                            </div>
+                            <div>
+                                <label class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Till</label>
+                                <input type="time" name="female_staff_end_time"
+                                    class="w-full bg-white dark:bg-slate-900 border-none rounded-xl p-3 text-xs font-bold text-navy-trust dark:text-white">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <button type="submit" class="btn">Complete Onboarding</button>
-    </form>
+            <button type="submit"
+                class="w-full bg-navy-trust text-white py-5 rounded-2xl font-bold text-base shadow-xl shadow-navy-trust/20 active:scale-[0.98] transition-all mt-10">
+                Submit for Verification
+            </button>
+        </form>
+    </div>
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    // Geolocation and Reverse Geocoding
-    const shareLocationBtn = document.getElementById('share-location-btn');
-    const latInput = document.getElementById('latitude');
-    const lonInput = document.getElementById('longitude');
-    const addressInput = document.getElementById('address');
-    const statusText = document.getElementById('location-status-text');
-    const miniMapDiv = document.getElementById('mini-map');
-    let miniMap;
-    let marker;
+    const femaleStaffCheck = document.getElementById('has_female_staff');
+    const staffTimings = document.getElementById('staff-timings');
+    const locBtn = document.getElementById('get-location');
+    const latInp = document.getElementById('latitude');
+    const lonInp = document.getElementById('longitude');
+    const addrInp = document.getElementById('address');
+    const mapCont = document.getElementById('mini-map-container');
+    let map, marker;
 
-    function initMiniMap(lat, lon) {
-        miniMapDiv.style.display = 'block';
-        if (!miniMap) {
-            miniMap = L.map('mini-map').setView([lat, lon], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(miniMap);
-            marker = L.marker([lat, lon]).addTo(miniMap);
-        } else {
-            miniMap.setView([lat, lon], 15);
-            marker.setLatLng([lat, lon]);
-        }
-    }
-
-    shareLocationBtn.addEventListener('click', function () {
-        if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser.');
-            return;
-        }
-
-        shareLocationBtn.disabled = true;
-        shareLocationBtn.classList.add('loading');
-        shareLocationBtn.innerText = '⌛ Detecting...';
-        statusText.style.display = 'block';
-        statusText.innerText = 'Requesting browser location...';
-
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-
-                latInput.value = lat.toFixed(6);
-                lonInput.value = lon.toFixed(6);
-
-                statusText.innerText = 'Location detected! Fetching address...';
-                initMiniMap(lat, lon);
-
-                try {
-                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-                    const data = await response.json();
-                    if (data && data.display_name) {
-                        addressInput.value = data.display_name;
-                        statusText.innerText = 'Location and address updated successfully!';
-                    } else {
-                        statusText.innerText = 'Location detected, but address could not be fetched.';
-                    }
-                } catch (error) {
-                    console.error('Error fetching address:', error);
-                    statusText.innerText = 'Location detected, but address fetch failed.';
-                } finally {
-                    shareLocationBtn.disabled = false;
-                    shareLocationBtn.classList.remove('loading');
-                    shareLocationBtn.innerText = '📍 Update Location';
-                }
-            },
-            (error) => {
-                console.error('Geolocation error:', error);
-                let msg = 'Failed to get location.';
-                if (error.code === 1) msg = 'Location permission denied.';
-                else if (error.code === 2) msg = 'Location unavailable.';
-                else if (error.code === 3) msg = 'Location request timed out.';
-
-                statusText.innerText = msg;
-                statusText.style.color = '#c41e3a';
-                shareLocationBtn.disabled = false;
-                shareLocationBtn.classList.remove('loading');
-                shareLocationBtn.innerText = '📍 Share Browser Location';
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
+    femaleStaffCheck.addEventListener('change', () => {
+        staffTimings.classList.toggle('hidden', !femaleStaffCheck.checked);
     });
 
-    // Toggle staff timing fields based on has_female_staff checkbox
-    const hasFemaleStaffCheckbox = document.getElementById('has_female_staff');
-    const staffTimingFields = document.getElementById('staff-timing-fields');
+    locBtn.addEventListener('click', () => {
+        if (navigator.geolocation) {
+            locBtn.innerText = 'Detecting...';
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const { latitude, longitude } = pos.coords;
+                latInp.value = latitude.toFixed(6);
+                lonInp.value = longitude.toFixed(6);
 
-    hasFemaleStaffCheckbox.addEventListener('change', function () {
-        if (this.checked) {
-            staffTimingFields.classList.add('show');
-        } else {
-            staffTimingFields.classList.remove('show');
-            // Clear the time fields when hiding
-            document.getElementById('female_staff_start_time').value = '';
-            document.getElementById('female_staff_end_time').value = '';
+                mapCont.classList.remove('hidden');
+                if (!map) {
+                    map = L.map('mini-map').setView([latitude, longitude], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                    marker = L.marker([latitude, longitude]).addTo(map);
+                } else {
+                    map.setView([latitude, longitude], 15);
+                    marker.setLatLng([latitude, longitude]);
+                }
+
+                try {
+                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                    const data = await res.json();
+                    if (data.display_name) addrInp.value = data.display_name;
+                } catch (e) { }
+
+                locBtn.innerText = 'Updated';
+                setTimeout(() => locBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span>Auto-Detect', 2000);
+            });
         }
     });
 </script>

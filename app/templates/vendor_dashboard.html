@@ -1,216 +1,156 @@
 {% extends "base.html" %}
 
-{% block title %}Vendor Dashboard - SheSafe{% endblock %}
-
-{% block styles %}
-<style>
-    .vendor-container {
-        max-width: 1000px;
-        margin: 2rem auto;
-    }
-
-    .vendor-header {
-        background: linear-gradient(135deg, #1e5bc4 0%, #2d7dd2 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .vendor-header h2 {
-        margin-bottom: 0.5rem;
-    }
-
-    .vendor-header .role-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-
-    .vendor-info {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-    }
-
-    .vendor-info h3 {
-        color: #1e5bc4;
-        margin-bottom: 1.5rem;
-    }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .info-item {
-        padding: 1rem;
-        background: #f5f9ff;
-        border-radius: 4px;
-        border-left: 3px solid #1e5bc4;
-    }
-
-    .info-item label {
-        display: block;
-        font-size: 0.875rem;
-        color: #666;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-    }
-
-    .info-item .value {
-        font-size: 1.125rem;
-        color: #333;
-    }
-
-    .vendor-features {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .vendor-features h3 {
-        color: #1e5bc4;
-        margin-bottom: 1.5rem;
-    }
-
-    .feature-list {
-        list-style: none;
-        padding: 0;
-    }
-
-    .feature-list li {
-        padding: 1rem;
-        margin-bottom: 0.5rem;
-        background: #f5f9ff;
-        border-radius: 4px;
-        border-left: 3px solid #1e5bc4;
-    }
-
-    .feature-list li::before {
-        content: "✓ ";
-        color: #1e5bc4;
-        font-weight: bold;
-        margin-right: 0.5rem;
-    }
-</style>
-{% endblock %}
+{% block title %}Merchant Dashboard - SheSafe{% endblock %}
 
 {% block content %}
-<div class="vendor-container">
-    <div class="vendor-header">
-        <h2>Vendor Dashboard</h2>
-        <p>Welcome, {{ user.name }} <span class="role-badge">{{ user.role }}</span></p>
+<div
+    class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-[#F8FAFC] dark:bg-background-dark">
+    <!-- Header -->
+    <div
+        class="flex items-center px-5 pt-10 pb-4 justify-between sticky top-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md z-40 border-b border-slate-100 dark:border-slate-800">
+        <h1 class="text-navy-trust dark:text-white text-2xl font-black tracking-tight">Merchant</h1>
+        <div class="flex items-center gap-3">
+            <div
+                class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-primary border-2 border-primary/30">
+                <span class="material-symbols-outlined text-xl">store</span>
+            </div>
+        </div>
     </div>
 
     {% if not user.vendor_profile %}
-    <div
-        style="background: #fff3cd; border: 1px solid #ffc107; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-        <h3 style="color: #856404; margin-top: 0;">Complete Your Vendor Profile</h3>
-        <p style="color: #856404; margin-bottom: 1rem;">You haven't completed your vendor onboarding yet. Please
-            complete your profile to start offering services on SheSafe.</p>
-        <a href="{{ url_for('main.vendor_onboard') }}"
-            style="display: inline-block; padding: 0.75rem 1.5rem; background: #1e5bc4; color: white; text-decoration: none; border-radius: 4px; font-weight: 600;">Complete
-            Onboarding</a>
+    <!-- Onboarding Prompt -->
+    <div class="px-5 py-8">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-[32px] p-8 text-center shadow-xl shadow-navy-trust/5 border border-pink-100 dark:border-slate-800">
+            <div
+                class="size-20 bg-pink-50 dark:bg-pink-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-brand-pink text-4xl">add_business</span>
+            </div>
+            <h2 class="text-navy-trust dark:text-white text-xl font-black mb-3">Complete Onboarding</h2>
+            <p class="text-slate-400 text-sm mb-8 px-4 leading-relaxed">Join the SheSafe network and start welcoming
+                visitors to your safe space.</p>
+            <a href="{{ url_for('main.vendor_onboard') }}"
+                class="block w-full bg-navy-trust text-white py-5 rounded-2xl font-bold shadow-lg shadow-navy-trust/20 active:scale-95 transition-all">
+                Setup Merchant Profile
+            </a>
+        </div>
     </div>
     {% else %}
-    <div class="vendor-info">
-        <h3>Your Profile</h3>
-        <div class="info-grid">
-            <div class="info-item">
-                <label>Name</label>
-                <div class="value">{{ user.name }}</div>
-            </div>
-            <div class="info-item">
-                <label>Email</label>
-                <div class="value">{{ user.email }}</div>
-            </div>
-            <div class="info-item">
-                <label>Role</label>
-                <div class="value">{{ user.role }}</div>
-            </div>
-            <div class="info-item">
-                <label>Vendor ID</label>
-                <div class="value">#{{ user.id }}</div>
+    <!-- Stats Grid -->
+    <div class="px-5 pt-8 grid grid-cols-2 gap-4 mb-8">
+        <div
+            class="bg-navy-trust dark:bg-slate-900 rounded-[32px] p-5 text-white shadow-xl shadow-navy-trust/10 col-span-2">
+            <p class="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Total Revenue</p>
+            <h2 class="text-3xl font-black tabular-nums">₹{{
+                "%.2f"|format(user.vendor_profile.bookings|sum(attribute='amount')) }}</h2>
+            <div class="flex items-center gap-2 mt-4 text-[11px] font-bold text-primary">
+                <span class="material-symbols-outlined text-sm">trending_up</span>
+                <span>+12.4% from last month</span>
             </div>
         </div>
-
         <div
-            style="margin-top: 2rem; padding: 1rem; background: #f5f9ff; border-radius: 4px; border-left: 3px solid #1e5bc4;">
-            <h4 style="margin-top: 0; color: #1e5bc4;">Business: {{ user.vendor_profile.business_name }}</h4>
-            <p style="margin: 0; color: #666;">
-                <strong>Status:</strong>
-                {% if user.vendor_profile.is_verified %}
-                <span style="color: #28a745;">✓ Verified</span>
-                {% else %}
-                <span style="color: #ffc107;">⏳ Pending Verification</span>
-                {% endif %}
-                |
-                {% if user.vendor_profile.is_active %}
-                <span style="color: #28a745;">Active</span>
-                {% else %}
-                <span style="color: #dc3545;">Inactive</span>
-                {% endif %}
-            </p>
+            class="bg-white dark:bg-slate-900 rounded-[32px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Visitors</p>
+            <h3 class="text-xl font-black text-navy-trust dark:text-white">{{ user.vendor_profile.bookings|length }}
+            </h3>
+        </div>
+        <div
+            class="bg-white dark:bg-slate-900 rounded-[32px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Average Rating</p>
+            <div class="flex items-center gap-1.5">
+                <h3 class="text-xl font-black text-navy-trust dark:text-white">{{
+                    "%.1f"|format(user.vendor_profile.average_rating) }}</h3>
+                <span class="material-symbols-outlined text-brand-pink text-sm fill-1">star</span>
+            </div>
         </div>
     </div>
 
-    <!-- Image Gallery Section -->
-    <div class="vendor-info" style="margin-top: 2rem;">
-        <h3>Property & Washroom Images</h3>
-        <p style="color: #666; margin-bottom: 1.5rem;">Upload clear images of your property and facilities. These will
-            be visible to users once your profile is verified.</p>
-
-        <div
-            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-            {% for image in user.vendor_profile.images %}
+    <!-- Active Reservations -->
+    <div class="px-5 mb-8">
+        <div class="flex justify-between items-center mb-4 px-1">
+            <h3 class="text-navy-trust dark:text-white text-lg font-bold">Active Reservations</h3>
+            <span class="text-brand-pink text-xs font-bold uppercase tracking-wider">All Bookings</span>
+        </div>
+        <div class="space-y-4">
+            {% set active_bookings = user.vendor_profile.bookings | selectattr('status', 'equalto', 'upcoming') | list
+            %}
+            {% for booking in active_bookings | sort(attribute='visit_date') %}
             <div
-                style="position: relative; aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; border: 1px solid #ddd;">
-                <img src="{{ url_for('static', filename=image.image_url) }}" alt="Vendor Facility"
-                    style="width: 100%; height: 100%; object-fit: cover;">
+                class="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4">
+                <div
+                    class="size-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary shrink-0 font-bold text-sm">
+                    {{ booking.visit_date.strftime('%H:%M') }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h4 class="text-navy-trust dark:text-white font-bold text-sm truncate uppercase tracking-tight">{{
+                        booking.user.name }}</h4>
+                    <p class="text-[10px] text-slate-400 font-medium">#SAFE-{{ booking.id }} • Today</p>
+                </div>
+                <div class="flex gap-2">
+                    <button
+                        class="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-navy-trust dark:text-white active:scale-95 transition-all">
+                        <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                    </button>
+                    <button
+                        class="size-10 rounded-xl bg-primary text-white flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-primary/20">
+                        <span class="material-symbols-outlined text-xl">check</span>
+                    </button>
+                </div>
             </div>
             {% else %}
-            <div
-                style="grid-column: 1/-1; padding: 2rem; background: #f9f9f9; border: 2px dashed #ddd; border-radius: 8px; text-align: center; color: #999;">
-                No images uploaded yet.
-            </div>
+            <p
+                class="text-xs text-slate-400 italic text-center py-8 bg-white dark:bg-slate-900 rounded-[32px] border border-slate-50 dark:border-slate-800">
+                No upcoming visits for today.</p>
             {% endfor %}
         </div>
+    </div>
 
-        <form method="POST" action="{{ url_for('main.upload_images') }}" enctype="multipart/form-data"
-            style="background: #f5f9ff; padding: 1.5rem; border-radius: 8px; border-left: 3px solid #1e5bc4;">
-            <h4 style="margin-top: 0; color: #1e5bc4;">Upload New Images</h4>
-            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                <input type="file" name="images" multiple accept="image/*"
-                    style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; flex-grow: 1;">
-                <button type="submit"
-                    style="padding: 0.75rem 1.5rem; background: #1e5bc4; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Upload
-                    Images</button>
+    <!-- Gallery & Uploads -->
+    <div class="px-5 mb-8">
+        <h3 class="text-navy-trust dark:text-white text-lg font-bold mb-4 px-1">Space Gallery</h3>
+        <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+            {% for image in user.vendor_profile.images %}
+            <div
+                class="h-40 w-32 shrink-0 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm relative group">
+                <img src="{{ url_for('static', filename=image.image_url) }}" class="h-full w-full object-cover">
+                <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                    <span class="text-[8px] text-white font-bold uppercase tracking-widest">Facility Image</span>
+                </div>
             </div>
-            <small style="color: #666; display: block; margin-top: 0.5rem;">You can select multiple files at once.
-                Allowed: PNG, JPG, JPEG, WEBP.</small>
-        </form>
+            {% endfor %}
+            <form id="image-upload-form" method="POST" action="{{ url_for('main.upload_images') }}"
+                enctype="multipart/form-data" class="h-40 w-32 shrink-0">
+                <label
+                    class="flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all hover:bg-slate-50">
+                    <input type="file" name="images" multiple accept="image/*" class="sr-only"
+                        onchange="this.form.submit()">
+                    <span class="material-symbols-outlined text-slate-300 text-3xl mb-1">add_a_photo</span>
+                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Add New</span>
+                </label>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payout Section (Visual only) -->
+    <div class="px-5">
+        <div
+            class="bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h4 class="text-navy-trust dark:text-white font-bold text-base">Next Payout</h4>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5 italic">Est.
+                        Processing: Feb 28</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-xl font-black text-navy-trust dark:text-white">₹2,450.00</span>
+                </div>
+            </div>
+            <button
+                class="w-full bg-slate-50 dark:bg-slate-800 text-slate-400 py-4 rounded-2xl font-bold text-[11px] uppercase tracking-widest cursor-not-allowed">
+                Verification Required for Payout
+            </button>
+        </div>
     </div>
     {% endif %}
-
-    <div class="vendor-features">
-        <h3>Vendor Features</h3>
-        <ul class="feature-list">
-            <li>Manage your products and services</li>
-            <li>View customer inquiries and orders</li>
-            <li>Update vendor profile and business information</li>
-            <li>Access vendor-specific analytics and reports</li>
-            <li>Communicate with customers through messaging</li>
-        </ul>
-    </div>
 </div>
 {% endblock %}

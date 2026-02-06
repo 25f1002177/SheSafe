@@ -2,304 +2,162 @@
 
 {% block title %}Home - SheSafe{% endblock %}
 
-{% block styles %}
-<style>
-    .hero {
-        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=2070');
-        background-size: cover;
-        background-position: center;
-        color: white;
-        padding: 8rem 2rem;
-        text-align: center;
-        margin-bottom: 4rem;
-        border-radius: 0 0 3rem 3rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .hero h1 {
-        font-size: 4rem;
-        font-weight: 800;
-        margin-bottom: 1.5rem;
-        letter-spacing: -2px;
-        line-height: 1.1;
-    }
-
-    .hero p {
-        font-size: 1.4rem;
-        max-width: 700px;
-        opacity: 0.9;
-        font-weight: 400;
-        margin-bottom: 2.5rem;
-    }
-
-    .hero-btn {
-        background: white;
-        color: var(--primary);
-        padding: 1rem 2.5rem;
-        border-radius: 99px;
-        font-weight: 700;
-        text-decoration: none;
-        font-size: 1.1rem;
-        transition: var(--transition);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .hero-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .section-title {
-        text-align: center;
-        margin-bottom: 3.5rem;
-    }
-
-    .section-title h2 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--text-main);
-        margin-bottom: 1rem;
-    }
-
-    .vendor-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 2.5rem;
-        padding: 0 2rem;
-        max-width: 1250px;
-        margin: 0 auto 6rem;
-    }
-
-    .vendor-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 24px;
-        overflow: hidden;
-        transition: var(--transition);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .vendor-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
-        background: white;
-    }
-
-    .vendor-image-container {
-        position: relative;
-        height: 220px;
-        overflow: hidden;
-    }
-
-    .vendor-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: var(--transition);
-    }
-
-    .vendor-card:hover .vendor-image {
-        transform: scale(1.1);
-    }
-
-    .vendor-details {
-        padding: 1.75rem;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .vendor-details h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        color: var(--text-main);
-    }
-
-    .vendor-address {
-        color: var(--text-muted);
-        font-size: 0.95rem;
-        margin-bottom: 1.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .safety-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .safety-badge {
-        padding: 0.4rem 0.8rem;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background: #f0f4ff;
-        color: #4f46e5;
-        border: 1px solid #e0e7ff;
-    }
-
-    .view-btn {
-        width: 100%;
-        padding: 0.9rem;
-        background: var(--bg-light);
-        color: var(--primary);
-        border: 2px solid var(--primary);
-        border-radius: 12px;
-        font-weight: 700;
-        text-decoration: none;
-        text-align: center;
-        transition: var(--transition);
-        margin-top: auto;
-    }
-
-    .view-btn:hover {
-        background: var(--primary);
-        color: white;
-    }
-
-    .stats-section {
-        background: white;
-        padding: 5rem 2rem;
-        margin-bottom: 6rem;
-    }
-
-    .stats-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 3rem;
-        text-align: center;
-    }
-
-    .stat-item h3 {
-        font-size: 3rem;
-        font-weight: 800;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-item p {
-        color: var(--text-muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 0.9rem;
-    }
-
-    @media (max-width: 768px) {
-        .hero h1 {
-            font-size: 2.5rem;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-        }
-
-        .vendor-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="hero">
-    <h1>Safe. Clean. Verified.</h1>
-    <p>Empowering women with dignified sanitation access across India.</p>
-    <a href="#explore" class="hero-btn">Explore Nearby Spaces</a>
-</div>
-
-<div class="stats-section">
-    <div class="stats-container">
-        <div class="stat-item">
-            <h3>500+</h3>
-            <p>Verified Spaces</p>
+<div
+    class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-[#FFF9F9] dark:bg-background-dark">
+    <!-- Header -->
+    <div
+        class="flex items-center bg-white dark:bg-background-dark px-5 pt-6 pb-4 justify-between sticky top-0 z-50 shadow-sm border-b border-pink-50 dark:border-slate-800">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-brand-pink text-2xl fill-1">location_on</span>
+            <h1 class="text-navy-trust dark:text-white text-2xl font-bold tracking-tight">SheSafe</h1>
         </div>
-        <div class="stat-item">
-            <h3>20k+</h3>
-            <p>Happy Users</p>
-        </div>
-        <div class="stat-item">
-            <h3>100%</h3>
-            <p>Safety Audited</p>
+        <div class="flex items-center gap-3">
+            <button
+                class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-lg fill-1">emergency</span>
+                <span class="text-xs font-black uppercase tracking-wider">SOS</span>
+            </button>
+            {% if current_user.is_authenticated and not current_user.is_vendor %}
+            <a href="{{ url_for('main.vendor_onboard') }}"
+                class="flex size-10 items-center justify-center rounded-full bg-navy-trust/5 text-navy-trust dark:text-white">
+                <span class="material-symbols-outlined">store</span>
+            </a>
+            {% elif current_user.is_authenticated and current_user.is_vendor %}
+            <a href="{{ url_for('main.dashboard') }}"
+                class="flex size-10 items-center justify-center rounded-full bg-navy-trust/5 text-navy-trust dark:text-white">
+                <span class="material-symbols-outlined">dashboard</span>
+            </a>
+            {% endif %}
         </div>
     </div>
-</div>
 
-<div id="explore" class="section-title">
-    <h2>Verified Locations</h2>
-    <p style="color: var(--text-muted);">Hand-picked and audited spaces for your peace of mind.</p>
+    <!-- Greeting -->
+    <div class="px-5 pt-8 pb-2">
+        <h2 class="text-navy-trust dark:text-white text-2xl font-bold leading-tight">
+            Find a Safe Space, <span class="text-brand-pink">{% if current_user.is_authenticated %}{{
+                current_user.username | upper }}{% else %}READY{% endif %}</span>
+        </h2>
+    </div>
 
-    <div style="margin-top: 2rem;">
-        <form action="{{ url_for('main.index') }}" method="get" style="display: inline-block;">
+    <!-- Pulse status -->
+    <div class="px-5 py-2">
+        <div class="bg-navy-trust/5 dark:bg-slate-800 px-4 py-2.5 rounded-xl flex items-center gap-3">
+            <div class="size-2 bg-brand-pink rounded-full animate-pulse"></div>
+            <p class="text-[11px] font-bold text-navy-trust/70 dark:text-slate-400 uppercase tracking-widest">Finding
+                facilities nearby...</p>
+        </div>
+    </div>
+
+    <!-- Featured / Closest -->
+    {% if vendors %}
+    {% set closest = vendors[0] %}
+    <div class="px-5 pt-4">
+        <a href="{{ url_for('main.vendor_detail', vendor_id=closest.id) }}"
+            class="block cursor-pointer relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-brand-pink/10 shadow-xl shadow-navy-trust/5 transition-transform active:scale-[0.98]">
+            <div class="absolute top-4 right-4 z-10">
+                <span
+                    class="bg-brand-pink text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px] fill-1">verified</span> VERIFIED
+                </span>
+            </div>
+            <div class="h-44 bg-slate-200 bg-cover bg-center"
+                style="background-image: url('{% if closest.images %}{{ url_for('static', filename=closest.images[0].image_url) }}{% else %}https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=2070{% endif %}')">
+            </div>
+            <div class="p-5">
+                <p class="text-brand-pink text-[11px] font-bold uppercase tracking-widest mb-1">Closest to You •
+                    Verified</p>
+                <h3 class="text-navy-trust dark:text-white text-xl font-bold">{{ closest.business_name }}</h3>
+                <div class="flex items-center gap-1 mt-1 mb-4">
+                    <span class="material-symbols-outlined text-brand-pink text-sm fill-1">star</span>
+                    <span class="text-sm font-bold text-navy-trust dark:text-white">{{
+                        "%.1f"|format(closest.average_rating) }}</span>
+                    <span class="text-xs text-slate-400 ml-1">({{ closest.feedbacks|length }} reviews)</span>
+                </div>
+                <div
+                    class="w-full bg-navy-trust text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-navy-trust/20 transition-all">
+                    <span class="material-symbols-outlined text-xl">near_me</span>
+                    View Details
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Filter/Search area -->
+    <div class="px-5 py-6">
+        <form action="{{ url_for('main.index') }}" method="get"
+            class="flex w-full items-stretch rounded-2xl h-14 shadow-sm border border-navy-trust/5 bg-white dark:bg-slate-900 overflow-hidden">
+            <div class="text-brand-pink flex items-center justify-center pl-4">
+                <span class="material-symbols-outlined">search</span>
+            </div>
             <select name="city" onchange="this.form.submit()"
-                style="padding: 0.8rem 1.5rem; border-radius: 99px; border: 1px solid #ddd; font-size: 1rem; background: white; cursor: pointer; min-width: 200px; box-shadow: var(--shadow); appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234f46e5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 1.5rem center; background-size: 0.8rem;">
-                <option value="All Cities">All Cities</option>
+                class="form-select flex w-full min-w-0 flex-1 border-none bg-transparent text-navy-trust dark:text-white focus:outline-0 focus:ring-0 px-3 text-base appearance-none cursor-pointer">
+                <option value="All Cities">Search by City...</option>
                 {% for city in cities %}
                 <option value="{{ city }}" {% if selected_city==city %}selected{% endif %}>{{ city }}</option>
                 {% endfor %}
             </select>
         </form>
     </div>
-</div>
 
-<div class="vendor-grid">
-    {% for vendor in vendors %}
-    <div class="vendor-card">
-        <div class="vendor-image-container">
-            {% if vendor.images %}
-            <img src="{{ url_for('static', filename=vendor.images[0].image_url) }}" class="vendor-image"
-                alt="{{ vendor.business_name }}">
-            {% else %}
+    <!-- Categories -->
+    <div class="px-5">
+        <h3 class="text-navy-trust dark:text-white text-lg font-bold mb-4">Categories</h3>
+        <div class="grid grid-cols-4 gap-3">
+            {% set cats = [
+            ('Washroom', 'sanitizer'),
+            ('Period', 'water_drop'),
+            ('Nursing', 'child_care'),
+            ('Changing', 'checkroom')
+            ] %}
+            {% for name, icon in cats %}
             <div
-                style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--primary); background: #f0f4ff; font-weight: 600;">
-                Safe Space
+                class="flex flex-col gap-2 rounded-2xl bg-white dark:bg-slate-900 p-3 py-4 items-center text-center shadow-sm border border-slate-50 dark:border-slate-800 transition-all active:bg-slate-50">
+                <div class="size-12 bg-brand-pink/10 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-brand-pink text-2xl">{{ icon }}</span>
+                </div>
+                <span class="text-navy-trust dark:text-slate-300 text-[10px] font-bold leading-tight">{{ name }}</span>
             </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Verified Locations Grid (Simplified replacement for old grid) -->
+    <div id="explore" class="px-5 mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-navy-trust dark:text-white text-lg font-bold">Verified Places</h3>
+            <span class="text-brand-pink text-xs font-bold uppercase">View All</span>
+        </div>
+        <div class="space-y-4">
+            {% for vendor in vendors %}
+            {% if not loop.first or vendors|length == 1 %}
+            <a href="{{ url_for('main.vendor_detail', vendor_id=vendor.id) }}"
+                class="flex gap-4 bg-white dark:bg-slate-900 rounded-2xl p-3 border border-slate-100 dark:border-slate-800 shadow-sm transition-all active:scale-[0.98]">
+                <div class="h-20 w-20 shrink-0 rounded-xl overflow-hidden bg-slate-200">
+                    <img class="h-full w-full object-cover"
+                        src="{% if vendor.images %}{{ url_for('static', filename=vendor.images[0].image_url) }}{% else %}https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=200{% endif %}"
+                        alt="{{ vendor.business_name }}">
+                </div>
+                <div class="flex flex-col flex-1 justify-center py-0.5">
+                    <h4 class="text-navy-trust dark:text-white font-bold text-base leading-tight">{{
+                        vendor.business_name }}</h4>
+                    <p class="text-slate-400 text-xs mt-0.5">{{ vendor.city }}</p>
+                    <div class="flex items-center gap-1 mt-1">
+                        <span class="material-symbols-outlined text-brand-pink text-[14px] fill-1">star</span>
+                        <span class="text-xs font-bold text-navy-trust dark:text-white">{{
+                            "%.1f"|format(vendor.average_rating) }}</span>
+                        <span class="text-[10px] text-slate-400 ml-1">Verified Vendor</span>
+                    </div>
+                </div>
+            </a>
             {% endif %}
-            <div style="position: absolute; top: 1rem; right: 1rem;">
-                <span
-                    style="background: white; color: #92400e; padding: 0.4rem 0.8rem; border-radius: 99px; font-weight: 700; font-size: 0.8rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    ⭐ {{ "%.1f"|format(vendor.average_rating) }}
-                </span>
+            {% else %}
+            <div class="text-center py-10">
+                <p class="text-slate-400 font-bold">No spaces found in this city.</p>
             </div>
-        </div>
-        <div class="vendor-details">
-            <h3>{{ vendor.business_name }}</h3>
-            <div class="vendor-address">
-                📍 {{ vendor.address[:50] }}{% if vendor.address|length > 50 %}...{% endif %}
-            </div>
-
-            <div class="safety-badges">
-                {% if vendor.has_cctv %}
-                <span class="safety-badge">📹 CCTV</span>
-                {% endif %}
-                {% if vendor.has_female_staff %}
-                <span class="safety-badge">👩‍💼 Female Staff</span>
-                {% endif %}
-                <span class="safety-badge">✨ Clean</span>
-            </div>
-
-            <a href="{{ url_for('main.vendor_detail', vendor_id=vendor.id) }}" class="view-btn">View Details</a>
+            {% endfor %}
         </div>
     </div>
-    {% else %}
-    <div
-        style="grid-column: 1/-1; text-align: center; padding: 4rem; background: white; border-radius: 24px; box-shadow: var(--shadow);">
-        <h2 style="color: var(--text-muted);">No verified spaces found yet.</h2>
-        <p style="color: var(--text-muted); margin-top: 1rem;">We are currently auditing new dhabas and hotels. Check
-            back soon!</p>
-    </div>
-    {% endfor %}
 </div>
 {% endblock %}

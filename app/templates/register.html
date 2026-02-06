@@ -1,123 +1,108 @@
 {% extends "base.html" %}
 
-{% block title %}Register - SheSafe{% endblock %}
-
-{% block styles %}
-<style>
-    .form-container {
-        max-width: 500px;
-        margin: 2rem auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-container h2 {
-        margin-bottom: 1.5rem;
-        color: #667eea;
-        text-align: center;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: #333;
-    }
-
-    .form-group input,
-    .form-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        transition: border-color 0.3s;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #667eea;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 0.75rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .form-footer {
-        margin-top: 1.5rem;
-        text-align: center;
-        color: #666;
-    }
-
-    .form-footer a {
-        color: #667eea;
-        text-decoration: none;
-    }
-
-    .form-footer a:hover {
-        text-decoration: underline;
-    }
-</style>
-{% endblock %}
+{% block title %}Join SheSafe{% endblock %}
 
 {% block content %}
-<div class="form-container">
-    <h2>Create Account</h2>
-    <form method="POST" action="{{ url_for('main.register') }}">
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required>
+<div
+    class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-white dark:bg-background-dark px-5">
+    <!-- Hero / Branding -->
+    <div class="pt-16 pb-10 flex flex-col items-center text-center">
+        <div
+            class="size-16 rounded-[22px] bg-brand-pink flex items-center justify-center text-white mb-6 shadow-xl shadow-brand-pink/20">
+            <span class="material-symbols-outlined text-3xl font-black">join_full</span>
+        </div>
+        <h1 class="text-navy-trust dark:text-white text-3xl font-black tracking-tight mb-2">Create Account</h1>
+        <p class="text-slate-400 text-sm font-medium">Join thousands of women staying safe</p>
+    </div>
+
+    <!-- Register Form -->
+    <form method="POST" action="{{ url_for('main.register') }}" class="space-y-5">
+        <div class="space-y-4">
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">person</span>
+                <input type="text" name="name" required placeholder="Full Name"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-12 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink shadow-sm">
+            </div>
+
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">mail</span>
+                <input type="email" name="email" required placeholder="Email Address"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-12 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink shadow-sm">
+            </div>
+
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">group</span>
+                <select name="role" required
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-12 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink shadow-sm appearance-none">
+                    <option value="user" selected>Visitor (Seeking Safety)</option>
+                    <option value="vendor">Merchant (Providing Safety)</option>
+                </select>
+                <span
+                    class="material-symbols-outlined absolute right-4 top-4 text-slate-300 pointer-events-none">expand_more</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">lock</span>
+                    <input type="password" name="password" required placeholder="Password"
+                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-10 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink shadow-sm">
+                </div>
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">verified</span>
+                    <input type="password" name="confirm_password" required placeholder="Confirm"
+                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-10 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink shadow-sm">
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
+        <div class="flex items-start gap-3 py-2 px-1">
+            <input type="checkbox" required
+                class="mt-1 size-4 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
+            <p class="text-[10px] text-slate-400 font-medium leading-relaxed">
+                By signing up, I agree to the <span class="text-brand-pink font-bold">Safety Terms</span> and <span
+                    class="text-brand-pink font-bold">Privacy Policy</span>.
+            </p>
         </div>
 
-        <div class="form-group">
-            <label for="role">Role</label>
-            <select id="role" name="role" required>
-                <option value="user">User</option>
-                <option value="vendor">Vendor</option>
-                <option value="vendor">Vendor</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required minlength="6">
-        </div>
-
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
-        </div>
-
-        <button type="submit" class="btn">Register</button>
+        <button type="submit"
+            class="w-full bg-navy-trust text-white py-5 rounded-2xl font-bold text-base shadow-xl shadow-navy-trust/20 active:scale-[0.98] transition-all">
+            Join the Community
+        </button>
     </form>
 
-    <div class="form-footer">
-        Already have an account? <a href="{{ url_for('main.login') }}">Login here</a>
+    <!-- Social Login (Visual) -->
+    <div class="mt-10 space-y-4">
+        <div class="flex items-center gap-4">
+            <div class="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Connect with</span>
+            <div class="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
+        </div>
+
+        <div class="flex gap-4">
+            <button
+                class="flex-1 flex items-center justify-center py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="size-4 mr-2">
+                <span class="text-xs font-bold text-navy-trust dark:text-white">Google</span>
+            </button>
+            <button
+                class="flex-1 flex items-center justify-center py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all">
+                <img src="https://www.svgrepo.com/show/475631/apple-black.svg" class="size-4 mr-2 dark:invert">
+                <span class="text-xs font-bold text-navy-trust dark:text-white">Apple</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-auto pt-10 text-center">
+        <p class="text-slate-400 text-sm font-medium">
+            Member already?
+            <a href="{{ url_for('main.login') }}" class="text-brand-pink font-black ml-1">Log In</a>
+        </p>
     </div>
 </div>
 {% endblock %}
