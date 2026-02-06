@@ -133,7 +133,7 @@
             <div class="flex gap-4">
                 <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
                     <img id="nearest-vendor-img" class="h-full w-full object-cover"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDImtv3s1TcedVMmNfuGrLA2anXIRLWYjZvUJWnjGdCceLr-_Pd3Us7si3V3deav5t2ohWYL-9LU4iVSNM8JHO9JjIOxWtrRB85nbJuP1BwqgGONLD7za9NdeLyWC0sHgLPbvYGk2AeBjyok19DMjoKjcMD_WhLyn9eVGpopxMbmMDJUUBVxIS7OTALXX7PR2XlcyNcYd4qPRwRQPwyk2KDZRtSrJGvrFLA8NfftJ_hOb8_Iwg0Kl6DAOAW4ieQqNmt89nxX7a5qUrn" />
+                        src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop" />
                     <div
                         class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
                         <span class="material-symbols-outlined text-[10px] fill-1">verified</span> VERIFIED
@@ -142,14 +142,13 @@
                 <div class="flex flex-col flex-1 justify-between py-1">
                     <div>
                         <div class="flex justify-between items-start">
-                            <h3 id="nearest-vendor-name" class="text-navy-trust font-bold text-lg leading-tight">Civic
-                                Center Plaza</h3>
+                            <h3 id="nearest-vendor-name" class="text-navy-trust font-bold text-lg leading-tight">Finding
+                                nearest...</h3>
                             <button class="text-slate-300 hover:text-primary-pink transition-colors">
                                 <span class="material-symbols-outlined">bookmark</span>
                             </button>
                         </div>
-                        <p id="nearest-vendor-address" class="text-slate-500 text-xs mt-0.5">Public Restroom • Janpath
-                            Rd</p>
+                        <p id="nearest-vendor-address" class="text-slate-500 text-xs mt-0.5">Please wait</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
@@ -158,7 +157,7 @@
                         </div>
                         <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
                             <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
-                            <span id="nearest-vendor-rating" class="text-navy-trust font-bold text-sm">4.9</span>
+                            <span id="nearest-vendor-rating" class="text-navy-trust font-bold text-sm">---</span>
                         </div>
                     </div>
                 </div>
@@ -178,6 +177,19 @@
         </div>
     </div>
 </div>
+
+<div id="vendors-data" data-vendors='[
+    {% for vendor in vendors %}
+    {
+        "id": {{ vendor.id }},
+        "name": "{{ vendor.business_name|e }}",
+        "lat": {{ vendor.latitude or 28.6139 }},
+        "lng": {{ vendor.longitude or 77.2090 }},
+        "address": "{{ vendor.address|e }}",
+        "rating": "{{ vendor.average_rating or "5.0" }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+]' class="hidden"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -185,18 +197,9 @@
     let map;
     let markers = [];
     let userMarker;
-    const vendors = [
-        {% for vendor in vendors %}
-    {
-        id: { { vendor.id } },
-        name: "{{ vendor.business_name }}",
-            lat: { { vendor.latitude or 28.6139 } },
-        lng: { { vendor.longitude or 77.2090 } },
-        address: "{{ vendor.address }}",
-            rating: "{{ vendor.avg_rating or '5.0' }}"
-    } {% if not loop.last %}, {% endif %}
-    {% endfor %}
-    ];
+
+    // Parse vendors from data attribute to keep script clean and fix IDE lints
+    const vendors = JSON.parse(document.getElementById('vendors-data').dataset.vendors);
 
     function initMap() {
         const defaultCenter = { lat: 28.6139, lng: 77.2090 }; // Delhi
@@ -204,7 +207,7 @@
         map = new google.maps.Map(document.getElementById("map"), {
             center: defaultCenter,
             zoom: 15,
-            mapId: 'SHE_SAFE_MAP', // Optional: requires Map ID in Cloud Console for Advanced Markers
+            mapId: 'SHE_SAFE_MAP',
             disableDefaultUI: true,
             styles: [
                 {
@@ -228,7 +231,6 @@
                     };
                     map.setCenter(pos);
 
-                    // User location marker with pulse effect (custom overlay would be better but simple circle for now)
                     userMarker = new google.maps.Marker({
                         position: pos,
                         map: map,
@@ -243,10 +245,15 @@
                         zIndex: 100
                     });
 
-                    // Update nearest info
                     updateNearestVendor(pos);
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    updateNearestVendor(defaultCenter);
                 }
             );
+        } else {
+            updateNearestVendor(defaultCenter);
         }
 
         // Add vendor markers
@@ -256,7 +263,7 @@
                 map: map,
                 icon: {
                     path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z M12,11.5c-1.38,0-2.5-1.12-2.5-2.5s1.12-2.5,2.5-2.5 s2.5,1.12,2.5,2.5S13.38,11.5,12,11.5z',
-                    fillColor: "#001F3F", // Navy
+                    fillColor: "#001F3F",
                     fillOpacity: 1,
                     strokeWeight: 2,
                     strokeColor: "white",
@@ -267,21 +274,6 @@
                 title: vendor.name
             });
 
-            // Small pink circle inside marker
-            const innerDot = new google.maps.Marker({
-                position: { lat: vendor.lat, lng: vendor.lng },
-                map: map,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 4,
-                    fillColor: "#FFB6C1", // Soft Pink
-                    fillOpacity: 1,
-                    strokeWeight: 0,
-                    anchor: new google.maps.Point(0, 13) // Approximate center of the pin head
-                },
-                clickable: false
-            });
-
             marker.addListener("click", () => {
                 map.panTo(marker.getPosition());
                 showVendorInfo(vendor);
@@ -289,8 +281,6 @@
 
             markers.push(marker);
         });
-
-        // Search Box logic if needed (pac-input)
     }
 
     function showVendorInfo(vendor) {
@@ -298,7 +288,6 @@
         document.getElementById('nearest-vendor-address').innerText = vendor.address;
         document.getElementById('nearest-vendor-rating').innerText = vendor.rating;
         document.getElementById('nearest-vendor-link').href = `/vendor/${vendor.id}`;
-        // You would dynamically change the image too if you have vendor image URLs
     }
 
     function recenterMap() {
@@ -329,11 +318,11 @@
 
         // Update distance text
         const distText = minDist < 1000 ? Math.round(minDist) + 'm' : (minDist / 1000).toFixed(1) + 'km';
-        const walkTime = Math.round(minDist / 80); // ~80m/min walking speed
+        const walkTime = Math.round(minDist / 80);
         document.getElementById('nearest-vendor-dist').innerText = `${distText} • ${walkTime} mins`;
     }
 
-    // Load geometry library for distance calculations
+    // Load geometry library
     const script = document.createElement('script');
     script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAzECsdwJsm3S9FgHyfRJyYGY5_eJPMxV4&libraries=geometry,places&callback=initMap";
     script.async = true;

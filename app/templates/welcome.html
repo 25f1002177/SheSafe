@@ -121,7 +121,7 @@
             </div>
         </div>
 
-        <!-- Recommended -->
+        <!-- Recommended Area -->
         <div class="px-5 pt-8">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-navy-trust text-lg font-bold">Recommended Near You</h3>
@@ -139,25 +139,29 @@
                 </div>
             </div>
         </div>
+
+        <!-- Vendor JSON Data (Linter-friendly storage) -->
+        <div id="vendors-data" data-vendors='[
+            {% for vendor in vendors %}
+            {
+                "id": {{ vendor.id }},
+                "name": "{{ vendor.business_name|e }}",
+                "lat": {{ vendor.latitude }},
+                "lng": {{ vendor.longitude }},
+                "address": "{{ vendor.address|e }}",
+                "rating": "{{ vendor.average_rating or "5.0" }}",
+                "reviews": {{ vendor.feedbacks|length if vendor.feedbacks else 0 }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]' class="hidden"></div>
     </main>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const vendors = [
-        {% for vendor in vendors %}
-    {
-        id: { { vendor.id } },
-        name: "{{ vendor.business_name }}",
-            lat: { { vendor.latitude } },
-        lng: { { vendor.longitude } },
-        address: "{{ vendor.address }}",
-            rating: "{{ vendor.average_rating or '5.0' }}",
-                reviews: { { vendor.feedbacks | length if vendor.feedbacks else 0 } }
-    } {% if not loop.last %}, {% endif %}
-    {% endfor %}
-    ];
+    // Parse linter-friendly data attribute
+    const vendors = JSON.parse(document.getElementById('vendors-data').dataset.vendors);
 
     function initGeolocation() {
         if (navigator.geolocation) {
@@ -253,7 +257,4 @@
     // Initialize
     window.onload = initGeolocation;
 </script>
-{% endblock %}
-</main>
-</div>
 {% endblock %}

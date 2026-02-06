@@ -44,11 +44,6 @@
         }
     </script>
     <style type="text/tailwindcss">
-        @layer base {
-            body {
-                @apply font-display text-navy-trust min-h-screen bg-blush-white;
-            }
-        }
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -62,7 +57,7 @@
     {% block styles %}{% endblock %}
 </head>
 
-<body class="min-h-screen">
+<body class="font-display text-navy-trust min-h-screen bg-blush-white">
     <div class="max-w-[430px] mx-auto min-h-screen flex flex-col relative bg-white dark:bg-background-dark shadow-2xl">
 
 
