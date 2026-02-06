@@ -4,350 +4,164 @@
 
 {% block styles %}
 <style>
-    .admin-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-    }
-
-    .admin-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .admin-header h2 {
-        margin-bottom: 0.5rem;
-    }
-
-    .admin-header .role-badge {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #667eea;
-    }
-
-    .stat-card h3 {
-        color: #666;
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-
-    .stat-card .value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #667eea;
-    }
-
-    .users-table-container {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .users-table-container h3 {
-        margin-bottom: 1.5rem;
-        color: #333;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    th {
-        background: #f5f5f5;
-        padding: 1rem;
-        text-align: left;
-        font-weight: 600;
-        color: #333;
-        border-bottom: 2px solid #ddd;
-    }
-
-    td {
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    tr:hover {
-        background: #f9f9f9;
-    }
-
-    .role-badge-table {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-
-    .role-admin {
-        background: #ffd7d7;
-        color: #c41e3a;
-    }
-
-    .role-vendor {
-        background: #d7e8ff;
-        color: #1e5bc4;
-    }
-
-    .role-user {
-        background: #d7ffd7;
-        color: #1e8c1e;
+    .pb-safe-area {
+        padding-bottom: env(safe-area-inset-bottom);
     }
 </style>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "admin-primary": "#0f49bd",
+                    "rose-pink": "#e91e63",
+                },
+                fontFamily: {
+                    "display": ["Public Sans"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+        },
+    }
+</script>
 {% endblock %}
 
 {% block content %}
-<div class="admin-container">
-    <div class="admin-header">
-        <h2>Admin Dashboard</h2>
-        <p>Welcome, {{ user.name }} <span class="role-badge">{{ user.role }}</span></p>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Total Users</h3>
-            <div class="value">{{ user_count }}</div>
-        </div>
-        <div class="stat-card">
-            <h3>Administrators</h3>
-            <div class="value">{{ admin_count }}</div>
-        </div>
-        <div class="stat-card">
-            <h3>Vendors</h3>
-            <div class="value">{{ vendor_count }}</div>
-        </div>
-        <div class="stat-card">
-            <h3>Regular Users</h3>
-            <div class="value">{{ regular_user_count }}</div>
-        </div>
-    </div>
-
-    <div class="users-table-container" style="margin-bottom: 2rem;">
-        <h3>Pending Vendor Approvals ({{ pending_vendors|length }})</h3>
-
-        {% if pending_vendors %}
-        <div style="display: grid; gap: 1.5rem; margin-top: 1.5rem;">
-            {% for vendor in pending_vendors %}
-            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 1.5rem; background: #f9f9f9;">
-                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                    <div>
-                        <h4 style="margin: 0 0 0.5rem 0; color: #1e5bc4;">{{ vendor.business_name }}</h4>
-                        <p style="margin: 0; color: #666; font-size: 0.875rem;">
-                            Owner: {{ vendor.user.name }} ({{ vendor.user.email }})
-                        </p>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <form method="POST" action="{{ url_for('main.approve_vendor', vendor_id=vendor.id) }}"
-                            style="display: inline;">
-                            <button type="submit"
-                                style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                                ✓ Approve
-                            </button>
-                        </form>
-                        <form method="POST" action="{{ url_for('main.reject_vendor', vendor_id=vendor.id) }}"
-                            style="display: inline;"
-                            onsubmit="return confirm('Are you sure you want to reject this vendor? This will delete their profile.');">
-                            <button type="submit"
-                                style="padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                                ✗ Reject
-                            </button>
-                        </form>
-                    </div>
+<div class="bg-background-light dark:bg-background-dark min-h-screen -m-4">
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between p-4 pb-3">
+            <div class="flex items-center gap-3">
+                <div class="size-10 rounded-full bg-admin-primary/20 flex items-center justify-center overflow-hidden border border-admin-primary/30">
+                    <span class="material-symbols-outlined text-admin-primary">admin_panel_settings</span>
                 </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <strong style="color: #333;">Location:</strong>
-                        <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.875rem;">{{ vendor.address }}</p>
-                        <p style="margin: 0.25rem 0 0 0; color: #999; font-size: 0.75rem;">
-                            Coordinates: {{ vendor.latitude }}, {{ vendor.longitude }}
-                        </p>
-                    </div>
-                    <div>
-                        <strong style="color: #333;">Safety Features:</strong>
-                        <div style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            {% if vendor.has_cctv %}
-                            <span
-                                style="display: inline-block; padding: 0.25rem 0.75rem; background: #d4edda; color: #155724; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                📹 CCTV Available
-                            </span>
-                            {% endif %}
-                            {% if vendor.has_female_staff %}
-                            <span
-                                style="display: inline-block; padding: 0.25rem 0.75rem; background: #d1ecf1; color: #0c5460; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
-                                👥 Female Staff
-                            </span>
-                            {% endif %}
-                        </div>
-                        {% if vendor.has_female_staff and vendor.female_staff_start_time %}
-                        <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.75rem;">
-                            Staff Hours: {{ vendor.female_staff_start_time.strftime('%H:%M') }} - {{
-                            vendor.female_staff_end_time.strftime('%H:%M') }}
-                        </p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                {% if vendor.description %}
                 <div>
-                    <strong style="color: #333;">Description:</strong>
-                    <p style="margin: 0.25rem 0 0 0; color: #666; font-size: 0.875rem;">{{ vendor.description }}</p>
+                    <h2 class="text-sm font-medium text-slate-500 dark:text-slate-400 leading-none mb-1">Welcome back,</h2>
+                    <h1 class="text-lg font-bold leading-none">{{ user.name }}</h1>
                 </div>
-                {% endif %}
-
-                {% if vendor.images %}
-                <div style="margin-top: 1rem;">
-                    <strong style="color: #333;">Facility Images:</strong>
-                    <div
-                        style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-top: 0.5rem;">
-                        {% for image in vendor.images %}
-                        <div
-                            style="flex: 0 0 120px; aspect-ratio: 1/1; border-radius: 4px; overflow: hidden; border: 1px solid #ddd;">
-                            <img src="{{ url_for('static', filename=image.image_url) }}" alt="Facility Image"
-                                style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
-                                onclick="window.open(this.src)">
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
             </div>
-            {% endfor %}
+            <div class="flex items-center gap-2">
+                <button class="relative p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined">notifications</span>
+                    <span class="absolute top-2 right-2 flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-pink opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-pink"></span>
+                    </span>
+                </button>
+            </div>
         </div>
-        {% else %}
-        <p style="color: #666; margin-top: 1rem;">No pending vendor approvals.</p>
-        {% endif %}
-    </div>
+    </header>
 
-    <div class="users-table-container" style="margin-bottom: 2rem;">
-        <h3>All Vendors ({{ all_vendors|length }})</h3>
+    <main class="p-4 pb-24 max-w-md mx-auto">
+        <!-- Section Title -->
+        <div class="mb-4">
+            <h2 class="text-xl font-bold tracking-tight">Overview Dashboard</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Platform activity</p>
+        </div>
 
-        {% if all_vendors %}
-        <table style="margin-top: 1rem;">
-            <thead>
-                <tr>
-                    <th>Business Name</th>
-                    <th>Owner</th>
-                    <th>Safety Features</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for vendor in all_vendors %}
-                <tr>
-                    <td>
-                        <strong>{{ vendor.business_name }}</strong>
-                        <br>
-                        <small style="color: #999;">{{ vendor.address[:50] }}...</small>
-                    </td>
-                    <td>{{ vendor.user.name }}</td>
-                    <td>
-                        {% if vendor.has_cctv %}
-                        <span
-                            style="display: inline-block; padding: 0.25rem 0.5rem; background: #d4edda; color: #155724; border-radius: 4px; font-size: 0.75rem; margin-right: 0.25rem;">
-                            📹 CCTV
-                        </span>
-                        {% endif %}
-                        {% if vendor.has_female_staff %}
-                        <span
-                            style="display: inline-block; padding: 0.25rem 0.5rem; background: #d1ecf1; color: #0c5460; border-radius: 4px; font-size: 0.75rem;">
-                            👥 Female Staff
-                        </span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if vendor.is_verified %}
-                        <span style="color: #28a745; font-weight: 600;">✓ Verified</span>
-                        {% else %}
-                        <span style="color: #ffc107; font-weight: 600;">⏳ Pending</span>
-                        {% endif %}
-                        <br>
-                        {% if vendor.is_active %}
-                        <span style="color: #28a745;">Active</span>
-                        {% else %}
-                        <span style="color: #dc3545;">Inactive</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if vendor.is_active %}
-                        <form method="POST" action="{{ url_for('main.disable_vendor', vendor_id=vendor.id) }}"
-                            style="display: inline;">
-                            <button type="submit"
-                                style="padding: 0.25rem 0.75rem; background: #ffc107; color: #333; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
-                                Disable
-                            </button>
-                        </form>
-                        {% endif %}
-                        {% if not vendor.is_verified %}
-                        <form method="POST" action="{{ url_for('main.approve_vendor', vendor_id=vendor.id) }}"
-                            style="display: inline;">
-                            <button type="submit"
-                                style="padding: 0.25rem 0.75rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.875rem;">
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="flex flex-col gap-2 rounded-xl p-4 bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-admin-primary">groups</span>
+                </div>
+                <div>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Total Users</p>
+                    <p class="text-2xl font-bold mt-1">{{ user_count }}</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 rounded-xl p-4 bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-rose-pink">storefront</span>
+                </div>
+                <div>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Total Vendors</p>
+                    <p class="text-2xl font-bold mt-1">{{ vendor_count }}</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 rounded-xl p-4 bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-amber-500">payments</span>
+                </div>
+                <div>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Total Revenue</p>
+                    <p class="text-2xl font-bold mt-1">${{ "%.0f"|format(vendor_count * 54) }}</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 rounded-xl p-4 bg-white dark:bg-card-dark border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex justify-between items-start">
+                    <span class="material-symbols-outlined text-admin-primary">pending_actions</span>
+                </div>
+                <div>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Pending</p>
+                    <p class="text-2xl font-bold mt-1">{{ pending_vendors|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Vendor Requests Section -->
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold">Pending Vendor Requests</h3>
+            <a href="#" class="text-admin-primary text-sm font-semibold">View All</a>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            {% if pending_vendors %}
+                {% for vendor in pending_vendors %}
+                <div class="flex flex-col bg-white dark:bg-card-dark p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-12 w-12 flex-shrink-0 bg-slate-200 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-slate-400">storefront</span>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-base font-bold truncate">{{ vendor.business_name }}</p>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm truncate">{{ vendor.category }} • {{ vendor.user.name }}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <form method="POST" action="{{ url_for('main.approve_vendor', vendor_id=vendor.id) }}" class="flex-1">
+                            <button type="submit" class="w-full h-10 bg-admin-primary text-white rounded-lg text-sm font-bold transition-opacity hover:opacity-90 active:scale-[0.98]">
                                 Approve
                             </button>
                         </form>
-                        {% endif %}
-                    </td>
-                </tr>
+                        <form method="POST" action="{{ url_for('main.reject_vendor', vendor_id=vendor.id) }}" class="flex-1" onsubmit="return confirm('Are you sure you want to reject this vendor?');">
+                            <button type="submit" class="w-full h-10 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-bold transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-[0.98]">
+                                Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p style="color: #666; margin-top: 1rem;">No vendors registered yet.</p>
-        {% endif %}
-    </div>
+            {% else %}
+                <div class="flex flex-col bg-white dark:bg-card-dark p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+                    <p class="text-slate-500 dark:text-slate-400">No pending vendor requests</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
 
-    <div class="users-table-container">
-        <h3>All Users</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for u in all_users %}
-                <tr>
-                    <td>#{{ u.id }}</td>
-                    <td>{{ u.name }}</td>
-                    <td>{{ u.email }}</td>
-                    <td>
-                        <span class="role-badge-table role-{{ u.role }}">{{ u.role }}</span>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <!-- Bottom Navigation Bar (iOS Style) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-background-dark/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-safe-area z-50">
+        <div class="flex justify-around items-center px-2 py-3">
+            <a href="{{ url_for('main.admin_dashboard') }}" class="flex flex-col items-center gap-1 text-admin-primary">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="text-[10px] font-bold uppercase tracking-tight">Overview</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-admin-primary transition-colors">
+                <span class="material-symbols-outlined">storefront</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Vendors</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-admin-primary transition-colors">
+                <span class="material-symbols-outlined">group</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Users</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-admin-primary transition-colors">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Settings</span>
+            </a>
+        </div>
+        <div class="h-6 w-full"></div>
+    </nav>
 </div>
 {% endblock %}
