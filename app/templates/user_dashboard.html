@@ -192,5 +192,13 @@
             histCont.classList.add('hidden');
         }
     }
+
+    window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) {
+            switchMode(tab);
+        }
+    });
 </script>
 {% endblock %}

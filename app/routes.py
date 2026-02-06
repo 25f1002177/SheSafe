@@ -138,7 +138,7 @@ def dashboard():
     elif current_user.role == 'vendor':
         return redirect(url_for('main.vendor_dashboard'))
     else:
-        return redirect(url_for('main.user_dashboard'))
+        return redirect(url_for('main.index'))
 
 
 @main.route('/admin/dashboard')
