@@ -697,7 +697,8 @@ def admin_user_detail(user_id):
             db.joinedload(Booking.vendor)
         ).filter_by(user_id=user_id).order_by(Booking.booking_time.desc()).all()
         
-        feedbacks = Feedback.query.filter_by(user_id=user_id).all()
+        # Get feedbacks through bookings (Feedback -> Booking -> User)
+        feedbacks = db.session.query(Feedback).join(Booking).filter(Booking.user_id == user_id).all()
         
         # Calculate average rating
         avg_rating = 0
