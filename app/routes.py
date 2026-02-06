@@ -198,6 +198,12 @@ def vendor_detail(vendor_id):
     return render_template('vendor_details.html', vendor=vendor)
 
 
+@main.route('/for-vendors')
+def vendor_landing():
+    """Landing page for potential vendor partners."""
+    return render_template('vendor_landing.html')
+
+
 @main.route('/manifest.json')
 def manifest():
     return current_app.send_static_file('manifest.json')

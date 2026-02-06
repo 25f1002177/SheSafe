@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Partner - SheSafe{% endblock %}
+
+{% block content %}
+<main class="flex flex-col w-full max-w-md mx-auto min-h-screen pb-20">
+    <!-- Hero Section -->
+    <header class="relative px-4 pt-16 pb-12 overflow-hidden bg-navy-trust">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 z-0 opacity-40">
+            <div class="w-full h-full bg-cover bg-center" data-alt="Modern hotel lobby interior with warm lighting"
+                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB9j1l_2kSYvM8tLH4PE_cuY8jGBRmQSJIZFadkIiPmYfpRTX637yW6M-v5q-tL93ZavAHbyANKmY8icYFeW7CihNbPDsXJvIZH5dBuUyRLt9FBnjdGCjhkN6-KZ2ChGj8wROFpbDgWMf3jxBGbnrRORbtU6xeISq3Qpoj2mTAUbbqYrHmsM5DPKNXQEMOSushNtwbBGYLdeN-w5YzP4EWlHDa2qXdnsd8VWBaYeUngtJX1go19X6pDMxTGWGCVdWCC983IBbQ7zvCw');">
+            </div>
+        </div>
+        <div class="absolute inset-0 z-10 bg-gradient-to-t from-navy-trust via-navy-trust/80 to-transparent"></div>
+        <div class="relative z-20 flex flex-col items-start gap-4">
+            <span
+                class="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white bg-primary rounded-full">Partner
+                Program</span>
+            <h2 class="text-3xl font-black leading-[1.1] text-white tracking-tight">
+                Grow your business by <span class="text-primary">3-5x</span> with <span
+                    class="underline decoration-primary">Zero Investment</span>
+            </h2>
+            <p class="text-slate-300 text-sm leading-relaxed max-w-[90%]">
+                Utilize your existing infrastructure to serve the SheSafe community and welcome verified women
+                travelers.
+            </p>
+            <div class="flex flex-col w-full gap-3 mt-4">
+                <a href="{{ url_for('main.register', role='vendor') }}"
+                    class="w-full bg-primary hover:bg-primary/90 text-white text-center font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                    Register as Vendor
+                </a>
+                <button
+                    class="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-xl border border-white/20 transition-all backdrop-blur-sm">
+                    View Success Stories
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Counter -->
+    <section
+        class="flex justify-between px-6 py-4 -mt-6 relative z-30 mx-4 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700">
+        <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Partners</p>
+            <p class="text-lg font-black text-navy-trust dark:text-white">500+</p>
+        </div>
+        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700 my-auto"></div>
+        <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Users</p>
+            <p class="text-lg font-black text-navy-trust dark:text-white">100k+</p>
+        </div>
+        <div class="w-px h-8 bg-slate-200 dark:bg-slate-700 my-auto"></div>
+        <div class="text-center">
+            <p class="text-[10px] font-bold text-slate-400 uppercase">Growth</p>
+            <p class="text-lg font-black text-primary">300%</p>
+        </div>
+    </section>
+
+    <!-- Value Propositions -->
+    <section class="px-4 py-10">
+        <h3 class="text-xl font-bold text-navy-trust dark:text-white mb-6">Why Partner with Us?</h3>
+        <div class="flex flex-col gap-4">
+            <!-- Card 1 -->
+            <div
+                class="flex gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
+                <div
+                    class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-3xl">payments</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h4 class="font-bold text-navy-trust dark:text-slate-100">New Revenue Stream</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-normal">
+                        Monetize your existing space without any extra overheads or setup costs.
+                    </p>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div
+                class="flex gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
+                <div
+                    class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-3xl">verified_user</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h4 class="font-bold text-navy-trust dark:text-slate-100">Verified Customer Traffic</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-normal">
+                        Attract a loyal community of verified SheSafe members directly to your doorstep.
+                    </p>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div
+                class="flex gap-4 p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
+                <div
+                    class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-3xl">health_and_safety</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h4 class="font-bold text-navy-trust dark:text-slate-100">Become a Safety Partner</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-normal">
+                        Enhance your brand reputation by becoming a certified safe space for women.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple Onboarding -->
+    <section class="px-4 py-8 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+        <h3 class="text-xl font-bold text-navy-trust dark:text-white mb-6">Simple Onboarding</h3>
+        <div class="relative flex flex-col gap-8">
+            <!-- Connector Line -->
+            <div class="absolute left-[23px] top-4 bottom-4 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex items-start gap-4 relative">
+                <div
+                    class="flex-shrink-0 w-12 h-12 rounded-full bg-navy-trust text-white flex items-center justify-center font-bold z-10">
+                    1</div>
+                <div>
+                    <p class="font-bold text-navy-trust dark:text-white">Register</p>
+                    <p class="text-xs text-slate-500">Sign up and submit your business details in under 5 minutes.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 relative">
+                <div
+                    class="flex-shrink-0 w-12 h-12 rounded-full bg-navy-trust text-white flex items-center justify-center font-bold z-10">
+                    2</div>
+                <div>
+                    <p class="font-bold text-navy-trust dark:text-white">Verification</p>
+                    <p class="text-xs text-slate-500">Our team performs a quick safety and quality audit of your
+                        premises.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 relative">
+                <div
+                    class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold z-10">
+                    3</div>
+                <div>
+                    <p class="font-bold text-navy-trust dark:text-white">Go Live</p>
+                    <p class="text-xs text-slate-500">Start receiving verified customers and grow your revenue.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="px-6 py-12 flex flex-col items-center text-center bg-background-light dark:bg-background-dark">
+        <div class="size-16 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-4">
+            <span class="material-symbols-outlined text-4xl">rocket_launch</span>
+        </div>
+        <h3 class="text-2xl font-black text-navy-trust dark:text-white mb-2 leading-tight">Ready to expand?</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-[280px]">Join the safety revolution and turn
+            your space into a profitable safe zone.</p>
+        <a href="{{ url_for('main.register', role='vendor') }}"
+            class="w-full max-w-xs bg-primary text-white text-center font-bold py-4 rounded-xl shadow-lg shadow-primary/20">
+            Register as Vendor
+        </a>
+        <p class="mt-6 text-[10px] text-slate-400 uppercase tracking-widest font-bold">Trusted by hotels, cafes, and
+            stations nationwide</p>
+    </section>
+</main>
+{% endblock %}

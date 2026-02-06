@@ -16,17 +16,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet">
 
+    <!-- PWA Support -->
+    <link rel="manifest" href="{{ url_for('main.manifest') }}">
+    <meta name="theme-color" content="#ee2b6c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#2bee9d",
+                        "primary": "#ee2b6c",
                         "brand-pink": "#ee2b6c",
                         "navy-trust": "#1A2B47",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#101322",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221016",
                     },
                     fontFamily: {
                         "display": ["Public Sans"],
@@ -48,9 +55,9 @@
         
         .user-location-pulse { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(238, 43, 108, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(238, 43, 108, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(238, 43, 108, 0); }
         }
     </style>
     {% block styles %}{% endblock %}
@@ -80,83 +87,107 @@
 
         {% block bottom_nav %}
         <nav
-            class="fixed bottom-0 w-full max-w-[430px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 px-4 py-3 pb-6 flex justify-around items-end z-50">
+            class="sticky bottom-0 w-full bg-white dark:bg-background-dark border-t border-slate-100 dark:border-slate-800 px-6 py-3 pb-8 flex justify-between items-center z-50">
             {% if not current_user.is_authenticated %}
             <!-- Guest Bottom Nav -->
             <a href="{{ url_for('main.index') }}"
-                class="flex flex-col items-center gap-1 w-1/4 {% if request.endpoint == 'main.index' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.index' %}text-primary{% else %}text-slate-400{% endif %}">
                 <span
                     class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
                 <span class="text-[10px] font-bold">Home</span>
             </a>
-            <a href="#explore" class="flex flex-col items-center gap-1 w-1/4 text-slate-400">
+            <a href="#explore" class="flex flex-col items-center gap-1 text-slate-400">
                 <span class="material-symbols-outlined">explore</span>
                 <span class="text-[10px] font-bold">Explore</span>
             </a>
-            <a href="{{ url_for('main.login') }}" class="flex flex-col items-center gap-1 w-1/4 text-slate-400">
-                <span class="material-symbols-outlined">login</span>
-                <span class="text-[10px] font-bold">Sign In</span>
+            <div class="relative -top-6">
+                <button
+                    class="size-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 ring-4 ring-white dark:ring-background-dark">
+                    <span class="material-symbols-outlined text-3xl font-bold">sos</span>
+                </button>
+                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-primary">SOS</span>
+            </div>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400">
+                <span class="material-symbols-outlined">groups</span>
+                <span class="text-[10px] font-bold">Community</span>
             </a>
-            <a href="{{ url_for('main.register') }}" class="flex flex-col items-center gap-1 w-1/4 text-slate-400">
-                <span class="material-symbols-outlined">person_add</span>
-                <span class="text-[10px] font-bold">Join</span>
+            <a href="{{ url_for('main.login') }}" class="flex flex-col items-center gap-1 text-slate-400">
+                <span class="material-symbols-outlined">account_circle</span>
+                <span class="text-[10px] font-bold">Login</span>
             </a>
+
             {% elif current_user.role == 'vendor' %}
             <!-- Vendor Bottom Nav -->
             <a href="{{ url_for('main.dashboard') }}"
-                class="flex flex-col items-center gap-1 w-1/3 {% if request.endpoint == 'main.dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.dashboard' %}text-primary{% else %}text-slate-400{% endif %}">
                 <span
-                    class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">dashboard</span>
-                <p class="text-[10px] font-medium font-bold">Dashboard</p>
+                    class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">home</span>
+                <span class="text-[10px] font-bold">Home</span>
             </a>
-            <div class="flex flex-col items-center w-1/3 -mt-8 relative">
-                <div
-                    class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-white mb-1">
-                    <span class="material-symbols-outlined text-3xl">qr_code_scanner</span>
-                </div>
-                <span class="text-[10px] font-bold text-navy-trust dark:text-white">Scan</span>
-            </div>
-            <a href="{{ url_for('main.logout') }}" class="flex flex-col items-center gap-1 w-1/3 text-slate-400">
-                <span class="material-symbols-outlined">logout</span>
-                <p class="text-[10px] font-bold">Logout</p>
+            <a href="{{ url_for('main.vendor_landing') }}" class="flex flex-col items-center gap-1 text-slate-400">
+                <span class="material-symbols-outlined">help_center</span>
+                <span class="text-[10px] font-bold">Benefits</span>
             </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400">
+                <span class="material-symbols-outlined">contact_support</span>
+                <span class="text-[10px] font-bold">Support</span>
+            </a>
+            <a href="{{ url_for('main.logout') }}" class="flex flex-col items-center gap-1 text-slate-400">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-bold">Account</span>
+            </a>
+
             {% else %}
             <!-- User Bottom Nav -->
             <a href="{{ url_for('main.index') }}"
-                class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.index' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.index' %}text-primary{% else %}text-slate-400{% endif %}">
                 <span
                     class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
                 <span class="text-[10px] font-bold">Home</span>
             </a>
-            <a href="#explore" class="flex flex-col items-center gap-1 w-1/5 text-slate-400">
+            <a href="#explore" class="flex flex-col items-center gap-1 text-slate-400">
                 <span class="material-symbols-outlined">explore</span>
                 <span class="text-[10px] font-bold">Explore</span>
             </a>
-            <div class="flex flex-col items-center w-1/5 -mt-8 relative">
-                <div
-                    class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-white mb-1">
-                    <span class="material-symbols-outlined text-3xl">clinical_notes</span>
-                </div>
-                <span class="text-[10px] font-bold text-navy-trust dark:text-white">Ask</span>
+            <div class="relative -top-6">
+                <button
+                    class="size-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 ring-4 ring-white dark:ring-background-dark">
+                    <span class="material-symbols-outlined text-3xl font-bold">sos</span>
+                </button>
+                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-primary">SOS</span>
             </div>
-            <a href="{{ url_for('main.dashboard') }}"
-                class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
-                <span
-                    class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">schedule</span>
-                <span class="text-[10px] font-bold">History</span>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400">
+                <span class="material-symbols-outlined">groups</span>
+                <span class="text-[10px] font-bold">Community</span>
             </a>
             <a href="{{ url_for('main.user_dashboard') }}"
-                class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.user_dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.user_dashboard' %}text-primary{% else %}text-slate-400{% endif %}">
                 <span
-                    class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' %}fill-1{% endif %}">person</span>
+                    class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' %}fill-1{% endif %}">account_circle</span>
                 <span class="text-[10px] font-bold">Profile</span>
             </a>
             {% endif %}
         </nav>
+        <!-- iOS Indicator -->
+        <div
+            class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-navy-trust/10 dark:bg-white/20 rounded-full z-[60]">
+        </div>
         {% endblock %}
     </div>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{{ url_for('main.service_worker') }}")
+                    .then(reg => console.log('Service Worker registered', reg))
+                    .catch(err => console.log('Service Worker registration failed', err));
+            });
+        }
+    </script>
     {% block scripts %}{% endblock %}
+</body>
+
+{% block scripts %}{% endblock %}
 </body>
 
 </html>

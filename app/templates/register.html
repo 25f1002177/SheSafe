@@ -37,8 +37,10 @@
                     class="material-symbols-outlined absolute left-4 top-4 text-slate-300 dark:text-slate-600">group</span>
                 <select name="role" required
                     class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 pl-12 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink shadow-sm appearance-none">
-                    <option value="user" selected>Visitor (Seeking Safety)</option>
-                    <option value="vendor">Merchant (Providing Safety)</option>
+                    <option value="user" {% if request.args.get('role') !='vendor' %}selected{% endif %}>Visitor
+                        (Seeking Safety)</option>
+                    <option value="vendor" {% if request.args.get('role')=='vendor' %}selected{% endif %}>Merchant
+                        (Providing Safety)</option>
                 </select>
                 <span
                     class="material-symbols-outlined absolute right-4 top-4 text-slate-300 pointer-events-none">expand_more</span>
