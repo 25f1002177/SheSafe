@@ -8,13 +8,22 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
+        # Fix for SQLAlchemy 1.4+ / 2.0 where postgres:// is deprecated
+        if DATABASE_URL.startswith("postgres://"):
+            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+        
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
-        if 'supabase' in DATABASE_URL.lower():
-            SQLALCHEMY_ENGINE_OPTIONS = {
-                'connect_args': {
-                    'sslmode': 'require'
-                }
+        
+        # Optimize for Supabase and Serverless (Vercel)
+        from sqlalchemy.pool import NullPool
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'poolclass': NullPool,
+            'pool_pre_ping': True,
+            'connect_args': {
+                'sslmode': 'require',
+                'connect_timeout': 20
             }
+        }
     else:
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

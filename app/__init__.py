@@ -52,9 +52,13 @@ def create_app(config_name='default'):
         from flask import render_template
         return render_template('error_403.html'), 403
     
-    # Create database tables
-    with app.app_context():
-        from app import models
-        db.create_all()
+    # Create database tables (handled safely for serverless)
+    if os.environ.get('FLASK_ENV') != 'production' or os.environ.get('INIT_DB') == 'true':
+        with app.app_context():
+            try:
+                from app import models
+                db.create_all()
+            except Exception as e:
+                print(f"Database initialization skipped or failed: {e}")
     
     return app
