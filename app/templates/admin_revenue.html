@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Admin: Revenue & Analytics - SheSafe{% endblock %}
+
+{% block styles %}
+<style>
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#137fec",
+                    "background-light": "#f6f7f8",
+                    "background-dark": "#101922",
+                },
+                fontFamily: {
+                    "display": ["Public Sans", "sans-serif"]
+                },
+            },
+        },
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="bg-background-light dark:bg-background-dark min-h-screen -mx-5 -my-6">
+    <!-- Top App Bar -->
+    <header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center p-4 justify-between">
+            <a href="{{ url_for('main.admin_dashboard') }}" class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-slate-700 dark:text-white">arrow_back</span>
+            </a>
+            <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Revenue & Analytics</h1>
+            <button class="flex items-center justify-center size-10 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-slate-700 dark:text-white">notifications</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto pb-24">
+        <!-- KPI Summary Section -->
+        <div class="p-4 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">payments</span>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Revenue</p>
+                    </div>
+                    <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">${{ "%.2f"|format(total_revenue) }}</p>
+                    <div class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[#0bda5b] text-sm">trending_up</span>
+                        <p class="text-[#0bda5b] text-xs font-bold leading-normal">+{{ revenue_growth }}%</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 rounded-xl p-5 bg-white dark:bg-[#192633] border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-orange-500 text-xl">pending_actions</span>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Pending Payouts</p>
+                    </div>
+                    <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">${{ "%.2f"|format(pending_payouts) }}</p>
+                    <div class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-orange-500 text-sm">schedule</span>
+                        <p class="text-orange-500 text-xs font-bold leading-normal">Due soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="px-4 py-2">
+            <form method="GET" action="{{ url_for('main.admin_revenue') }}" class="relative flex items-center">
+                <span class="material-symbols-outlined absolute left-4 text-slate-400">search</span>
+                <input name="search" value="{{ search_query or '' }}" class="w-full h-12 pl-12 pr-4 rounded-xl border-none bg-white dark:bg-[#192633] text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary shadow-sm" placeholder="Search vendor by name..." type="text"/>
+            </form>
+        </div>
+
+        <!-- Vendor List Section -->
+        <div class="px-4 pt-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Vendor-wise Earnings</h3>
+            </div>
+
+            <div class="space-y-4">
+                {% for vendor in vendors %}
+                <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-[#192633] p-4 border border-slate-100 dark:border-slate-800 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="flex gap-3">
+                            <div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+                                {% if vendor.user.name %}
+                                <span class="material-symbols-outlined text-primary text-xl">{{ vendor.user.name[0].upper() }}</span>
+                                {% else %}
+                                <span class="material-symbols-outlined text-primary text-xl">storefront</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="text-slate-900 dark:text-white text-base font-bold leading-tight">{{ vendor.business_name }}</p>
+                                <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-tighter">ID: #SH{{ "%04d"|format(vendor.id) }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center bg-yellow-500/10 px-2 py-1 rounded-full">
+                            <span class="material-symbols-outlined text-yellow-500 text-xs fill-1">star</span>
+                            <span class="text-yellow-600 dark:text-yellow-500 text-xs font-bold ml-1">{{ "%.1f"|format(vendor.average_rating or 0) }}</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 py-2 border-y border-slate-100 dark:border-slate-800">
+                        <div>
+                            <p class="text-slate-400 text-[10px] font-bold uppercase">Bookings</p>
+                            <p class="text-slate-900 dark:text-white font-bold">{{ vendor.bookings_count }}</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-400 text-[10px] font-bold uppercase">Revenue</p>
+                            <p class="text-primary font-bold">${{ "%.2f"|format(vendor.total_revenue) }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">analytics</span>
+                    <p class="text-slate-500">No vendors found</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

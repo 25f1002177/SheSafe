@@ -714,3 +714,64 @@ def admin_user_detail(user_id):
     except Exception as e:
         flash(f'Error loading user: {str(e)}', 'error')
         return redirect(url_for('main.admin_users'))
+
+
+@main.route('/admin/revenue')
+@admin_required
+def admin_revenue():
+    """Admin revenue and analytics page."""
+    try:
+        from app.models import User, Booking, Feedback, Vendor
+        
+        search_query = request.args.get('search', '')
+        
+        # Get all verified vendors
+        vendors_query = Vendor.query.filter_by(is_verified=True)
+        
+        # Apply search
+        if search_query:
+            search = f"%{search_query}%"
+            vendors_query = vendors_query.filter(Vendor.business_name.ilike(search))
+        
+        vendors = vendors_query.order_by(Vendor.created_at.desc()).all()
+        
+        # Calculate vendor stats
+        total_revenue = 0
+        pending_payouts = 0
+        vendors_data = []
+        
+        for v in vendors:
+            # Get bookings count
+            bookings_count = Booking.query.filter_by(vendor_id=v.id).count()
+            
+            # Calculate revenue from bookings
+            revenue = db.session.query(db.func.sum(Booking.amount)).filter_by(vendor_id=v.id).scalar() or 0
+            
+            # Get average rating
+            avg_rating = v.average_rating or 0
+            
+            total_revenue += revenue
+            pending_payouts += revenue * 0.1  # 10% pending as example
+            
+            vendors_data.append({
+                'id': v.id,
+                'business_name': v.business_name,
+                'bookings_count': bookings_count,
+                'total_revenue': revenue,
+                'average_rating': avg_rating,
+                'user': v.user
+            })
+        
+        # Calculate growth percentage (placeholder)
+        revenue_growth = 12.5
+        
+        return render_template('admin_revenue.html',
+                             user=current_user,
+                             vendors=vendors_data,
+                             total_revenue=total_revenue,
+                             pending_payouts=pending_payouts,
+                             revenue_growth=revenue_growth,
+                             search_query=search_query)
+    except Exception as e:
+        flash(f'Error loading revenue data: {str(e)}', 'error')
+        return redirect(url_for('main.admin_dashboard'))

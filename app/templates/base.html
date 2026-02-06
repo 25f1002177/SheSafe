@@ -187,9 +187,10 @@
                 </a>
             </div>
             <div
-                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors w-1/5">
-                <a href="#" class="flex flex-col items-center gap-1">
-                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_revenue' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
+                <a href="{{ url_for('main.admin_revenue') }}" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_revenue' %}fill-1{% endif %}">account_balance_wallet</span>
                     <span class="text-[10px] font-medium">Revenue</span>
                 </a>
             </div>
