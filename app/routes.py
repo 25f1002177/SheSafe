@@ -260,9 +260,11 @@ def vendor_onboard():
         female_staff_start_time = request.form.get('female_staff_start_time')
         female_staff_end_time = request.form.get('female_staff_end_time')
         
+        category = request.form.get('category')
+        
         # Validation
-        if not all([business_name, latitude, longitude, address]):
-            flash('Business name, latitude, longitude, and address are required.', 'error')
+        if not all([business_name, latitude, longitude, address, category]):
+            flash('Business name, location, address, and category are required.', 'error')
             return render_template('vendor_onboard.html')
         
         try:
@@ -291,6 +293,7 @@ def vendor_onboard():
             latitude=latitude,
             longitude=longitude,
             address=address,
+            category=category,
             has_cctv=has_cctv,
             has_female_staff=has_female_staff,
             female_staff_start_time=start_time,

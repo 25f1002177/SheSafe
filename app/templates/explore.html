@@ -178,18 +178,21 @@
     </div>
 </div>
 
-<div id="vendors-data" data-vendors='[
-    {% for vendor in vendors %}
-    {
-        "id": {{ vendor.id }},
-        "name": "{{ vendor.business_name|e }}",
-        "lat": {{ vendor.latitude or 28.6139 }},
-        "lng": {{ vendor.longitude or 77.2090 }},
-        "address": "{{ vendor.address|e }}",
-        "rating": "{{ vendor.average_rating or "5.0" }}"
-    }{% if not loop.last %},{% endif %}
-    {% endfor %}
-]' class="hidden"></div>
+<!-- Vendor JSON Data (Robust storage) -->
+<script id="vendors-json" type="application/json">
+    [
+        {% for vendor in vendors %}
+        {
+            "id": {{ vendor.id }},
+            "name": {{ vendor.business_name|tojson }},
+            "lat": {{ (vendor.latitude or 28.6139)|tojson }},
+            "lng": {{ (vendor.longitude or 77.2090)|tojson }},
+            "address": {{ vendor.address|tojson }},
+            "rating": {{ (vendor.average_rating or 5.0)|tojson }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+</script>
 {% endblock %}
 
 {% block scripts %}
@@ -198,8 +201,9 @@
     let markers = [];
     let userMarker;
 
-    // Parse vendors from data attribute to keep script clean and fix IDE lints
-    const vendors = JSON.parse(document.getElementById('vendors-data').dataset.vendors);
+    // Parse vendors from robust JSON block
+    const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
+    console.log("Loaded vendors:", vendors.length);
 
     function initMap() {
         const defaultCenter = { lat: 28.6139, lng: 77.2090 }; // Delhi

@@ -55,6 +55,24 @@
                     <textarea name="description" placeholder="Briefly describe your space..."
                         class="w-full h-32 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
                 </div>
+
+                <div>
+                    <label
+                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Service
+                        Category</label>
+                    <div class="relative">
+                        <select name="category" required
+                            class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink appearance-none">
+                            <option value="" disabled selected>Select primary service...</option>
+                            <option value="Washroom">Washroom</option>
+                            <option value="Period Care">Period Care</option>
+                            <option value="Nursing">Nursing Room</option>
+                            <option value="Changing Room">Changing Room</option>
+                        </select>
+                        <span
+                            class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Location Section -->
@@ -154,9 +172,6 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
     const femaleStaffCheck = document.getElementById('has_female_staff');
     const staffTimings = document.getElementById('staff-timings');
@@ -171,34 +186,74 @@
         staffTimings.classList.toggle('hidden', !femaleStaffCheck.checked);
     });
 
+    function initMap() {
+        // Initial map load (will be hidden until location is detected)
+        map = new google.maps.Map(document.getElementById("mini-map"), {
+            center: { lat: 28.6139, lng: 77.2090 },
+            zoom: 15,
+            disableDefaultUI: true,
+        });
+
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+        });
+
+        // Update inputs when marker is dragged
+        marker.addListener('dragend', () => {
+            const pos = marker.getPosition();
+            latInp.value = pos.lat().toFixed(6);
+            lonInp.value = pos.lng().toFixed(6);
+            // Optional: Reverse geocode here if needed
+            reverseGeocode(pos.lat(), pos.lng());
+        });
+    }
+
+    // Google Maps Geocoder for address
+    function reverseGeocode(lat, lng) {
+        const geocoder = new google.maps.Geocoder();
+        const latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        geocoder.geocode({ location: latlng }, (results, status) => {
+            if (status === "OK") {
+                if (results[0]) {
+                    addrInp.value = results[0].formatted_address;
+                }
+            }
+        });
+    }
+
     locBtn.addEventListener('click', () => {
         if (navigator.geolocation) {
-            locBtn.innerText = 'Detecting...';
-            navigator.geolocation.getCurrentPosition(async (pos) => {
+            locBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Detecting...';
+
+            navigator.geolocation.getCurrentPosition((pos) => {
                 const { latitude, longitude } = pos.coords;
                 latInp.value = latitude.toFixed(6);
                 lonInp.value = longitude.toFixed(6);
 
                 mapCont.classList.remove('hidden');
-                if (!map) {
-                    map = L.map('mini-map').setView([latitude, longitude], 15);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-                    marker = L.marker([latitude, longitude]).addTo(map);
-                } else {
-                    map.setView([latitude, longitude], 15);
-                    marker.setLatLng([latitude, longitude]);
-                }
 
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-                    const data = await res.json();
-                    if (data.display_name) addrInp.value = data.display_name;
-                } catch (e) { }
+                const userLoc = { lat: latitude, lng: longitude };
+                map.setCenter(userLoc);
+                marker.setPosition(userLoc);
+
+                reverseGeocode(latitude, longitude);
 
                 locBtn.innerText = 'Updated';
                 setTimeout(() => locBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span>Auto-Detect', 2000);
+            }, (err) => {
+                alert("Location access denied. Please enable GPS.");
+                locBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span>Auto-Detect';
             });
         }
     });
+
+    // Load Google Maps Script
+    const script = document.createElement('script');
+    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAzECsdwJsm3S9FgHyfRJyYGY5_eJPMxV4&callback=initMap";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
 </script>
 {% endblock %}

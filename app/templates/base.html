@@ -111,7 +111,43 @@
             </div>
 
             {% else %}
-            <!-- Authenticated Bottom Nav (Home, Explore, Ask AI, History, Profile) -->
+            {% if current_user.role == 'vendor' %}
+            <!-- Vendor Bottom Nav -->
+            <div
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.vendor_dashboard' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/4">
+                <a href="{{ url_for('main.vendor_dashboard') }}" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.vendor_dashboard' %}fill-1{% endif %}">store</span>
+                    <span class="text-[10px] font-bold">Dashboard</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.vendor_bookings' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/4">
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.vendor_bookings' %}fill-1{% endif %}">calendar_month</span>
+                    <span class="text-[10px] font-medium">Bookings</span>
+                </a>
+            </div>
+            <div class="flex flex-col items-center w-1/4 -mt-8 relative">
+                <a href="{{ url_for('main.vendor_onboard') }}" class="flex flex-col items-center">
+                    <div
+                        class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-blush-white mb-1 transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-3xl">edit_square</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-navy-trust">Manage</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.logout' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/4">
+                <a href="{{ url_for('main.logout') }}" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="text-[10px] font-medium">Logout</span>
+                </a>
+            </div>
+
+            {% else %}
+            <!-- Authenticated User Bottom Nav -->
             <div
                 class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.welcome_home' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.welcome_home') }}" class="flex flex-col items-center gap-1">
@@ -156,6 +192,7 @@
                     <span class="text-[10px] font-medium">Profile</span>
                 </a>
             </div>
+            {% endif %}
             {% endif %}
         </nav>
         <!-- iOS Indicator -->

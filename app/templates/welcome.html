@@ -140,28 +140,31 @@
             </div>
         </div>
 
-        <!-- Vendor JSON Data (Linter-friendly storage) -->
-        <div id="vendors-data" data-vendors='[
-            {% for vendor in vendors %}
-            {
-                "id": {{ vendor.id }},
-                "name": "{{ vendor.business_name|e }}",
-                "lat": {{ vendor.latitude }},
-                "lng": {{ vendor.longitude }},
-                "address": "{{ vendor.address|e }}",
-                "rating": "{{ vendor.average_rating or "5.0" }}",
-                "reviews": {{ vendor.feedbacks|length if vendor.feedbacks else 0 }}
-            }{% if not loop.last %},{% endif %}
-            {% endfor %}
-        ]' class="hidden"></div>
+        <!-- Vendor JSON Data (Robust storage) -->
+        <script id="vendors-json" type="application/json">
+            [
+                {% for vendor in vendors %}
+                {
+                    "id": {{ vendor.id }},
+                    "name": {{ vendor.business_name|tojson }},
+                    "lat": {{ vendor.latitude }},
+                    "lng": {{ vendor.longitude }},
+                    "address": {{ vendor.address|tojson }},
+                    "rating": {{ (vendor.average_rating or 5.0)|tojson }},
+                    "reviews": {{ (vendor.feedbacks|length if vendor.feedbacks else 0)|tojson }}
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ]
+        </script>
     </main>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Parse linter-friendly data attribute
-    const vendors = JSON.parse(document.getElementById('vendors-data').dataset.vendors);
+    // Parse vendors from robust JSON block
+    const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
+    console.log("Loaded vendors:", vendors.length);
 
     function initGeolocation() {
         if (navigator.geolocation) {
