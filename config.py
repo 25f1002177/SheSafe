@@ -9,6 +9,12 @@ class Config:
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
+        if 'supabase' in DATABASE_URL.lower():
+            SQLALCHEMY_ENGINE_OPTIONS = {
+                'connect_args': {
+                    'sslmode': 'require'
+                }
+            }
     else:
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
