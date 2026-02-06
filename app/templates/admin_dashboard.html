@@ -165,33 +165,5 @@
             {% endfor %}
         </div>
     </main>
-
-    <!-- Bottom Navigation Bar -->
-    <nav
-        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50">
-        <div class="flex justify-around items-center px-2 py-3 max-w-md mx-auto">
-            <a href="{{ url_for('main.admin_dashboard') }}" class="flex flex-col items-center gap-1 text-navy-trust">
-                <span class="material-symbols-outlined fill-1">dashboard</span>
-                <span class="text-[10px] font-bold uppercase tracking-tight">Overview</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
-                <span class="material-symbols-outlined">storefront</span>
-                <span class="text-[10px] font-medium uppercase tracking-tight">Vendors</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
-                <span class="material-symbols-outlined">group</span>
-                <span class="text-[10px] font-medium uppercase tracking-tight">Users</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
-                <span class="material-symbols-outlined">account_balance_wallet</span>
-                <span class="text-[10px] font-medium uppercase tracking-tight">Revenue</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
-                <span class="material-symbols-outlined">settings</span>
-                <span class="text-[10px] font-medium uppercase tracking-tight">Settings</span>
-            </a>
-        </div>
-        <div class="h-6 w-full"></div>
-    </nav>
 </div>
 {% endblock %}

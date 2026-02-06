@@ -160,6 +160,45 @@
                 </a>
             </div>
 
+            {% elif current_user.role == 'admin' %}
+            <!-- Admin Bottom Nav -->
+            <div
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_dashboard' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
+                <a href="{{ url_for('main.admin_dashboard') }}" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_dashboard' %}fill-1{% endif %}">dashboard</span>
+                    <span class="text-[10px] font-bold">Overview</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors w-1/5">
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">storefront</span>
+                    <span class="text-[10px] font-medium">Vendors</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors w-1/5">
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="text-[10px] font-medium">Users</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors w-1/5">
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">account_balance_wallet</span>
+                    <span class="text-[10px] font-medium">Revenue</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors w-1/5">
+                <a href="#" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="text-[10px] font-medium">Settings</span>
+                </a>
+            </div>
+
             {% else %}
             <!-- Authenticated User Bottom Nav -->
             <div
