@@ -616,18 +616,28 @@ def admin_users():
     filter_type = request.args.get('filter', 'all')
     
     # Base query - exclude admins and vendors
-    base_query = User.query.filter(db.or_(User.role == 'user', User.role == None))
+    base_query = User.query.filter(db.or_(User.role == 'user', User.role.is_(None)))
     
     # Apply search
     if search_query:
         search = f"%{search_query}%"
-        base_query = base_query.filter(
-            db.or_(
-                User.name.ilike(search),
-                User.email.ilike(search),
-                User.id.ilike(search)
+        # Try to parse as integer for ID search, otherwise search name/email
+        try:
+            search_id = int(search_query)
+            base_query = base_query.filter(
+                db.or_(
+                    User.name.ilike(search),
+                    User.email.ilike(search),
+                    User.id == search_id
+                )
             )
-        )
+        except ValueError:
+            base_query = base_query.filter(
+                db.or_(
+                    User.name.ilike(search),
+                    User.email.ilike(search)
+                )
+            )
     
     # Get all users matching criteria
     all_users = base_query.order_by(User.id.desc()).all()
