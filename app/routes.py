@@ -645,8 +645,12 @@ def admin_users():
         # Build a list of user dictionaries to avoid modifying SQLAlchemy instances
         users_data = []
         for u in all_users:
-            bookings_count = Booking.query.filter_by(user_id=u.id).count()
-            avg_rating = db.session.query(db.func.avg(Feedback.overall_rating)).filter_by(user_id=u.id).scalar()
+            # Get bookings count
+            bookings_count = db.session.query(db.func.count(Booking.id)).filter_by(user_id=u.id).scalar() or 0
+            
+            # Get average rating safely
+            avg_result = db.session.query(db.func.avg(Feedback.overall_rating)).filter(Feedback.user_id == u.id).scalar()
+            avg_rating = round(float(avg_result), 1) if avg_result else 0
             
             users_data.append({
                 'id': u.id,
@@ -654,7 +658,7 @@ def admin_users():
                 'email': u.email,
                 'role': u.role,
                 'bookings_count': bookings_count,
-                'average_rating': round(avg_rating, 1) if avg_rating else 0,
+                'average_rating': avg_rating,
                 'is_verified': True,
                 'is_flagged': False
             })
