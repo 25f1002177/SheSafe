@@ -1,7 +1,12 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db
-from datetime import datetime
+from datetime import datetime, timezone
+
+
+def utcnow():
+    """Return current UTC datetime."""
+    return datetime.now(timezone.utc)
 
 
 class User(UserMixin, db.Model):
@@ -47,7 +52,7 @@ class Vendor(db.Model):
     is_verified = db.Column(db.Boolean, default=False, nullable=False)
     is_active = db.Column(db.Boolean, default=False, nullable=False)
     average_rating = db.Column(db.Float, default=0.0, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow(), nullable=False)
     
     # Relationship to images
     images = db.relationship('VendorImage', backref='vendor', lazy=True, cascade='all, delete-orphan')
@@ -74,7 +79,7 @@ class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    booking_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    booking_time = db.Column(db.DateTime, default=utcnow(), nullable=False)
     visit_date = db.Column(db.DateTime, nullable=False)
     payment_mode = db.Column(db.String(20), nullable=False) # 'app' or 'pay_at_location'
     amount = db.Column(db.Float, nullable=False)
@@ -98,7 +103,7 @@ class Feedback(db.Model):
     staff_behavior_rating = db.Column(db.Integer, nullable=False)
     overall_rating = db.Column(db.Float, nullable=False)
     comments = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow(), nullable=False)
     
     # Relationships
     booking = db.relationship('Booking', backref=db.backref('feedback', uselist=False))
@@ -115,7 +120,7 @@ class VendorImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
     image_url = db.Column(db.String(255), nullable=False)
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=utcnow(), nullable=False)
     
     def __repr__(self):
         return f'<VendorImage {self.image_url}>'

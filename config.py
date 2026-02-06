@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    DATABASE_URL = os.environ.get('TURSO_DATABASE_URL') or os.environ.get('DATABASE_URL')
+    DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
     else:

@@ -4,10 +4,6 @@ from flask_login import LoginManager
 from config import config
 import os
 
-import libsql_dialect
-from sqlalchemy.dialects import registry
-registry.register("libsql", "libsql_dialect", "dialect")
-
 # Initialize extensions
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -56,16 +52,9 @@ def create_app(config_name='default'):
         from flask import render_template
         return render_template('error_403.html'), 403
     
-    # Create database tables (only if using a writable database)
+    # Create database tables
     with app.app_context():
         from app import models
-        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
-        if db_uri.startswith('sqlite:'):
-            try:
-                db.create_all()
-            except OSError:
-                pass
-        else:
-            db.create_all()
+        db.create_all()
     
     return app
