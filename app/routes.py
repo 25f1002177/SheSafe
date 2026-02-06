@@ -132,16 +132,21 @@ def login():
             login_user(user)
             flash(f'Welcome back, {user.name}!', 'success')
             
-            print(f"DEBUG: Login successful, redirecting to {user.role} dashboard")  # Debug
-            
             # Redirect to next page or dashboard
             next_page = request.args.get('next')
             if next_page:
                 return redirect(next_page)
             
             if user.role == 'admin':
-                print("DEBUG: Redirecting to admin dashboard")  # Debug
-        return redirect(url_for('main.admin_dashboard'))
+                return redirect(url_for('main.admin_dashboard'))
+            elif user.role == 'vendor':
+                return redirect(url_for('main.vendor_dashboard'))
+            else:
+                return redirect(url_for('main.welcome_home'))
+                
+        flash('Invalid email or password.', 'error')
+        
+    return render_template('login.html')
 
 
 @main.route('/admin/settings')
@@ -149,16 +154,6 @@ def login():
 def admin_settings():
     """Admin settings page."""
     return render_template('admin_settings.html', user=current_user)
-            elif user.role == 'vendor':
-                return redirect(url_for('main.vendor_dashboard'))
-            else:
-                return redirect(url_for('main.welcome_home'))
-        else:
-            print("DEBUG: Login failed - invalid credentials")  # Debug
-            flash('Invalid email or password.', 'error')
-            return render_template('login.html')
-    
-    return render_template('login.html')
 
 
 @main.route('/logout')
@@ -230,6 +225,79 @@ def admin_vendors():
                          verified_vendors=verified_vendors)
 
 
+
+
+@main.route('/admin/users')
+@admin_required
+def admin_users():
+    """Admin user management page (admin only)."""
+    from app.models import Booking, Feedback
+    
+    # Get search query and filter
+    search_query = request.args.get('search', '').strip()
+    filter_type = request.args.get('filter', 'all')
+    
+    # Base query
+    query = User.query
+    
+    # Apply search filter
+    if search_query:
+        query = query.filter(
+            (User.name.ilike(f'%{search_query}%')) |
+            (User.email.ilike(f'%{search_query}%'))
+        )
+    
+    # Apply type filter
+    if filter_type == 'flagged':
+        # For now, just show all users. You can add flagging logic later
+        pass
+    
+    # Get all users
+    users = query.all()
+    
+    # Add booking count and average rating to each user
+    for user in users:
+        user.bookings_count = Booking.query.filter_by(user_id=user.id).count()
+        
+        # Get average rating safely - join through bookings since Feedback doesn't have user_id
+        avg_result = db.session.query(db.func.avg(Feedback.overall_rating)).\
+            join(Booking, Feedback.booking_id == Booking.id).\
+            filter(Booking.user_id == user.id).scalar()
+        user.average_rating = round(float(avg_result), 1) if avg_result else 0
+    
+    return render_template('admin_users.html',
+                         user=current_user,
+                         all_users=User.query.all(),
+                         users=users,
+                         search_query=search_query,
+                         filter_type=filter_type)
+
+
+@main.route('/admin/users/<int:user_id>')
+@admin_required
+def admin_user_detail(user_id):
+    """Admin user detail page (admin only)."""
+    from app.models import Booking, Feedback
+    
+    target_user = User.query.get_or_404(user_id)
+    # Use booking_time instead of created_at
+    bookings = Booking.query.filter_by(user_id=user_id).order_by(Booking.booking_time.desc()).all()
+    
+    # Get feedbacks for this user
+    feedbacks = Feedback.query.join(Booking).filter(Booking.user_id == user_id).all()
+    
+    # Calculate average rating
+    avg_rating = 0
+    if feedbacks:
+        avg_rating = sum([f.overall_rating for f in feedbacks]) / len(feedbacks)
+        avg_rating = round(avg_rating, 1)
+    
+    return render_template('admin_user_detail.html',
+                         user=current_user,
+                         target_user=target_user,
+                         bookings=bookings,
+                         feedbacks=feedbacks,
+                         average_rating=avg_rating)
 
 
 @main.route('/vendor/dashboard')
