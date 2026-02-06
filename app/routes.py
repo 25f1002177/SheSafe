@@ -648,8 +648,10 @@ def admin_users():
             # Get bookings count
             bookings_count = db.session.query(db.func.count(Booking.id)).filter_by(user_id=u.id).scalar() or 0
             
-            # Get average rating safely
-            avg_result = db.session.query(db.func.avg(Feedback.overall_rating)).filter(Feedback.user_id == u.id).scalar()
+            # Get average rating safely - join through bookings since Feedback doesn't have user_id
+            avg_result = db.session.query(db.func.avg(Feedback.overall_rating)).\
+                join(Booking, Feedback.booking_id == Booking.id).\
+                filter(Booking.user_id == u.id).scalar()
             avg_rating = round(float(avg_result), 1) if avg_result else 0
             
             users_data.append({
