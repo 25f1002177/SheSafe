@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Ask AI - SheSafe{% endblock %}
+
+{% block content %}
+<div class="flex flex-col min-h-screen bg-blush-white dark:bg-background-dark pb-32">
+    <!-- Top App Bar -->
+    <header
+        class="flex items-center bg-white dark:bg-background-dark px-5 pt-6 pb-4 justify-between sticky top-0 z-50 shadow-sm border-b border-pink-50 dark:border-gray-800">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary-pink text-2xl fill-1">smart_toy</span>
+            <h1 class="text-navy-trust dark:text-white text-xl font-bold tracking-tight">SheSafe AI</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button
+                class="flex size-10 items-center justify-center rounded-full bg-navy-trust/5 text-navy-trust dark:text-white">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Chat History Section -->
+    <main class="flex-1 overflow-y-auto pt-4">
+        <div class="flex items-end gap-3 p-4">
+            <div
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0 bg-primary-pink/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary-pink">smart_toy</span>
+            </div>
+            <div class="flex flex-1 flex-col gap-1 items-start">
+                <p class="text-primary-pink text-[11px] font-bold uppercase tracking-wider">SheSafe Assistant</p>
+                <div
+                    class="text-sm font-medium leading-relaxed flex max-w-[85%] rounded-2xl px-4 py-3 bg-white dark:bg-slate-800 shadow-sm text-navy-trust dark:text-white border border-slate-50 dark:border-slate-700">
+                    Hello! I'm here to help with your health and hygiene questions. How can I assist you today?
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-end justify-end gap-3 p-4">
+            <div class="flex flex-col gap-1 items-end w-full">
+                <div
+                    class="text-sm font-medium leading-relaxed flex max-w-[85%] rounded-2xl px-4 py-3 bg-primary-pink text-white shadow-lg shadow-primary-pink/20">
+                    What are some tips for maintaining hygiene while using public washrooms?
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-end gap-3 p-4">
+            <div
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0 bg-primary-pink/20 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary-pink">smart_toy</span>
+            </div>
+            <div class="flex flex-1 flex-col gap-1 items-start">
+                <p class="text-primary-pink text-[11px] font-bold uppercase tracking-wider">SheSafe Assistant</p>
+                <div
+                    class="text-sm font-medium leading-relaxed flex max-w-[85%] rounded-2xl px-4 py-3 bg-white dark:bg-slate-800 shadow-sm text-navy-trust dark:text-white border border-slate-50 dark:border-slate-700">
+                    Always carry a sanitizer, use seat covers or sprays if available, and wash your hands thoroughly for
+                    at least 20 seconds after use.
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Blogs Section -->
+        <section class="mt-8 pb-10">
+            <div class="flex items-center justify-between px-5 mb-4">
+                <h2 class="text-navy-trust dark:text-white text-xl font-bold leading-tight">Health Blogs</h2>
+                <button class="text-primary-pink text-sm font-semibold">See All</button>
+            </div>
+            <div class="flex overflow-x-auto pb-4 px-5 gap-4 no-scrollbar">
+                <!-- Blog 1 -->
+                <div
+                    class="flex flex-col gap-3 rounded-2xl min-w-[240px] max-w-[240px] bg-white dark:bg-slate-800 p-3 shadow-sm border border-slate-50 dark:border-slate-700">
+                    <div class="w-full aspect-video bg-cover bg-center rounded-xl"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_ce9pLXT7CDAFMekByaYuklBB1-V5imEFWFirbixtk2Hx7N198yPnmKzgCeRxdWpF1sYlj0x--0VKYJwHPrG__2pafK_TXzbp03aoiLzTY6mz1SLT0qhBI1iaI1SPurFqgsw3IQxamcPc2aDCxzeIZWJVfEN8QhGVIV5Pz3KIvtHIA_WacCdtT-8EWAz8giy92wtEZZQvRY70MLHloi7J5s9Jofa_pUK67YVPSk7-7P8D9gk7FfbkLaoDYf2axOa6zpjJgVHlObWf')">
+                    </div>
+                    <div>
+                        <p class="text-navy-trust dark:text-white text-sm font-bold leading-tight">Maintaining Hygiene
+                            on the Go</p>
+                        <p class="text-slate-400 text-xs mt-1">Stay safe and clean while traveling.</p>
+                    </div>
+                </div>
+                <!-- Blog 2 -->
+                <div
+                    class="flex flex-col gap-3 rounded-2xl min-w-[240px] max-w-[240px] bg-white dark:bg-slate-800 p-3 shadow-sm border border-slate-50 dark:border-slate-700">
+                    <div class="w-full aspect-video bg-cover bg-center rounded-xl"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeugA4pmHZRbM-O4OFOmq9-4ozni2mOaMT1wmUsZLMzMu1bFb23nuvnGG6DQpQdc7hWFrh3l60abxVIWG6ymNMrUqZVltobDA6L-9NaIP1Y1CnkaE9smLB3MdqOggOgmB2tgYYTg_8crwKRaUVkAHKsxND3kIr_u73WL4M9nBFpwaKuIfXoVVh1yXQSLLONSrkOVFdvb2HDpbqlxjs8ma52Cjw0QtCycDhMU4CukvQURdzW_Ltwk-F317O6Er5PIuiOD3sKFQvns74')">
+                    </div>
+                    <div>
+                        <p class="text-navy-trust dark:text-white text-sm font-bold leading-tight">Period Care Tips</p>
+                        <p class="text-slate-400 text-xs mt-1">Essential self-care routines.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Input Section (Floating above Nav) -->
+    <div
+        class="fixed bottom-[72px] left-0 right-0 max-w-[430px] mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 py-3 border-t border-slate-100 dark:border-slate-800 z-40">
+        <div class="flex items-center gap-3">
+            <div class="bg-primary-pink/10 rounded-full size-10 shrink-0 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary-pink text-[20px]">psychology</span>
+            </div>
+            <div
+                class="flex w-full items-stretch rounded-xl bg-slate-50 dark:bg-slate-800 h-12 overflow-hidden border border-transparent focus-within:border-primary-pink transition-all">
+                <input
+                    class="form-input flex-1 min-w-0 border-none bg-transparent focus:ring-0 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-sm font-medium text-navy-trust dark:text-white"
+                    placeholder="Ask about women's health..." />
+                <div class="flex items-center gap-1 pr-2">
+                    <button class="p-2 text-slate-400 hover:text-primary-pink">
+                        <span class="material-symbols-outlined text-[20px]">mic</span>
+                    </button>
+                    <button
+                        class="bg-primary-pink text-white rounded-lg h-8 px-4 font-bold text-xs shadow-sm active:scale-95 transition-all">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

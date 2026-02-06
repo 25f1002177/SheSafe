@@ -65,20 +65,6 @@
 <body class="min-h-screen">
     <div class="max-w-[430px] mx-auto min-h-screen flex flex-col relative bg-white dark:bg-background-dark shadow-2xl">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="fixed top-20 left-1/2 -translate-x-1/2 w-[90%] z-[100] space-y-2">
-            {% for category, message in messages %}
-            <div class="px-4 py-3 rounded-xl shadow-lg backdrop-blur-md font-bold text-sm flex items-center gap-3 animate-bounce
-                {% if category == 'error' %}bg-red-500/90 text-white{% else %}bg-navy-trust/90 text-white{% endif %}">
-                <span class="material-symbols-outlined">{% if category == 'error' %}error{% else %}check_circle{% endif
-                    %}</span>
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
 
         <main class="flex-1 overflow-x-hidden">
             {% block content %}{% endblock %}
@@ -122,7 +108,7 @@
             </div>
 
             {% else %}
-            <!-- Authenticated Bottom Nav (Home, Explore, Ask, History, Profile) -->
+            <!-- Authenticated Bottom Nav (Home, Explore, Ask AI, History, Profile) -->
             <div
                 class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.welcome_home' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.welcome_home') }}" class="flex flex-col items-center gap-1">
@@ -140,11 +126,16 @@
                 </a>
             </div>
             <div class="flex flex-col items-center w-1/5 -mt-8 relative">
-                <div
-                    class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-blush-white mb-1">
-                    <span class="material-symbols-outlined text-3xl">clinical_notes</span>
-                </div>
-                <span class="text-[10px] font-medium text-navy-trust">Ask</span>
+                <a href="{{ url_for('main.ask_ai') }}" class="flex flex-col items-center">
+                    <div
+                        class="{% if request.endpoint == 'main.ask_ai' %}bg-primary-pink{% else %}bg-navy-trust{% endif %} size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-blush-white mb-1 transition-all active:scale-95">
+                        <span
+                            class="material-symbols-outlined text-3xl {% if request.endpoint == 'main.ask_ai' %}fill-1{% endif %}">chat_bubble</span>
+                    </div>
+                    <span
+                        class="text-[10px] font-bold {% if request.endpoint == 'main.ask_ai' %}text-primary-pink{% else %}text-navy-trust{% endif %}">Ask
+                        AI</span>
+                </a>
             </div>
             <div
                 class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'history' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
@@ -158,7 +149,7 @@
                 class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'profile' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.user_dashboard', tab='profile') }}" class="flex flex-col items-center gap-1">
                     <span
-                        class="material-symbols-outlined {% if request.args.get('tab') == 'profile' %}fill-1{% endif %}">person</span>
+                        class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' and request.args.get('tab') == 'profile' %}fill-1{% endif %}">person</span>
                     <span class="text-[10px] font-medium">Profile</span>
                 </a>
             </div>

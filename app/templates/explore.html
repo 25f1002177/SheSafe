@@ -3,49 +3,180 @@
 {% block title %}Explore - SheSafe{% endblock %}
 
 {% block head %}
-<script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzECsdwJsm3S9FgHyfRJyYGY5_eJPMxV4&libraries=places"></script>
 <style>
     #map {
         height: 100%;
         width: 100%;
-    }
-
-    .map-container {
-        height: calc(100vh - 80px);
-        /* Adjust based on navbar height if any, or just full height */
-        position: relative;
-    }
-
-    .search-overlay {
         position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 400px;
-        z-index: 10;
+        top: 0;
+        left: 0;
+        z-index: 0;
+    }
+
+    .user-location-pulse {
+        animation: pulse-blue 2s infinite;
+    }
+
+    @keyframes pulse-blue {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+        }
+
+        70% {
+            transform: scale(1);
+            box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+        }
+
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="map-container overflow-hidden">
-    <!-- Search Bar Overlay -->
-    <div class="search-overlay">
-        <div
-            class="flex w-full items-stretch rounded-2xl h-14 shadow-xl border border-navy-trust/5 bg-white overflow-hidden">
-            <div class="text-primary-pink flex items-center justify-center pl-4">
-                <span class="material-symbols-outlined">search</span>
+<div class="relative flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden bg-slate-100">
+    <!-- Google Map Background -->
+    <div id="map" class="absolute inset-0 z-0"></div>
+
+    <!-- Top Overlays -->
+    <div class="relative z-10 flex flex-col pt-12 px-4 gap-3 pointer-events-none">
+        <div class="flex items-center justify-between pointer-events-auto">
+            <div class="flex gap-2">
+                <button
+                    class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <button
+                    class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
             </div>
-            <input id="pac-input"
-                class="form-input flex w-full min-w-0 flex-1 border-none bg-white text-navy-trust focus:outline-0 focus:ring-0 placeholder:text-slate-400 px-3 text-base"
-                placeholder="Search for safe spaces..." />
+            <h1 class="text-navy-trust text-xl font-bold tracking-tight drop-shadow-sm">SheSafe</h1>
+            <div class="flex gap-2">
+                <button
+                    class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
+                    <span class="material-symbols-outlined">tune</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters scroll -->
+        <div class="flex gap-2 py-1 overflow-x-auto no-scrollbar pointer-events-auto">
+            <div
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary-pink px-4 shadow-sm border border-pink-200 cursor-pointer active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-navy-trust text-[18px] fill-1">verified_user</span>
+                <p class="text-navy-trust text-xs font-bold whitespace-nowrap">Verified Only</p>
+            </div>
+            <div
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">water_drop</span>
+                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Period Care</p>
+            </div>
+            <div
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">child_care</span>
+                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Nursing</p>
+            </div>
+        </div>
+
+        <!-- Rating Prompt -->
+        <div class="mt-2 pointer-events-auto">
+            <div
+                class="bg-navy-trust p-3 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-navy-trust/20">
+                <div class="flex items-center gap-3">
+                    <div class="size-10 rounded-lg bg-primary-pink/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary-pink">rate_review</span>
+                    </div>
+                    <div>
+                        <p class="text-white text-[10px] font-bold opacity-60 uppercase tracking-widest">How was your
+                            visit?</p>
+                        <p class="text-white text-sm font-bold">Rate Civic Center Plaza</p>
+                    </div>
+                </div>
+                <button
+                    class="bg-primary-pink text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-primary-pink/20 active:scale-95 transition-all">Rate
+                    Now</button>
+            </div>
         </div>
     </div>
 
-    <!-- Map Element -->
-    <div id="map"></div>
+    <!-- Floating Action Buttons -->
+    <div class="absolute right-4 bottom-72 z-10 flex flex-col gap-3">
+        <button onclick="recenterMap()"
+            class="flex h-12 px-5 items-center gap-2 rounded-full bg-white text-navy-trust shadow-lg border border-slate-100 font-bold text-sm active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[20px]">my_location</span>
+            Recenter
+        </button>
+        <button
+            class="flex h-12 w-12 self-end items-center justify-center rounded-full bg-sos-red text-white shadow-xl relative active:scale-90 transition-all">
+            <span class="material-symbols-outlined text-2xl fill-1">error</span>
+            <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4 w-4 bg-sos-red"></span>
+            </span>
+        </button>
+    </div>
+
+    <!-- Bottom Sheet Vendor Info -->
+    <div class="mt-auto relative z-20 px-4 pb-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-4 flex flex-col gap-4 border border-slate-100">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto -mt-1 mb-1"></div>
+            <div class="flex items-center gap-2">
+                <span
+                    class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">Absolute
+                    Nearest</span>
+                <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Verified Vendor</span>
+            </div>
+            <div class="flex gap-4">
+                <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
+                    <img id="nearest-vendor-img" class="h-full w-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDImtv3s1TcedVMmNfuGrLA2anXIRLWYjZvUJWnjGdCceLr-_Pd3Us7si3V3deav5t2ohWYL-9LU4iVSNM8JHO9JjIOxWtrRB85nbJuP1BwqgGONLD7za9NdeLyWC0sHgLPbvYGk2AeBjyok19DMjoKjcMD_WhLyn9eVGpopxMbmMDJUUBVxIS7OTALXX7PR2XlcyNcYd4qPRwRQPwyk2KDZRtSrJGvrFLA8NfftJ_hOb8_Iwg0Kl6DAOAW4ieQqNmt89nxX7a5qUrn" />
+                    <div
+                        class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
+                        <span class="material-symbols-outlined text-[10px] fill-1">verified</span> VERIFIED
+                    </div>
+                </div>
+                <div class="flex flex-col flex-1 justify-between py-1">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 id="nearest-vendor-name" class="text-navy-trust font-bold text-lg leading-tight">Civic
+                                Center Plaza</h3>
+                            <button class="text-slate-300 hover:text-primary-pink transition-colors">
+                                <span class="material-symbols-outlined">bookmark</span>
+                            </button>
+                        </div>
+                        <p id="nearest-vendor-address" class="text-slate-500 text-xs mt-0.5">Public Restroom • Janpath
+                            Rd</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
+                            <span class="material-symbols-outlined text-[16px]">directions_walk</span>
+                            <span class="font-bold text-[11px]">250m • 3 mins</span>
+                        </div>
+                        <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
+                            <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
+                            <span id="nearest-vendor-rating" class="text-navy-trust font-bold text-sm">4.9</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <a id="nearest-vendor-link" href="#"
+                    class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl bg-navy-trust text-white font-bold text-base shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
+                    <span class="material-symbols-outlined text-xl">directions</span>
+                    Directions
+                </a>
+                <button
+                    class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-base active:scale-[0.98] transition-all">
+                    <span class="material-symbols-outlined text-xl fill-1">forum</span>
+                    Reviews
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -53,16 +184,17 @@
 <script>
     let map;
     let markers = [];
+    let userMarker;
     const vendors = [
         {% for vendor in vendors %}
     {
         id: { { vendor.id } },
         name: "{{ vendor.business_name }}",
-            lat: { { vendor.latitude } },
-        lng: { { vendor.longitude } },
+            lat: { { vendor.latitude or 28.6139 } },
+        lng: { { vendor.longitude or 77.2090 } },
         address: "{{ vendor.address }}",
-            rating: { { vendor.average_rating or 5.0 } }
-    },
+            rating: "{{ vendor.avg_rating or '5.0' }}"
+    } {% if not loop.last %}, {% endif %}
     {% endfor %}
     ];
 
@@ -71,24 +203,22 @@
 
         map = new google.maps.Map(document.getElementById("map"), {
             center: defaultCenter,
-            zoom: 13,
-            mapTypeControl: false,
-            streetViewControl: false,
-            fullscreenControl: false,
+            zoom: 15,
+            mapId: 'SHE_SAFE_MAP', // Optional: requires Map ID in Cloud Console for Advanced Markers
+            disableDefaultUI: true,
             styles: [
                 {
-                    "featureType": "poi.business",
+                    "featureType": "poi",
                     "stylers": [{ "visibility": "off" }]
                 },
                 {
-                    "featureType": "poi.park",
-                    "elementType": "labels.text",
+                    "featureType": "transit",
                     "stylers": [{ "visibility": "off" }]
                 }
             ]
         });
 
-        // Try HTML5 geolocation
+        // Geolocation
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -97,81 +227,112 @@
                         lng: position.coords.longitude,
                     };
                     map.setCenter(pos);
-                    // Add current location marker
-                    new google.maps.Marker({
+
+                    // User location marker with pulse effect (custom overlay would be better but simple circle for now)
+                    userMarker = new google.maps.Marker({
                         position: pos,
                         map: map,
                         icon: {
                             path: google.maps.SymbolPath.CIRCLE,
-                            scale: 10,
+                            scale: 8,
                             fillColor: "#4285F4",
                             fillOpacity: 1,
                             strokeWeight: 2,
                             strokeColor: "white",
                         },
-                        title: "Your Location"
+                        zIndex: 100
                     });
+
+                    // Update nearest info
+                    updateNearestVendor(pos);
                 }
             );
         }
 
-        // Add vendors to map
+        // Add vendor markers
         vendors.forEach(vendor => {
             const marker = new google.maps.Marker({
                 position: { lat: vendor.lat, lng: vendor.lng },
                 map: map,
-                title: vendor.name,
                 icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/pink-dot.png'
-                }
+                    path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z M12,11.5c-1.38,0-2.5-1.12-2.5-2.5s1.12-2.5,2.5-2.5 s2.5,1.12,2.5,2.5S13.38,11.5,12,11.5z',
+                    fillColor: "#001F3F", // Navy
+                    fillOpacity: 1,
+                    strokeWeight: 2,
+                    strokeColor: "white",
+                    scale: 1.5,
+                    anchor: new google.maps.Point(12, 22),
+                    labelOrigin: new google.maps.Point(12, 9)
+                },
+                title: vendor.name
             });
 
-            const infoWindow = new google.maps.InfoWindow({
-                content: `
-                    <div class="p-2 max-w-[200px]">
-                        <h3 class="font-bold text-navy-trust text-sm">${vendor.name}</h3>
-                        <p class="text-xs text-slate-500 mt-1">${vendor.address}</p>
-                        <div class="flex items-center mt-2">
-                             <span class="material-symbols-outlined text-primary-pink text-xs fill-1">star</span>
-                             <span class="text-xs font-bold ml-1">${vendor.rating}</span>
-                        </div>
-                        <a href="/vendor/${vendor.id}" class="block mt-3 text-center bg-navy-trust text-white text-[10px] py-2 rounded-lg font-bold">Details</a>
-                    </div>
-                `
+            // Small pink circle inside marker
+            const innerDot = new google.maps.Marker({
+                position: { lat: vendor.lat, lng: vendor.lng },
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 4,
+                    fillColor: "#FFB6C1", // Soft Pink
+                    fillOpacity: 1,
+                    strokeWeight: 0,
+                    anchor: new google.maps.Point(0, 13) // Approximate center of the pin head
+                },
+                clickable: false
             });
 
             marker.addListener("click", () => {
-                infoWindow.open(map, marker);
+                map.panTo(marker.getPosition());
+                showVendorInfo(vendor);
             });
 
             markers.push(marker);
         });
 
-        // Places Search
-        const input = document.getElementById("pac-input");
-        const searchBox = new google.maps.places.SearchBox(input);
-
-        map.addListener("bounds_changed", () => {
-            searchBox.setBounds(map.getBounds());
-        });
-
-        searchBox.addListener("places_changed", () => {
-            const places = searchBox.getPlaces();
-            if (places.length == 0) return;
-
-            const bounds = new google.maps.LatLngBounds();
-            places.forEach((place) => {
-                if (!place.geometry || !place.geometry.location) return;
-                if (place.geometry.viewport) {
-                    bounds.union(place.geometry.viewport);
-                } else {
-                    bounds.extend(place.geometry.location);
-                }
-            });
-            map.fitBounds(bounds);
-        });
+        // Search Box logic if needed (pac-input)
     }
 
-    window.onload = initMap;
+    function showVendorInfo(vendor) {
+        document.getElementById('nearest-vendor-name').innerText = vendor.name;
+        document.getElementById('nearest-vendor-address').innerText = vendor.address;
+        document.getElementById('nearest-vendor-rating').innerText = vendor.rating;
+        document.getElementById('nearest-vendor-link').href = `/vendor/${vendor.id}`;
+        // You would dynamically change the image too if you have vendor image URLs
+    }
+
+    function recenterMap() {
+        if (userMarker) {
+            map.panTo(userMarker.getPosition());
+            map.setZoom(15);
+        }
+    }
+
+    function updateNearestVendor(userPos) {
+        if (vendors.length === 0) return;
+
+        let nearest = vendors[0];
+        let minDist = Infinity;
+
+        vendors.forEach(v => {
+            const dist = google.maps.geometry.spherical.computeDistanceBetween(
+                new google.maps.LatLng(userPos.lat, userPos.lng),
+                new google.maps.LatLng(v.lat, v.lng)
+            );
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = v;
+            }
+        });
+
+        showVendorInfo(nearest);
+    }
+
+    // Load geometry library for distance calculations
+    const script = document.createElement('script');
+    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAzECsdwJsm3S9FgHyfRJyYGY5_eJPMxV4&libraries=geometry,places&callback=initMap";
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
 </script>
 {% endblock %}

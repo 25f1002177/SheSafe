@@ -50,6 +50,13 @@ def explore():
     return render_template('explore.html', vendors=vendors)
 
 
+@main.route('/ask-ai')
+@login_required
+def ask_ai():
+    """Ask AI page."""
+    return render_template('ask_ai.html')
+
+
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     """User registration route."""
