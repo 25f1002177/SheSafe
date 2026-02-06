@@ -60,6 +60,15 @@
 <body class="font-display text-navy-trust min-h-screen bg-blush-white">
     <div class="max-w-[430px] mx-auto min-h-screen flex flex-col relative bg-white dark:bg-background-dark shadow-2xl">
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="mx-4 mt-4 p-3 rounded-lg text-sm font-medium {% if category == 'error' %}bg-red-50 text-red-600 border border-red-200{% else %}bg-green-50 text-green-600 border border-green-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
         <main class="flex-1 overflow-x-hidden">
             {% block content %}{% endblock %}
