@@ -561,3 +561,27 @@ def update_db_schema():
         return "Schema updated successfully! Added 'category' column."
     except Exception as e:
         return f"Error updating schema: {str(e)}"
+
+@main.route('/create-admin')
+def create_admin():
+    """Secret route to create admin user. Call with ?token=YOUR_SECRET_TOKEN"""
+    import os
+    secret_token = os.environ.get('ADMIN_CREATE_TOKEN', 'default-secret-change-me')
+    provided_token = request.args.get('token', '')
+
+    if provided_token != secret_token:
+        return "Unauthorized", 401
+
+    admin_email = os.environ.get('ADMIN_EMAIL', 'admin@admin.com')
+    admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+
+    admin = User.query.filter_by(email=admin_email).first()
+    if admin:
+        return f"Admin user already exists: {admin_email}"
+
+    admin = User(name='Admin', email=admin_email, role='admin')
+    admin.set_password(admin_password)
+    db.session.add(admin)
+    db.session.commit()
+
+    return f"Admin created! Email: {admin_email}, Password: {admin_password}"
