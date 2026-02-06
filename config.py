@@ -8,11 +8,16 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.strip()
         # Fix for SQLAlchemy 1.4+ / 2.0 where postgres:// is deprecated
         if DATABASE_URL.startswith("postgres://"):
             DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
         
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
+        
+        # Parse URL for explicit host/port to avoid Unix socket defaulting
+        import urllib.parse as urlparse
+        url = urlparse.urlparse(DATABASE_URL)
         
         # Optimize for Supabase and Serverless (Vercel)
         from sqlalchemy.pool import NullPool
@@ -21,7 +26,9 @@ class Config:
             'pool_pre_ping': True,
             'connect_args': {
                 'sslmode': 'require',
-                'connect_timeout': 20
+                'connect_timeout': 30,
+                'host': url.hostname,
+                'port': url.port or 5432
             }
         }
     else:
