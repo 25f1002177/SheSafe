@@ -115,15 +115,24 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
+        print(f"DEBUG: Login attempt - Email: {email}")  # Debug
+        
         if not all([email, password]):
             flash('Email and password are required.', 'error')
             return render_template('login.html')
         
         user = User.query.filter_by(email=email).first()
         
+        print(f"DEBUG: User found: {user is not None}")  # Debug
+        if user:
+            print(f"DEBUG: User role: {user.role}")  # Debug
+            print(f"DEBUG: Password check: {user.check_password(password)}")  # Debug
+        
         if user and user.check_password(password):
             login_user(user)
             flash(f'Welcome back, {user.name}!', 'success')
+            
+            print(f"DEBUG: Login successful, redirecting to {user.role} dashboard")  # Debug
             
             # Redirect to next page or dashboard
             next_page = request.args.get('next')
@@ -131,12 +140,14 @@ def login():
                 return redirect(next_page)
             
             if user.role == 'admin':
+                print("DEBUG: Redirecting to admin dashboard")  # Debug
                 return redirect(url_for('main.admin_dashboard'))
             elif user.role == 'vendor':
                 return redirect(url_for('main.vendor_dashboard'))
             else:
                 return redirect(url_for('main.welcome_home'))
         else:
+            print("DEBUG: Login failed - invalid credentials")  # Debug
             flash('Invalid email or password.', 'error')
             return render_template('login.html')
     
