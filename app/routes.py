@@ -610,76 +610,100 @@ def create_admin():
 @admin_required
 def admin_users():
     """Admin user management page."""
-    from app.models import User, Booking, Feedback
-    
-    search_query = request.args.get('search', '')
-    filter_type = request.args.get('filter', 'all')
-    
-    # Base query - exclude admins and vendors
-    base_query = User.query.filter(db.or_(User.role == 'user', User.role.is_(None)))
-    
-    # Apply search
-    if search_query:
-        search = f"%{search_query}%"
-        # Try to parse as integer for ID search, otherwise search name/email
-        try:
-            search_id = int(search_query)
-            base_query = base_query.filter(
-                db.or_(
-                    User.name.ilike(search),
-                    User.email.ilike(search),
-                    User.id == search_id
+    try:
+        from app.models import User, Booking, Feedback
+        
+        search_query = request.args.get('search', '')
+        filter_type = request.args.get('filter', 'all')
+        
+        # Base query - exclude admins and vendors
+        base_query = User.query.filter(db.or_(User.role == 'user', User.role.is_(None)))
+        
+        # Apply search
+        if search_query:
+            search = f"%{search_query}%"
+            try:
+                search_id = int(search_query)
+                base_query = base_query.filter(
+                    db.or_(
+                        User.name.ilike(search),
+                        User.email.ilike(search),
+                        User.id == search_id
+                    )
                 )
-            )
-        except ValueError:
-            base_query = base_query.filter(
-                db.or_(
-                    User.name.ilike(search),
-                    User.email.ilike(search)
+            except ValueError:
+                base_query = base_query.filter(
+                    db.or_(
+                        User.name.ilike(search),
+                        User.email.ilike(search)
+                    )
                 )
-            )
-    
-    # Get all users matching criteria
-    all_users = base_query.order_by(User.id.desc()).all()
-    
-    # Placeholder for flagged users (no is_flagged field in model yet)
-    flagged_users = []
-    
-    # Add computed stats to each user
-    for user in all_users:
-        user.bookings_count = Booking.query.filter_by(user_id=user.id).count()
-        user.reports_count = 0  # Placeholder for reports (no reports table yet)
-        user.average_rating = db.session.query(db.func.avg(Feedback.overall_rating)).filter_by(user_id=user.id).scalar() or 0
-        user.is_verified = True  # Placeholder - all users treated as verified
-        user.is_flagged = False  # Placeholder - no flagged users
-    
-    # Filter for display if needed
-    if filter_type == 'flagged':
-        users = []
-        flagged_users = all_users[:3]  # Show some users as flagged for demo
-        for u in flagged_users:
-            u.is_flagged = True
-            u.flag_reason = 'Review Needed'
-    else:
-        users = all_users
+        
+        # Get all users matching criteria
+        all_users = base_query.order_by(User.id.desc()).all()
+        
+        # Build a list of user dictionaries to avoid modifying SQLAlchemy instances
+        users_data = []
+        for u in all_users:
+            bookings_count = Booking.query.filter_by(user_id=u.id).count()
+            avg_rating = db.session.query(db.func.avg(Feedback.overall_rating)).filter_by(user_id=u.id).scalar()
+            
+            users_data.append({
+                'id': u.id,
+                'name': u.name,
+                'email': u.email,
+                'role': u.role,
+                'bookings_count': bookings_count,
+                'average_rating': round(avg_rating, 1) if avg_rating else 0,
+                'is_verified': True,
+                'is_flagged': False
+            })
+        
         flagged_users = []
-    
-    return render_template('admin_users.html',
-                         user=current_user,
-                         all_users=users or all_users,
-                         users=users or all_users,
-                         flagged_users=flagged_users,
-                         search_query=search_query,
-                         filter_type=filter_type)
+        if filter_type == 'flagged':
+            # Show first 3 users as flagged for demo
+            flagged_users = users_data[:3]
+            for f in flagged_users:
+                f['is_flagged'] = True
+                f['flag_reason'] = 'Review Needed'
+        
+        return render_template('admin_users.html',
+                             user=current_user,
+                             users=users_data,
+                             all_users=users_data,
+                             flagged_users=flagged_users,
+                             search_query=search_query,
+                             filter_type=filter_type)
+    except Exception as e:
+        flash(f'Error loading users: {str(e)}', 'error')
+        return redirect(url_for('main.admin_dashboard'))
 
 @main.route('/admin/user/<int:user_id>')
 @admin_required
 def admin_user_detail(user_id):
     """Admin user detail page."""
-    from app.models import User, Booking, Feedback, Vendor
-    user = User.query.get_or_404(user_id)
-    
-    user.bookings = Booking.query.filter_by(user_id=user.id).order_by(Booking.created_at.desc()).all()
-    user.feedbacks = Feedback.query.filter_by(user_id=user.id).all()
-    
-    return render_template('admin_user_detail.html', user=current_user, target_user=user)
+    try:
+        from app.models import User, Booking, Feedback, Vendor
+        target_user = User.query.get_or_404(user_id)
+        
+        # Get bookings with vendor eagerly loaded
+        bookings = db.session.query(Booking).options(
+            db.joinedload(Booking.vendor)
+        ).filter_by(user_id=user_id).order_by(Booking.created_at.desc()).all()
+        
+        feedbacks = Feedback.query.filter_by(user_id=user_id).all()
+        
+        # Calculate average rating
+        avg_rating = 0
+        if feedbacks:
+            avg_rating = sum(f.overall_rating for f in feedbacks) / len(feedbacks)
+        
+        return render_template('admin_user_detail.html', 
+                             user=current_user, 
+                             target_user=target_user,
+                             bookings=bookings,
+                             feedbacks=feedbacks,
+                             average_rating=round(avg_rating, 1))
+    except Exception as e:
+        flash(f'Error loading user: {str(e)}', 'error')
+        return redirect(url_for('main.admin_users'))
