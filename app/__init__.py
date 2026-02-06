@@ -16,11 +16,17 @@ def create_app(config_name='default'):
     # Load configuration
     app.config.from_object(config[config_name])
     
-    # Create instance folder if it doesn't exist
-    os.makedirs(app.instance_path, exist_ok=True)
+    # Create instance folder if it doesn't exist (skip on Vercel)
+    try:
+        os.makedirs(app.instance_path, exist_ok=True)
+    except OSError:
+        pass
     
     # Create upload folder if it doesn't exist
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    try:
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    except OSError:
+        pass
     
     # Initialize extensions with app
     db.init_app(app)
