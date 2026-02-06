@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Admin: Platform Settings - SheSafe{% endblock %}
+
+{% block styles %}
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#0f49bd",
+                    "background-light": "#f6f6f8",
+                    "background-dark": "#101622",
+                    "shesafe-pink": "#ec4899",
+                },
+                fontFamily: {
+                    "display": ["Public Sans"]
+                },
+            },
+        },
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="bg-background-light dark:bg-background-dark min-h-screen -mx-5 -my-6">
+    <!-- Header -->
+    <header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pt-12 pb-4">
+        <div class="flex items-center justify-between mb-4">
+            <a href="{{ url_for('main.admin_dashboard') }}" class="flex items-center justify-center size-10 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <div class="flex flex-col items-center">
+                <h1 class="text-lg font-bold leading-tight tracking-tight">Platform Settings</h1>
+                <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">System Configuration</span>
+            </div>
+            <div class="size-10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">info</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="flex-1 px-4 pb-32">
+        <!-- General Section -->
+        <section class="mb-6">
+            <h2 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1 mb-3">General Configuration</h2>
+            <div class="space-y-2">
+                <!-- Platform Fees -->
+                <div class="flex items-center gap-4 bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 cursor-pointer" onclick="alert('Platform fees settings coming soon')">
+                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <span class="material-symbols-outlined">percent</span>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        <p class="text-base font-semibold">Platform Fees %</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Current commission rate</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-base font-bold text-primary">12%</span>
+                        <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                    </div>
+                </div>
+                <!-- Admin Profile -->
+                <div class="flex items-center gap-4 bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 cursor-pointer" onclick="alert('Admin profile settings coming soon')">
+                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                        <span class="material-symbols-outlined">admin_panel_settings</span>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        <p class="text-base font-semibold">Admin Profile</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Account and permissions</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Safety & Security Section -->
+        <section class="mb-6">
+            <h2 class="text-xs font-bold text-shesafe-pink/80 uppercase tracking-widest px-1 mb-3">Safety &amp; Security</h2>
+            <div class="space-y-2">
+                <!-- Verification Criteria -->
+                <div class="flex items-center gap-4 bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 cursor-pointer" onclick="alert('Verification criteria settings coming soon')">
+                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
+                        <span class="material-symbols-outlined">verified_user</span>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        <p class="text-base font-semibold">Verification Criteria</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Manage safety check requirements</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                </div>
+                <!-- Emergency Protocols -->
+                <div class="flex items-center gap-4 bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 cursor-pointer" onclick="alert('Emergency protocols settings coming soon')">
+                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-shesafe-pink/10 text-shesafe-pink">
+                        <span class="material-symbols-outlined">emergency_home</span>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        <p class="text-base font-semibold">Emergency Protocols</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">SOS and safety triggers logic</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compliance Section -->
+        <section class="mb-8">
+            <h2 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1 mb-3">Compliance &amp; Audit</h2>
+            <div class="space-y-2">
+                <!-- Data Privacy Logs -->
+                <div class="flex items-center gap-4 bg-white dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 cursor-pointer" onclick="alert('Data privacy logs coming soon')">
+                    <div class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                        <span class="material-symbols-outlined">policy</span>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        <p class="text-base font-semibold">Data Privacy Logs</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Audit trails and GDPR logs</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Logout Button -->
+        <a href="{{ url_for('main.logout') }}" class="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl bg-slate-200/50 dark:bg-slate-800/80 text-red-500 font-bold border border-slate-200 dark:border-slate-700/50 active:scale-95 transition-all block">
+            <span class="material-symbols-outlined">logout</span>
+            Logout Admin Account
+        </a>
+        <p class="text-center text-[10px] text-slate-400 dark:text-slate-600 mt-6 uppercase tracking-[0.2em]">
+            Version 1.0.0
+        </p>
+    </main>
+</div>
+{% endblock %}

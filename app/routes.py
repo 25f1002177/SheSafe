@@ -141,7 +141,14 @@ def login():
             
             if user.role == 'admin':
                 print("DEBUG: Redirecting to admin dashboard")  # Debug
-                return redirect(url_for('main.admin_dashboard'))
+        return redirect(url_for('main.admin_dashboard'))
+
+
+@main.route('/admin/settings')
+@admin_required
+def admin_settings():
+    """Admin settings page."""
+    return render_template('admin_settings.html', user=current_user)
             elif user.role == 'vendor':
                 return redirect(url_for('main.vendor_dashboard'))
             else:
