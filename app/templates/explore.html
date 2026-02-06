@@ -154,7 +154,7 @@
                     <div class="flex items-center gap-3">
                         <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
                             <span class="material-symbols-outlined text-[16px]">directions_walk</span>
-                            <span class="font-bold text-[11px]">250m • 3 mins</span>
+                            <span id="nearest-vendor-dist" class="font-bold text-[11px]">--- • --- mins</span>
                         </div>
                         <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
                             <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
@@ -326,6 +326,11 @@
         });
 
         showVendorInfo(nearest);
+
+        // Update distance text
+        const distText = minDist < 1000 ? Math.round(minDist) + 'm' : (minDist / 1000).toFixed(1) + 'km';
+        const walkTime = Math.round(minDist / 80); // ~80m/min walking speed
+        document.getElementById('nearest-vendor-dist').innerText = `${distText} • ${walkTime} mins`;
     }
 
     // Load geometry library for distance calculations

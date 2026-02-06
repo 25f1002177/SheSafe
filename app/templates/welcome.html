@@ -39,7 +39,7 @@
         </div>
 
         <!-- Closest Vendor -->
-        <div class="px-5 pt-4">
+        <div id="closest-vendor-card" class="px-5 pt-4 hidden">
             <div
                 class="relative overflow-hidden rounded-3xl bg-white border border-primary-pink/10 shadow-xl shadow-navy-trust/5">
                 <div class="absolute top-4 right-4 z-10">
@@ -48,27 +48,27 @@
                         <span class="material-symbols-outlined text-[12px] fill-1">verified</span> VERIFIED
                     </span>
                 </div>
-                <div class="h-44 bg-slate-200 bg-cover bg-center"
-                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDrkE_oma08AYgimzzzDK1KihKOAD03Kr7I0PXej3-Y8HDLi7HgfeF1CT7AqKCsakugfAFurCu_1bZLzpCME2Uj0G9GZ1NhVebUFjT7b0GsfwF8d-npiVcHLz_zRlzXrHi6Db_Y5gdcHnNQYvvmLgrb7gki7Te1FLr5K-yOhHARDDrNcq_vH1nMDtfD3n7Ge43lOywOlWAywDxCq7qeQ8x4A8xgfQQ_qzzXrC4PjB09BJxCctE5EnMIayXttrUG20i6-6F1qA2Vmazg')">
+                <div id="closest-vendor-img" class="h-44 bg-slate-200 bg-cover bg-center">
                 </div>
                 <div class="p-5">
                     <div class="flex justify-between items-end mb-4">
                         <div>
-                            <p class="text-primary-pink text-[11px] font-bold uppercase tracking-widest mb-1">Closest to
-                                You • 250m</p>
-                            <h3 class="text-navy-trust text-xl font-bold">The Heritage Plaza</h3>
+                            <p class="text-primary-pink text-[11px] font-bold uppercase tracking-widest mb-1">
+                                Closest to You • <span id="closest-vendor-dist">---</span></p>
+                            <h3 id="closest-vendor-name" class="text-navy-trust text-xl font-bold">---</h3>
                             <div class="flex items-center gap-1 mt-1">
                                 <span class="material-symbols-outlined text-primary-pink text-sm fill-1">star</span>
-                                <span class="text-sm font-bold text-navy-trust">4.9</span>
-                                <span class="text-xs text-slate-400 ml-1">(120 reviews)</span>
+                                <span id="closest-vendor-rating" class="text-sm font-bold text-navy-trust">---</span>
+                                <span id="closest-vendor-reviews" class="text-xs text-slate-400 ml-1">(---
+                                    reviews)</span>
                             </div>
                         </div>
                     </div>
-                    <button
+                    <a id="closest-vendor-link" href="#"
                         class="w-full bg-navy-trust text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-transform">
                         <span class="material-symbols-outlined text-xl">near_me</span>
                         Instant Navigate
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -127,28 +127,133 @@
                 <h3 class="text-navy-trust text-lg font-bold">Recommended Near You</h3>
                 <button class="text-primary-pink text-sm font-semibold">See All</button>
             </div>
-            <div class="space-y-4">
-                {% for vendor in vendors[:3] %}
-                <div class="flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-50 shadow-sm">
-                    <div class="size-16 rounded-xl bg-slate-100 shrink-0 bg-cover bg-center"
-                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC9rq5D92bDC02tpTv0aea6rIBxN1zf5hqWumUbCYnbopnowIS5aBobFg3s6rIUigayEb2vpaEftpSFEJ9XCB6xfz_3zKDyMWAOJrA8MTuc8ELdLsWXqrewPcxOC6FNqMlS2777oWot15_YCFt00PljhSbktfqsddEtGmgmMflrnGip9vm4sjtpR0Lb1IAf2CoQcdHavv_KAT5KebcJTJNzSuWimMIZIq9k6-IJIkGrMdYU0fTY4_NImhOf5JnGtl0yrH9AdGZL78kP')">
+            <div id="recommended-list" class="space-y-4">
+                <!-- Recommended vendors will be injected here -->
+                <div class="py-10 text-center">
+                    <div
+                        class="inline-block size-8 border-4 border-primary-pink border-t-transparent rounded-full animate-spin mb-4">
                     </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-navy-trust text-sm">{{ vendor.business_name }}</h4>
-                        <div class="flex items-center mt-0.5">
-                            <span class="material-symbols-outlined text-primary-pink text-xs fill-1">star</span>
-                            <span class="text-xs font-bold ml-1 text-navy-trust">{{ vendor.avg_rating or '5.0' }}</span>
-                            <span class="text-[10px] text-slate-400 ml-2">• 800m</span>
-                        </div>
-                    </div>
-                    <a href="{{ url_for('main.vendor_details', vendor_id=vendor.id) }}"
-                        class="bg-navy-trust/5 p-2.5 rounded-xl text-navy-trust">
-                        <span class="material-symbols-outlined text-xl">directions</span>
-                    </a>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Searching for nearby
+                        facilities...
+                    </p>
                 </div>
-                {% endfor %}
             </div>
         </div>
     </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const vendors = [
+        {% for vendor in vendors %}
+    {
+        id: { { vendor.id } },
+        name: "{{ vendor.business_name }}",
+            lat: { { vendor.latitude } },
+        lng: { { vendor.longitude } },
+        address: "{{ vendor.address }}",
+            rating: "{{ vendor.average_rating or '5.0' }}",
+                reviews: { { vendor.feedbacks | length if vendor.feedbacks else 0 } }
+    } {% if not loop.last %}, {% endif %}
+    {% endfor %}
+    ];
+
+    function initGeolocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userPos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    updateUI(userPos);
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    // Use a default location (Ashoka University) if permission denied
+                    updateUI({ lat: 28.9482, lng: 77.1022 });
+                }
+            );
+        } else {
+            updateUI({ lat: 28.9482, lng: 77.1022 });
+        }
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371e3; // metres
+        const φ1 = lat1 * Math.PI / 180;
+        const φ2 = lat2 * Math.PI / 180;
+        const Δφ = (lat2 - lat1) * Math.PI / 180;
+        const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // in metres
+    }
+
+    function formatDistance(dist) {
+        if (dist < 1000) return Math.round(dist) + 'm';
+        return (dist / 1000).toFixed(1) + 'km';
+    }
+
+    function updateUI(userPos) {
+        if (vendors.length === 0) return;
+
+        // Calculate distances
+        const vendorsWithDist = vendors.map(v => ({
+            ...v,
+            distance: calculateDistance(userPos.lat, userPos.lng, v.lat, v.lng)
+        }));
+
+        // Sort by distance
+        vendorsWithDist.sort((a, b) => a.distance - b.distance);
+
+        // Update Closest Vendor Card
+        const closest = vendorsWithDist[0];
+        document.getElementById('closest-vendor-card').classList.remove('hidden');
+        document.getElementById('closest-vendor-name').innerText = closest.name;
+        document.getElementById('closest-vendor-dist').innerText = formatDistance(closest.distance);
+        document.getElementById('closest-vendor-rating').innerText = closest.rating;
+        document.getElementById('closest-vendor-reviews').innerText = `(${closest.reviews} reviews)`;
+        document.getElementById('closest-vendor-link').href = `/vendor/${closest.id}`;
+        // Set a themed placeholder image
+        document.getElementById('closest-vendor-img').style.backgroundImage = `url('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop')`;
+
+        // Update Recommended List
+        const listContainer = document.getElementById('recommended-list');
+        listContainer.innerHTML = '';
+
+        vendorsWithDist.slice(0, 5).forEach(v => {
+            const item = document.createElement('div');
+            item.className = "flex items-center gap-4 bg-white p-3 rounded-2xl border border-slate-50 shadow-sm transition-all active:scale-[0.98]";
+            item.innerHTML = `
+                <div class="size-16 rounded-xl bg-slate-100 shrink-0 bg-cover bg-center" 
+                     style="background-image: url('https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop')">
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-bold text-navy-trust text-sm">${v.name}</h4>
+                    <div class="flex items-center mt-0.5">
+                        <span class="material-symbols-outlined text-primary-pink text-xs fill-1">star</span>
+                        <span class="text-xs font-bold ml-1 text-navy-trust">${v.rating}</span>
+                        <span class="text-[10px] text-slate-400 ml-2">• ${formatDistance(v.distance)}</span>
+                    </div>
+                </div>
+                <a href="/vendor/${v.id}" class="bg-navy-trust/5 p-2.5 rounded-xl text-navy-trust">
+                    <span class="material-symbols-outlined text-xl">near_me</span>
+                </a>
+            `;
+            listContainer.appendChild(item);
+        });
+    }
+
+    // Initialize
+    window.onload = initGeolocation;
+</script>
+{% endblock %}
+</main>
 </div>
 {% endblock %}
