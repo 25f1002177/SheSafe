@@ -4,6 +4,10 @@ from flask_login import LoginManager
 from config import config
 import os
 
+import libsql_dialect
+from sqlalchemy.dialects import registry
+registry.register("libsql", "libsql_dialect", "dialect")
+
 # Initialize extensions
 db = SQLAlchemy()
 login_manager = LoginManager()
