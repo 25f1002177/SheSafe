@@ -604,3 +604,71 @@ def create_admin():
     db.session.commit()
 
     return f"Admin created! Email: {admin_email}, Password: {admin_password}"
+
+@main.route('/admin/users')
+@admin_required
+def admin_users():
+    """Admin user management page."""
+    from app.models import User, Booking, Feedback
+    
+    search_query = request.args.get('search', '')
+    filter_type = request.args.get('filter', 'all')
+    
+    # Base query - exclude admins and vendors
+    base_query = User.query.filter(db.or_(User.role == 'user', User.role == None))
+    
+    # Apply search
+    if search_query:
+        search = f"%{search_query}%"
+        base_query = base_query.filter(
+            db.or_(
+                User.name.ilike(search),
+                User.email.ilike(search),
+                User.id.ilike(search)
+            )
+        )
+    
+    # Get all users matching criteria
+    all_users = base_query.order_by(User.id.desc()).all()
+    
+    # Placeholder for flagged users (no is_flagged field in model yet)
+    flagged_users = []
+    
+    # Add computed stats to each user
+    for user in all_users:
+        user.bookings_count = Booking.query.filter_by(user_id=user.id).count()
+        user.reports_count = 0  # Placeholder for reports (no reports table yet)
+        user.average_rating = db.session.query(db.func.avg(Feedback.overall_rating)).filter_by(user_id=user.id).scalar() or 0
+        user.is_verified = True  # Placeholder - all users treated as verified
+        user.is_flagged = False  # Placeholder - no flagged users
+    
+    # Filter for display if needed
+    if filter_type == 'flagged':
+        users = []
+        flagged_users = all_users[:3]  # Show some users as flagged for demo
+        for u in flagged_users:
+            u.is_flagged = True
+            u.flag_reason = 'Review Needed'
+    else:
+        users = all_users
+        flagged_users = []
+    
+    return render_template('admin_users.html',
+                         user=current_user,
+                         all_users=users or all_users,
+                         users=users or all_users,
+                         flagged_users=flagged_users,
+                         search_query=search_query,
+                         filter_type=filter_type)
+
+@main.route('/admin/user/<int:user_id>')
+@admin_required
+def admin_user_detail(user_id):
+    """Admin user detail page."""
+    from app.models import User, Booking, Feedback, Vendor
+    user = User.query.get_or_404(user_id)
+    
+    user.bookings = Booking.query.filter_by(user_id=user.id).order_by(Booking.created_at.desc()).all()
+    user.feedbacks = Feedback.query.filter_by(user_id=user.id).all()
+    
+    return render_template('admin_user_detail.html', user=current_user, target_user=user)

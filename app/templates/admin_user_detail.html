@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}User Detail - SheSafe Admin{% endblock %}
+
+{% block styles %}
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#ee2b6c",
+                    "background-light": "#f8f6f6",
+                    "background-dark": "#12080b",
+                    "card-dark": "#221016",
+                    "surface-dark": "#321721",
+                },
+                fontFamily: {
+                    "display": ["Public Sans", "sans-serif"]
+                },
+            },
+        },
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="bg-background-light dark:bg-background-dark min-h-screen -mx-5 -my-6">
+    <!-- Top App Bar -->
+    <header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10">
+        <div class="flex items-center p-4 justify-between">
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('main.admin_users') }}" class="flex size-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+                    <span class="material-symbols-outlined text-primary">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold leading-tight tracking-tight">User Profile</h1>
+                    <p class="text-xs text-slate-500 dark:text-primary/70 font-medium uppercase tracking-wider">User Details</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4 space-y-6">
+        <!-- User Profile Card -->
+        <div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-slate-100 dark:border-white/5 text-center">
+            <div class="relative inline-block mb-4">
+                <div class="size-24 rounded-full bg-cover bg-center border-2 border-primary/20 mx-auto" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDeo91e5c1Sw9yn17KT-ssk4cqIKXGHAwA5NeUqR9Mte6cUS4Rpc74_EZx7TUwTW8enB9TUfDWrpCl09y-WT8q9KWV3qrFMlIvqnavb3oejV55oDPAO6bvSzTX_hHTcIJcU9qn7mt-G1MMiSEQlGlkqMSdxHdK2qg0ogJAWUNSUgGF4Li8k78L7mLqZKpx_KTNh_LSXOY62_LtXls_QmpyJs_Vt_BxPpDLFl_YvRe5ti7ov3_FGP5GftvScZJElX0NzH_cVQ2QEoHGk')"></div>
+            </div>
+            <h2 class="text-xl font-bold">{{ target_user.name }}</h2>
+            <p class="text-slate-500 dark:text-white/60 text-sm mt-1">{{ target_user.email }}</p>
+            <span class="inline-block mt-3 px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-bold">ACTIVE</span>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white dark:bg-card-dark rounded-xl p-4 border border-slate-100 dark:border-white/5 text-center">
+                <p class="text-[10px] text-slate-500 dark:text-white/40 uppercase font-bold">Bookings</p>
+                <p class="text-2xl font-bold mt-1">{{ target_user.bookings|length }}</p>
+            </div>
+            <div class="bg-white dark:bg-card-dark rounded-xl p-4 border border-slate-100 dark:border-white/5 text-center">
+                <p class="text-[10px] text-slate-500 dark:text-white/40 uppercase font-bold">Reviews</p>
+                <p class="text-2xl font-bold mt-1">{{ target_user.feedbacks|length }}</p>
+            </div>
+            <div class="bg-white dark:bg-card-dark rounded-xl p-4 border border-slate-100 dark:border-white/5 text-center">
+                <p class="text-[10px] text-slate-500 dark:text-white/40 uppercase font-bold">Rating</p>
+                <p class="text-2xl font-bold mt-1">
+                    {% set avg = namespace(value=0) %}
+                    {% for f in target_user.feedbacks %}
+                        {% set avg.value = avg.value + f.overall_rating %}
+                    {% endfor %}
+                    {% if target_user.feedbacks|length > 0 %}
+                        {{ "%.1f"|format(avg.value / target_user.feedbacks|length) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Recent Bookings -->
+        <section>
+            <h2 class="text-lg font-bold mb-3">Recent Bookings</h2>
+            <div class="space-y-3">
+                {% for booking in target_user.bookings[:5] %}
+                <div class="bg-white dark:bg-card-dark rounded-xl p-4 border border-slate-100 dark:border-white/5">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="font-bold">{{ booking.vendor.business_name }}</p>
+                        <span class="text-xs px-2 py-0.5 rounded-full {% if booking.status == 'completed' %}bg-green-500/10 text-green-500{% elif booking.status == 'pending' %}bg-amber-500/10 text-amber-500{% else %}bg-slate-500/10 text-slate-500{% endif %}">{{ booking.status.upper() }}</span>
+                    </div>
+                    <p class="text-sm text-slate-500 dark:text-white/40">{{ booking.visit_date.strftime('%B %d, %Y') }}</p>
+                    <p class="text-sm text-slate-500 dark:text-white/40">₹{{ booking.amount }} • {{ booking.payment_mode }}</p>
+                </div>
+                {% else %}
+                <div class="text-center py-8 bg-white dark:bg-card-dark rounded-xl border border-slate-100 dark:border-white/5">
+                    <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">calendar_month</span>
+                    <p class="text-slate-500">No bookings yet</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

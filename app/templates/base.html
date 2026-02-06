@@ -179,9 +179,10 @@
                 </a>
             </div>
             <div
-                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors w-1/5">
-                <a href="#" class="flex flex-col items-center gap-1">
-                    <span class="material-symbols-outlined">group</span>
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_users' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
+                <a href="{{ url_for('main.admin_users') }}" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_users' %}fill-1{% endif %}">group</span>
                     <span class="text-[10px] font-medium">Users</span>
                 </a>
             </div>
