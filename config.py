@@ -16,9 +16,16 @@ class Config:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
         
         # Parse URL for explicit host/port to avoid Unix socket defaulting
-        import urllib.parse as urlparse
-        url = urlparse.urlparse(DATABASE_URL)
-        
+        # Use SQLAlchemy's own parser for robustness
+        from sqlalchemy.engine import make_url
+        try:
+            url = make_url(DATABASE_URL)
+            db_host = url.host
+            db_port = url.port or 5432
+        except Exception:
+            db_host = None
+            db_port = 5432
+            
         # Optimize for Supabase and Serverless (Vercel)
         from sqlalchemy.pool import NullPool
         SQLALCHEMY_ENGINE_OPTIONS = {
@@ -26,11 +33,14 @@ class Config:
             'pool_pre_ping': True,
             'connect_args': {
                 'sslmode': 'require',
-                'connect_timeout': 30,
-                'host': url.hostname,
-                'port': url.port or 5432
+                'connect_timeout': 30
             }
         }
+        
+        # Only add host/port if successfully parsed
+        if db_host:
+            SQLALCHEMY_ENGINE_OPTIONS['connect_args']['host'] = db_host
+            SQLALCHEMY_ENGINE_OPTIONS['connect_args']['port'] = db_port
     else:
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
