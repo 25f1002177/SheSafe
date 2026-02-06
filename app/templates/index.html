@@ -18,15 +18,20 @@
                 <span class="material-symbols-outlined text-lg fill-1">emergency</span>
                 <span class="text-xs font-black uppercase tracking-wider">SOS</span>
             </button>
-            {% if current_user.is_authenticated and not current_user.is_vendor %}
+            {% if current_user.is_authenticated and current_user.role != 'vendor' %}
             <a href="{{ url_for('main.vendor_onboard') }}"
                 class="flex size-10 items-center justify-center rounded-full bg-navy-trust/5 text-navy-trust dark:text-white">
                 <span class="material-symbols-outlined">store</span>
             </a>
-            {% elif current_user.is_authenticated and current_user.is_vendor %}
+            {% elif current_user.is_authenticated and current_user.role == 'vendor' %}
             <a href="{{ url_for('main.dashboard') }}"
                 class="flex size-10 items-center justify-center rounded-full bg-navy-trust/5 text-navy-trust dark:text-white">
                 <span class="material-symbols-outlined">dashboard</span>
+            </a>
+            {% else %}
+            <a href="{{ url_for('main.login') }}"
+                class="bg-navy-trust text-white px-4 py-1.5 rounded-full flex items-center gap-1.5 active:scale-95 transition-all">
+                <span class="text-xs font-black uppercase tracking-wider">Log In</span>
             </a>
             {% endif %}
         </div>
@@ -36,7 +41,7 @@
     <div class="px-5 pt-8 pb-2">
         <h2 class="text-navy-trust dark:text-white text-2xl font-bold leading-tight">
             Find a Safe Space, <span class="text-brand-pink">{% if current_user.is_authenticated %}{{
-                current_user.username | upper }}{% else %}READY{% endif %}</span>
+                current_user.name | upper }}{% else %}READY{% endif %}</span>
         </h2>
     </div>
 

@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{% block title %}SheSafe{% endblock %}</title>
     <!-- Tailwind CSS with Plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -28,7 +32,7 @@
                         "display": ["Public Sans"],
                         "plus": ["Plus Jakarta Sans"]
                     },
-                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
                 },
             },
         }
@@ -51,16 +55,18 @@
     </style>
     {% block styles %}{% endblock %}
 </head>
+
 <body class="min-h-screen">
     <div class="max-w-[430px] mx-auto min-h-screen flex flex-col relative bg-white dark:bg-background-dark shadow-2xl">
-        
+
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="fixed top-20 left-1/2 -translate-x-1/2 w-[90%] z-[100] space-y-2">
             {% for category, message in messages %}
             <div class="px-4 py-3 rounded-xl shadow-lg backdrop-blur-md font-bold text-sm flex items-center gap-3 animate-bounce
                 {% if category == 'error' %}bg-red-500/90 text-white{% else %}bg-navy-trust/90 text-white{% endif %}">
-                <span class="material-symbols-outlined">{% if category == 'error' %}error{% else %}check_circle{% endif %}</span>
+                <span class="material-symbols-outlined">{% if category == 'error' %}error{% else %}check_circle{% endif
+                    %}</span>
                 {{ message }}
             </div>
             {% endfor %}
@@ -73,54 +79,84 @@
         </main>
 
         {% block bottom_nav %}
-            {% if current_user.is_authenticated %}
-                {% if current_user.is_vendor %}
-                    <!-- Vendor Bottom Nav -->
-                    <nav class="fixed bottom-0 w-full max-w-[430px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex justify-around p-2 pb-6 z-50">
-                        <a href="{{ url_for('main.dashboard') }}" class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
-                            <span class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">dashboard</span>
-                            <p class="text-[10px] font-medium">Dashboard</p>
-                        </a>
-                        <a href="#" class="flex flex-col items-center gap-1 text-slate-400 opacity-50 cursor-not-allowed">
-                            <span class="material-symbols-outlined">qr_code_scanner</span>
-                            <p class="text-[10px] font-medium">Scanner</p>
-                        </a>
-                        <a href="{{ url_for('main.user_dashboard') }}" class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.user_dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
-                            <span class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' %}fill-1{% endif %}">person</span>
-                            <p class="text-[10px] font-medium">Profile</p>
-                        </a>
-                    </nav>
-                {% else %}
-                    <!-- User Bottom Nav -->
-                    <nav class="fixed bottom-0 w-full max-w-[430px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 px-4 py-3 pb-6 flex justify-between items-end z-50">
-                        <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.index' %}text-brand-pink{% else %}text-slate-400{% endif %}">
-                            <span class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
-                            <span class="text-[10px] font-bold">Home</span>
-                        </a>
-                        <a href="#explore" class="flex flex-col items-center gap-1 w-1/5 text-slate-400">
-                            <span class="material-symbols-outlined">explore</span>
-                            <span class="text-[10px] font-bold">Explore</span>
-                        </a>
-                        <div class="flex flex-col items-center w-1/5 -mt-8 relative">
-                            <div class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-white mb-1">
-                                <span class="material-symbols-outlined text-3xl">clinical_notes</span>
-                            </div>
-                            <span class="text-[10px] font-medium text-navy-trust dark:text-white">Ask</span>
-                        </div>
-                        <a href="{{ url_for('main.dashboard') }}" class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
-                            <span class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">schedule</span>
-                            <span class="text-[10px] font-bold">History</span>
-                        </a>
-                        <a href="{{ url_for('main.user_dashboard') }}" class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.user_dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
-                            <span class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' %}fill-1{% endif %}">person</span>
-                            <span class="text-[10px] font-bold">Profile</span>
-                        </a>
-                    </nav>
-                {% endif %}
+        <nav
+            class="fixed bottom-0 w-full max-w-[430px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 px-4 py-3 pb-6 flex justify-around items-end z-50">
+            {% if not current_user.is_authenticated %}
+            <!-- Guest Bottom Nav -->
+            <a href="{{ url_for('main.index') }}"
+                class="flex flex-col items-center gap-1 w-1/4 {% if request.endpoint == 'main.index' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                <span
+                    class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="#explore" class="flex flex-col items-center gap-1 w-1/4 text-slate-400">
+                <span class="material-symbols-outlined">explore</span>
+                <span class="text-[10px] font-bold">Explore</span>
+            </a>
+            <a href="{{ url_for('main.login') }}" class="flex flex-col items-center gap-1 w-1/4 text-slate-400">
+                <span class="material-symbols-outlined">login</span>
+                <span class="text-[10px] font-bold">Sign In</span>
+            </a>
+            <a href="{{ url_for('main.register') }}" class="flex flex-col items-center gap-1 w-1/4 text-slate-400">
+                <span class="material-symbols-outlined">person_add</span>
+                <span class="text-[10px] font-bold">Join</span>
+            </a>
+            {% elif current_user.role == 'vendor' %}
+            <!-- Vendor Bottom Nav -->
+            <a href="{{ url_for('main.dashboard') }}"
+                class="flex flex-col items-center gap-1 w-1/3 {% if request.endpoint == 'main.dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                <span
+                    class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">dashboard</span>
+                <p class="text-[10px] font-medium font-bold">Dashboard</p>
+            </a>
+            <div class="flex flex-col items-center w-1/3 -mt-8 relative">
+                <div
+                    class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-white mb-1">
+                    <span class="material-symbols-outlined text-3xl">qr_code_scanner</span>
+                </div>
+                <span class="text-[10px] font-bold text-navy-trust dark:text-white">Scan</span>
+            </div>
+            <a href="{{ url_for('main.logout') }}" class="flex flex-col items-center gap-1 w-1/3 text-slate-400">
+                <span class="material-symbols-outlined">logout</span>
+                <p class="text-[10px] font-bold">Logout</p>
+            </a>
+            {% else %}
+            <!-- User Bottom Nav -->
+            <a href="{{ url_for('main.index') }}"
+                class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.index' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                <span
+                    class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="#explore" class="flex flex-col items-center gap-1 w-1/5 text-slate-400">
+                <span class="material-symbols-outlined">explore</span>
+                <span class="text-[10px] font-bold">Explore</span>
+            </a>
+            <div class="flex flex-col items-center w-1/5 -mt-8 relative">
+                <div
+                    class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-white mb-1">
+                    <span class="material-symbols-outlined text-3xl">clinical_notes</span>
+                </div>
+                <span class="text-[10px] font-bold text-navy-trust dark:text-white">Ask</span>
+            </div>
+            <a href="{{ url_for('main.dashboard') }}"
+                class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                <span
+                    class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">schedule</span>
+                <span class="text-[10px] font-bold">History</span>
+            </a>
+            <a href="{{ url_for('main.user_dashboard') }}"
+                class="flex flex-col items-center gap-1 w-1/5 {% if request.endpoint == 'main.user_dashboard' %}text-brand-pink{% else %}text-slate-400{% endif %}">
+                <span
+                    class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' %}fill-1{% endif %}">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </a>
             {% endif %}
+        </nav>
         {% endblock %}
     </div>
 
     {% block scripts %}{% endblock %}
 </body>
+
 </html>
