@@ -223,6 +223,62 @@ def admin_vendors():
                          verified_vendors=verified_vendors)
 
 
+@main.route('/admin/users')
+@admin_required
+def admin_users():
+    """Admin user management page (admin only)."""
+    from app.models import Booking
+    
+    # Get search query and filter
+    search_query = request.args.get('search', '').strip()
+    filter_type = request.args.get('filter', 'all')
+    
+    # Base query
+    query = User.query
+    
+    # Apply search filter
+    if search_query:
+        query = query.filter(
+            (User.name.ilike(f'%{search_query}%')) |
+            (User.email.ilike(f'%{search_query}%'))
+        )
+    
+    # Apply type filter
+    if filter_type == 'flagged':
+        # For now, just show all users. You can add flagging logic later
+        pass
+    
+    # Get all users
+    all_users = User.query.all()
+    users = query.all()
+    
+    # Add booking count and average rating to each user
+    for user in users:
+        user.bookings_count = Booking.query.filter_by(user_id=user.id).count()
+        user.average_rating = 0  # You can calculate this from feedback if needed
+    
+    return render_template('admin_users.html',
+                         user=current_user,
+                         all_users=all_users,
+                         users=users,
+                         search_query=search_query,
+                         filter_type=filter_type)
+
+
+@main.route('/admin/users/<int:user_id>')
+@admin_required
+def admin_user_detail(user_id):
+    """Admin user detail page (admin only)."""
+    from app.models import Booking
+    
+    target_user = User.query.get_or_404(user_id)
+    bookings = Booking.query.filter_by(user_id=user_id).all()
+    
+    return render_template('admin_user_detail.html',
+                         user=current_user,
+                         target_user=target_user,
+                         bookings=bookings)
+
 
 @main.route('/vendor/dashboard')
 @vendor_required
