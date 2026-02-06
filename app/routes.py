@@ -205,6 +205,25 @@ def admin_dashboard():
                          verified_vendors=verified_vendors)
 
 
+@main.route('/admin/vendors')
+@admin_required
+def admin_vendors():
+    """Admin vendor management page (admin only)."""
+    from app.models import Vendor
+    
+    # Get all vendors
+    all_vendors = Vendor.query.all()
+    pending_vendors = Vendor.query.filter_by(is_verified=False).all()
+    verified_vendors = Vendor.query.filter_by(is_verified=True).all()
+    
+    return render_template('admin_vendors.html',
+                         user=current_user,
+                         all_vendors=all_vendors,
+                         pending_vendors=pending_vendors,
+                         verified_vendors=verified_vendors)
+
+
+
 @main.route('/vendor/dashboard')
 @vendor_required
 def vendor_dashboard():

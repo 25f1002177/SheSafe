@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Management - SheSafe Admin{% endblock %}
+
+{% block content %}
+<div class="bg-blush-white dark:bg-background-dark min-h-screen -mx-5 -my-6 overflow-y-auto overflow-x-hidden">
+    <!-- Top Navigation Bar -->
+    <header
+        class="sticky top-0 z-50 bg-blush-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between p-4 pb-3">
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('main.admin_dashboard') }}"
+                    class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined text-navy-trust">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="text-lg font-bold leading-none text-navy-trust dark:text-white">Vendor Management</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Review and manage vendors</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ url_for('main.logout') }}"
+                    class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined">logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="px-4 py-4 pb-24 max-w-[430px] mx-auto">
+        <!-- Filter Tabs -->
+        <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar">
+            <button class="px-4 py-2 rounded-full bg-navy-trust text-white text-sm font-bold whitespace-nowrap">
+                All ({{ all_vendors|length }})
+            </button>
+            <button
+                class="px-4 py-2 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium whitespace-nowrap border border-slate-200 dark:border-slate-700">
+                Pending ({{ pending_vendors|length }})
+            </button>
+            <button
+                class="px-4 py-2 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium whitespace-nowrap border border-slate-200 dark:border-slate-700">
+                Verified ({{ verified_vendors|length }})
+            </button>
+        </div>
+
+        <!-- Pending Vendors Section -->
+        {% if pending_vendors %}
+        <div class="mb-6">
+            <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Pending
+                Approval</h3>
+            <div class="flex flex-col gap-3">
+                {% for vendor in pending_vendors %}
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <!-- Vendor Header -->
+                    <div class="p-4 border-b border-slate-100 dark:border-slate-700">
+                        <div class="flex items-center gap-4 mb-3">
+                            <div
+                                class="bg-primary-pink/10 rounded-full h-12 w-12 flex-shrink-0 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary-pink">storefront</span>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-base font-bold truncate text-navy-trust dark:text-white">{{
+                                    vendor.business_name }}</p>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm">{{ vendor.category }}</p>
+                            </div>
+                            <span
+                                class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold">
+                                Pending
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Vendor Details -->
+                    <div class="p-4 space-y-3">
+                        <!-- Owner Info -->
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-slate-400 text-xl">person</span>
+                            <div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Owner</p>
+                                <p class="text-sm font-medium text-navy-trust dark:text-white">{{ vendor.user.name }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-slate-400 text-xl">mail</span>
+                            <div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Email</p>
+                                <p class="text-sm font-medium text-navy-trust dark:text-white">{{ vendor.user.email }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-slate-400 text-xl">location_on</span>
+                            <div class="flex-1">
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Location</p>
+                                <p class="text-sm font-medium text-navy-trust dark:text-white">{{ vendor.address }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        {% if vendor.description %}
+                        <div class="flex items-start gap-3">
+                            <span class="material-symbols-outlined text-slate-400 text-xl">description</span>
+                            <div class="flex-1">
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Description</p>
+                                <p class="text-sm text-slate-700 dark:text-slate-300">{{ vendor.description }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Features -->
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            {% if vendor.has_cctv %}
+                            <span
+                                class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">videocam</span>
+                                CCTV
+                            </span>
+                            {% endif %}
+                            {% if vendor.has_female_staff %}
+                            <span
+                                class="px-3 py-1 rounded-full bg-primary-pink/20 text-primary-pink text-xs font-medium flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">groups</span>
+                                Female Staff
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900/50 flex gap-2">
+                        <form method="POST" action="{{ url_for('main.approve_vendor', vendor_id=vendor.id) }}"
+                            class="flex-1">
+                            <button type="submit"
+                                class="w-full h-11 bg-navy-trust text-white rounded-2xl text-sm font-bold transition-opacity hover:opacity-90 active:scale-[0.98] flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-xl">check_circle</span>
+                                Approve
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('main.reject_vendor', vendor_id=vendor.id) }}"
+                            class="flex-1"
+                            onsubmit="return confirm('Are you sure you want to reject {{ vendor.business_name }}?');">
+                            <button type="submit"
+                                class="w-full h-11 border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-2xl text-sm font-bold transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-[0.98] flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-xl">cancel</span>
+                                Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Verified Vendors Section -->
+        <div class="mb-6">
+            <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Verified
+                Vendors</h3>
+            <div class="flex flex-col gap-3">
+                {% for vendor in verified_vendors %}
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="bg-primary-pink/10 rounded-full h-12 w-12 flex-shrink-0 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary-pink">storefront</span>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-base font-bold truncate text-navy-trust dark:text-white">{{
+                                vendor.business_name }}</p>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">{{ vendor.category }} • {{
+                                vendor.user.name }}</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="material-symbols-outlined text-emerald-500">verified</span>
+                            {% if vendor.is_active %}
+                            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                            {% else %}
+                            <span class="h-2 w-2 rounded-full bg-slate-300"></span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 z-50">
+        <div class="flex justify-around items-center px-2 py-3 max-w-md mx-auto">
+            <a href="{{ url_for('main.admin_dashboard') }}"
+                class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Overview</span>
+            </a>
+            <a href="{{ url_for('main.admin_vendors') }}" class="flex flex-col items-center gap-1 text-navy-trust">
+                <span class="material-symbols-outlined fill-1">storefront</span>
+                <span class="text-[10px] font-bold uppercase tracking-tight">Vendors</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
+                <span class="material-symbols-outlined">group</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Users</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Revenue</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-navy-trust transition-colors">
+                <span class="material-symbols-outlined">settings</span>
+                <span class="text-[10px] font-medium uppercase tracking-tight">Settings</span>
+            </a>
+        </div>
+        <div class="h-6 w-full"></div>
+    </nav>
+</div>
+{% endblock %}
