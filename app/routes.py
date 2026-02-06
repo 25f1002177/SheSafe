@@ -695,7 +695,7 @@ def admin_user_detail(user_id):
         # Get bookings with vendor eagerly loaded
         bookings = db.session.query(Booking).options(
             db.joinedload(Booking.vendor)
-        ).filter_by(user_id=user_id).order_by(Booking.created_at.desc()).all()
+        ).filter_by(user_id=user_id).order_by(Booking.booking_time.desc()).all()
         
         feedbacks = Feedback.query.filter_by(user_id=user_id).all()
         
