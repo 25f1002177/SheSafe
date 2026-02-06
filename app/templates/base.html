@@ -29,39 +29,35 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#E19292",
-                        "primary-pink": "#E19292",
-                        "navy-trust": "#1A2B47",
-                        "blush-white": "#FFF9F9",
-                        "sos-red": "#FF5A5F",
-                        "brand-pink": "#E19292",
-                        "background-light": "#FFF9F9",
-                        "background-dark": "#1A2B47",
+                        "primary-pink": "#E19292", // Soft sophisticated rose pink
+                        "navy-trust": "#1A2B47",  // Deep trust-instilling navy blue
+                        "blush-white": "#FFF9F9", // Very light blush white background
+                        "sos-red": "#FF5A5F",     // Contrasting red-pink for SOS
+                        "primary": "#E19292",     // Map primary to primary-pink for legacy support
                     },
                     fontFamily: {
-                        "display": ["Public Sans"],
-                        "plus": ["Plus Jakarta Sans"]
+                        "display": ["Public Sans", "sans-serif"]
                     },
-                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "1.25rem", "3xl": "2rem", "full": "9999px" },
                 },
             },
         }
     </script>
     <style type="text/tailwindcss">
         @layer base {
-            body { @apply font-display bg-background-light text-navy-trust; }
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            body {
+                @apply font-display text-navy-trust min-h-screen bg-blush-white;
+            }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .fill-1 { font-variation-settings: 'FILL' 1; }
-        
-        .user-location-pulse { animation: pulse-blue 2s infinite; }
-        @keyframes pulse-blue {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(238, 43, 108, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(238, 43, 108, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(238, 43, 108, 0); }
-        }
     </style>
     {% block styles %}{% endblock %}
 </head>
@@ -90,60 +86,45 @@
 
         {% block bottom_nav %}
         <nav
-            class="sticky bottom-0 w-full bg-white dark:bg-background-dark border-t border-slate-100 dark:border-slate-800 px-6 py-3 pb-8 flex justify-between items-center z-50">
+            class="fixed bottom-0 w-full max-w-[430px] bg-white/95 backdrop-blur-md border-t border-slate-100 px-4 py-3 pb-8 flex justify-between items-end z-50">
             {% if not current_user.is_authenticated %}
             <!-- Guest Bottom Nav -->
-            <a href="{{ url_for('main.index') }}"
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.index' %}text-primary{% else %}text-slate-400{% endif %}">
-                <span
-                    class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
-                <span class="text-[10px] font-bold">Home</span>
-            </a>
-            <a href="#explore" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined">explore</span>
-                <span class="text-[10px] font-bold">Explore</span>
-            </a>
-            <div class="relative -top-6">
-                <button
-                    class="size-14 rounded-full bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/40 ring-4 ring-white dark:ring-background-dark">
-                    <span class="material-symbols-outlined text-3xl font-bold">sos</span>
-                </button>
-                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-primary">SOS</span>
+            <div class="flex flex-col items-center gap-1 text-primary-pink w-1/5">
+                <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined fill-1">home</span>
+                    <span class="text-[10px] font-bold">Home</span>
+                </a>
             </div>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined">groups</span>
-                <span class="text-[10px] font-bold">Community</span>
-            </a>
-            <a href="{{ url_for('main.login') }}" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined">account_circle</span>
-                <span class="text-[10px] font-bold">Login</span>
-            </a>
-
-            {% elif current_user.role == 'vendor' %}
-            <!-- Vendor Bottom Nav -->
-            <a href="{{ url_for('main.dashboard') }}"
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.dashboard' %}text-primary{% else %}text-slate-400{% endif %}">
-                <span
-                    class="material-symbols-outlined {% if request.endpoint == 'main.dashboard' %}fill-1{% endif %}">home</span>
-                <span class="text-[10px] font-bold">Home</span>
-            </a>
-            <a href="{{ url_for('main.vendor_landing') }}" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined">help_center</span>
-                <span class="text-[10px] font-bold">Benefits</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined">contact_support</span>
-                <span class="text-[10px] font-bold">Support</span>
-            </a>
-            <a href="{{ url_for('main.logout') }}" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="material-symbols-outlined">person</span>
-                <span class="text-[10px] font-bold">Account</span>
-            </a>
+            <div class="flex flex-col items-center gap-1 text-slate-400 w-1/5">
+                <a href="{{ url_for('main.login') }}" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">login</span>
+                    <span class="text-[10px] font-medium">Login</span>
+                </a>
+            </div>
+            <div class="flex flex-col items-center w-1/5 -mt-8 relative">
+                <div
+                    class="bg-sos-red size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-sos-red/30 ring-4 ring-blush-white mb-1">
+                    <span class="material-symbols-outlined text-3xl font-bold">emergency</span>
+                </div>
+                <span class="text-[10px] font-medium text-sos-red">SOS</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-slate-400 w-1/5">
+                <a href="{{ url_for('main.register') }}" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span class="text-[10px] font-medium">Join</span>
+                </a>
+            </div>
+            <div class="flex flex-col items-center gap-1 text-slate-400 w-1/5">
+                <a href="{{ url_for('main.vendor_landing') }}" class="flex flex-col items-center gap-1">
+                    <span class="material-symbols-outlined">storefront</span>
+                    <span class="text-[10px] font-medium">Vendor</span>
+                </a>
+            </div>
 
             {% else %}
-            <!-- User Bottom Nav -->
+            <!-- Authenticated Bottom Nav (Home, Explore, Ask, History, Profile) -->
             <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.index' %}text-primary{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.index' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
@@ -153,30 +134,30 @@
             <div class="flex flex-col items-center gap-1 text-slate-400 w-1/5">
                 <a href="#explore" class="flex flex-col items-center gap-1">
                     <span class="material-symbols-outlined">explore</span>
-                    <span class="text-[10px] font-bold">Explore</span>
+                    <span class="text-[10px] font-medium">Explore</span>
                 </a>
             </div>
             <div class="flex flex-col items-center w-1/5 -mt-8 relative">
-                <button
+                <div
                     class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-blush-white mb-1">
                     <span class="material-symbols-outlined text-3xl">clinical_notes</span>
-                </button>
-                <span class="text-[10px] font-bold text-navy-trust">Ask</span>
+                </div>
+                <span class="text-[10px] font-medium text-navy-trust">Ask</span>
             </div>
             <div
-                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'history' %}text-primary{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'history' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.user_dashboard', tab='history') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.args.get('tab') == 'history' %}fill-1{% endif %}">schedule</span>
-                    <span class="text-[10px] font-bold">History</span>
+                    <span class="text-[10px] font-medium">History</span>
                 </a>
             </div>
             <div
-                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'profile' %}text-primary{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'profile' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.user_dashboard', tab='profile') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.args.get('tab') == 'profile' %}fill-1{% endif %}">person</span>
-                    <span class="text-[10px] font-bold">Profile</span>
+                    <span class="text-[10px] font-medium">Profile</span>
                 </a>
             </div>
             {% endif %}

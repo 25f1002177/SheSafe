@@ -4,14 +4,14 @@
 
 {% block content %}
 <div class="flex flex-col min-h-screen bg-blush-white dark:bg-background-dark">
-    {% if current_user.is_authenticated and current_user.role == 'user' %}
-    <!-- Registered User Home -->
+    {% if current_user.is_authenticated %}
+    <!-- Registered User Home (Matches requested design) -->
     <main class="flex-1 overflow-y-auto no-scrollbar pb-32">
         <!-- Header -->
         <div
             class="flex items-center bg-white px-5 pt-6 pb-4 justify-between sticky top-0 z-50 shadow-sm border-b border-pink-50">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-2xl fill-1">location_on</span>
+                <span class="material-symbols-outlined text-primary-pink text-2xl fill-1">location_on</span>
                 <h1 class="text-navy-trust text-2xl font-bold tracking-tight">SheSafe</h1>
             </div>
             <div class="flex items-center gap-3">
@@ -28,24 +28,24 @@
 
         <div class="px-5 pt-8 pb-2">
             <h2 class="text-navy-trust text-2xl font-bold leading-tight">Find a Safe Space, <span
-                    class="text-primary uppercase">{{ current_user.name }}</span></h2>
+                    class="text-primary-pink uppercase">{{ current_user.name }}</span></h2>
         </div>
 
         <div class="px-5 py-2">
             <div class="bg-navy-trust/5 px-4 py-2.5 rounded-xl flex items-center gap-3">
-                <div class="size-2 bg-primary rounded-full animate-pulse"></div>
+                <div class="size-2 bg-primary-pink rounded-full animate-pulse"></div>
                 <p class="text-[11px] font-bold text-navy-trust/70 uppercase tracking-widest">Finding facilities near
                     you...</p>
             </div>
         </div>
 
-        <!-- Closest Vendor (Mockup/Featured) -->
+        <!-- Closest Vendor -->
         <div class="px-5 pt-4">
             <div
-                class="relative overflow-hidden rounded-3xl bg-white border border-primary/10 shadow-xl shadow-navy-trust/5">
+                class="relative overflow-hidden rounded-3xl bg-white border border-primary-pink/10 shadow-xl shadow-navy-trust/5">
                 <div class="absolute top-4 right-4 z-10">
                     <span
-                        class="bg-primary text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm flex items-center gap-1">
+                        class="bg-primary-pink text-white text-[10px] px-3 py-1 rounded-full font-bold shadow-sm flex items-center gap-1">
                         <span class="material-symbols-outlined text-[12px] fill-1">verified</span> VERIFIED
                     </span>
                 </div>
@@ -55,11 +55,11 @@
                 <div class="p-5">
                     <div class="flex justify-between items-end mb-4">
                         <div>
-                            <p class="text-primary text-[11px] font-bold uppercase tracking-widest mb-1">Closest to You
-                                • 250m</p>
+                            <p class="text-primary-pink text-[11px] font-bold uppercase tracking-widest mb-1">Closest to
+                                You • 250m</p>
                             <h3 class="text-navy-trust text-xl font-bold">The Heritage Plaza</h3>
                             <div class="flex items-center gap-1 mt-1">
-                                <span class="material-symbols-outlined text-primary text-sm fill-1">star</span>
+                                <span class="material-symbols-outlined text-primary-pink text-sm fill-1">star</span>
                                 <span class="text-sm font-bold text-navy-trust">4.9</span>
                                 <span class="text-xs text-slate-400 ml-1">(120 reviews)</span>
                             </div>
@@ -78,7 +78,7 @@
         <div class="px-5 py-6">
             <div
                 class="flex w-full items-stretch rounded-2xl h-14 shadow-sm border border-navy-trust/5 bg-white overflow-hidden">
-                <div class="text-primary flex items-center justify-center pl-4">
+                <div class="text-primary-pink flex items-center justify-center pl-4">
                     <span class="material-symbols-outlined">search</span>
                 </div>
                 <input
@@ -93,29 +93,29 @@
             <div class="grid grid-cols-4 gap-3">
                 <div
                     class="flex flex-col gap-2 rounded-2xl bg-white p-3 py-4 items-center text-center shadow-sm border border-slate-50 transition-all active:bg-slate-50">
-                    <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary text-2xl">sanitizer</span>
+                    <div class="size-12 bg-primary-pink/10 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary-pink text-2xl">sanitizer</span>
                     </div>
                     <span class="text-navy-trust text-[10px] font-bold leading-tight">Washroom</span>
                 </div>
                 <div
                     class="flex flex-col gap-2 rounded-2xl bg-white p-3 py-4 items-center text-center shadow-sm border border-slate-50 transition-all active:bg-slate-50">
-                    <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary text-2xl">water_drop</span>
+                    <div class="size-12 bg-primary-pink/10 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary-pink text-2xl">water_drop</span>
                     </div>
                     <span class="text-navy-trust text-[10px] font-bold leading-tight">Period</span>
                 </div>
                 <div
                     class="flex flex-col gap-2 rounded-2xl bg-white p-3 py-4 items-center text-center shadow-sm border border-slate-50 transition-all active:bg-slate-50">
-                    <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary text-2xl">child_care</span>
+                    <div class="size-12 bg-primary-pink/10 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary-pink text-2xl">child_care</span>
                     </div>
                     <span class="text-navy-trust text-[10px] font-bold leading-tight">Nursing</span>
                 </div>
                 <div
                     class="flex flex-col gap-2 rounded-2xl bg-white p-3 py-4 items-center text-center shadow-sm border border-slate-50 transition-all active:bg-slate-50">
-                    <div class="size-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary text-2xl">checkroom</span>
+                    <div class="size-12 bg-primary-pink/10 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary-pink text-2xl">checkroom</span>
                     </div>
                     <span class="text-navy-trust text-[10px] font-bold leading-tight">Changing</span>
                 </div>
@@ -126,7 +126,7 @@
         <div class="px-5 pt-8">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-navy-trust text-lg font-bold">Recommended Near You</h3>
-                <button class="text-primary text-sm font-semibold">See All</button>
+                <button class="text-primary-pink text-sm font-semibold">See All</button>
             </div>
             <div class="space-y-4">
                 {% for vendor in vendors[:3] %}
@@ -137,7 +137,7 @@
                     <div class="flex-1">
                         <h4 class="font-bold text-navy-trust text-sm">{{ vendor.business_name }}</h4>
                         <div class="flex items-center mt-0.5">
-                            <span class="material-symbols-outlined text-primary text-xs fill-1">star</span>
+                            <span class="material-symbols-outlined text-primary-pink text-xs fill-1">star</span>
                             <span class="text-xs font-bold ml-1 text-navy-trust">{{ vendor.avg_rating or '5.0' }}</span>
                             <span class="text-[10px] text-slate-400 ml-2">• 800m</span>
                         </div>
@@ -165,7 +165,7 @@
                         Safety & Hygiene for every Woman on the move
                     </h2>
                     <a href="{{ url_for('main.register') }}"
-                        class="flex w-full cursor-pointer items-center justify-center rounded-xl h-14 px-6 bg-primary text-white text-lg font-bold shadow-lg shadow-primary/30 active:scale-[0.98] transition-all">
+                        class="flex w-full cursor-pointer items-center justify-center rounded-xl h-14 px-6 bg-primary-pink text-white text-lg font-bold shadow-lg shadow-primary-pink/30 active:scale-[0.98] transition-all">
                         <span>Get Started</span>
                     </a>
                 </div>
@@ -176,7 +176,7 @@
         <section class="grid grid-cols-1 gap-4 px-4 py-6">
             <div
                 class="flex items-start gap-4 p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
-                <div class="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div class="flex size-12 items-center justify-center rounded-lg bg-primary-pink/10 text-primary-pink">
                     <span class="material-symbols-outlined text-2xl">sanitizer</span>
                 </div>
                 <div class="flex flex-col gap-1">
@@ -187,7 +187,7 @@
             </div>
             <div
                 class="flex items-start gap-4 p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
-                <div class="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <div class="flex size-12 items-center justify-center rounded-lg bg-primary-pink/10 text-primary-pink">
                     <span class="material-symbols-outlined text-2xl">verified_user</span>
                 </div>
                 <div class="flex flex-col gap-1">
@@ -198,34 +198,12 @@
             </div>
         </section>
 
-        <!-- Testimonials -->
-        <section class="px-4 py-8 bg-primary/5">
-            <h3 class="text-navy-trust dark:text-white text-xl font-bold mb-6">Community Voice</h3>
-            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x snap-mandatory">
-                <div
-                    class="min-w-[85%] bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-md snap-center border border-slate-100">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="size-10 rounded-full bg-slate-200 bg-cover bg-center"
-                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBWC24QUVFr4V3whGIQJ8tJ7HCqoZj_vEFlDN6kHltWn2BbzWPvLKGL3IL_s_sYKfyrv8FRSc2EeQ0ylk2SdgkECnmm-NKp_RQvo2cvQFT4BgoBOqNJhLavpQo1rnzVCvqoqvOCnDUc9n-bi85e_Tp7UFUwFnuEeg8iqQE0X0nrQqkYVNSoNcsalZ4ZR4_0uEXZuxP45WFOhUWIN82DKsv8RMZqgcc_sfegFGC3ry8MzyqYz5P7I4mEidwjBmzoyRzr4LkfAMSXImnp')">
-                        </div>
-                        <div>
-                            <p class="text-navy-trust dark:text-white text-sm font-bold">Sarah J.</p>
-                            <p class="text-slate-400 text-xs">Frequent Traveler</p>
-                        </div>
-                    </div>
-                    <p class="text-navy-trust/80 dark:text-white/80 text-sm italic leading-relaxed">"Finally, an app
-                        that understands my travel concerns. I feel so much safer knowing where the verified clean
-                        restrooms are."</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Verified Places -->
+        <!-- Verified Places Preview -->
         <section class="px-4 py-8 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-navy-trust dark:text-white text-xl font-black">Verified Places</h3>
                 <a href="{{ url_for('main.login') }}"
-                    class="text-primary text-xs font-bold uppercase tracking-widest">See All</a>
+                    class="text-primary-pink text-xs font-bold uppercase tracking-widest">See All</a>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 {% for vendor in vendors[:2] %}
@@ -236,7 +214,7 @@
                             class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
                         <div
                             class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center shadow-sm">
-                            <span class="material-symbols-outlined text-[10px] text-primary fill-1">star</span>
+                            <span class="material-symbols-outlined text-[10px] text-primary-pink fill-1">star</span>
                             <span class="text-[10px] font-bold text-navy-trust ml-1">{{ vendor.avg_rating or '5.0'
                                 }}</span>
                         </div>
@@ -261,7 +239,7 @@
                 Login
             </a>
             <a href="{{ url_for('main.register') }}"
-                class="flex-[2] bg-primary text-white text-center font-bold py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                class="flex-[2] bg-primary-pink text-white text-center font-bold py-4 rounded-xl shadow-lg shadow-primary-pink/20 active:scale-95 transition-all">
                 Create Account
             </a>
         </div>
