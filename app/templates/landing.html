@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - SheSafe{% endblock %}
+
+{% block content %}
+<div class="flex flex-col min-h-screen bg-blush-white dark:bg-background-dark">
+    <!-- Guest Home -->
+    <main class="flex-1 overflow-y-auto no-scrollbar">
+        <!-- Hero Section -->
+        <section class="px-4 py-3">
+            <div class="relative flex flex-col justify-end overflow-hidden rounded-xl min-h-[340px] shadow-lg group"
+                data-alt="Confident woman smiling while using a mobile phone outdoors"
+                style='background-image: linear-gradient(180deg, rgba(27, 13, 18, 0) 40%, rgba(27, 13, 18, 0.85) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgXdIuUzOrMhiUyfGeN1EkRj6QU_vBAOjQvDAfLfdTzHvNzBcgLiAWYQxsPXbgDCIHueA6mWpa2Izf2jQ3i4ZoRVSVBeG-JiXdJ5CmEMzWvTze2_Z0aAbqFnZR-CMBvyi7Tl5xix2It7DXyUmDXZNmtjITR5IWhhvYp_KAV4s0mBleCCprOh287sdXixg8vNgtd_5xXKzKfFsbV0x3LPAeaprXChO2zuypdEwIbYcmf4NFK1qXC0PmN2AV3yiHYAvc3DymftlPm5c5"); background-size: cover; background-position: center;'>
+                <div class="p-6">
+                    <h2 class="text-white text-[32px] font-extrabold leading-[1.1] tracking-[-0.03em] mb-4">
+                        Safety & Hygiene for every Woman on the move
+                    </h2>
+                    <a href="{{ url_for('main.register') }}"
+                        class="flex w-full cursor-pointer items-center justify-center rounded-xl h-14 px-6 bg-primary-pink text-white text-lg font-bold shadow-lg shadow-primary-pink/30 active:scale-[0.98] transition-all">
+                        <span>Get Started</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Propositions -->
+        <section class="grid grid-cols-1 gap-4 px-4 py-6">
+            <div
+                class="flex items-start gap-4 p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="flex size-12 items-center justify-center rounded-lg bg-primary-pink/10 text-primary-pink">
+                    <span class="material-symbols-outlined text-2xl">sanitizer</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="text-navy-trust dark:text-white text-base font-bold">Hygiene First</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Clean & maintained washrooms everywhere you go.
+                    </p>
+                </div>
+            </div>
+            <div
+                class="flex items-start gap-4 p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <div class="flex size-12 items-center justify-center rounded-lg bg-primary-pink/10 text-primary-pink">
+                    <span class="material-symbols-outlined text-2xl">verified_user</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h3 class="text-navy-trust dark:text-white text-base font-bold">Safety Verified</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Verified safe zones for complete peace of mind.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verified Places Preview -->
+        <section class="px-4 py-8 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-navy-trust dark:text-white text-xl font-black">Verified Places</h3>
+                <a href="{{ url_for('main.login') }}"
+                    class="text-primary-pink text-xs font-bold uppercase tracking-widest">See All</a>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                {% for vendor in vendors[:2] %}
+                <div class="flex flex-col gap-2 group">
+                    <div class="relative overflow-hidden rounded-xl aspect-[4/3]">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9j1l_2kSYvM8tLH4PE_cuY8jGBRmQSJIZFadkIiPmYfpRTX637yW6M-v5q-tL93ZavAHbyANKmY8icYFeW7CihNbPDsXJvIZH5dBuUyRLt9FBnjdGCjhkN6-KZ2ChGj8wROFpbDgWMf3jxBGbnrRORbtU6xeISq3Qpoj2mTAUbbqYrHmsM5DPKNXQEMOSushNtwbBGYLdeN-w5YzP4EWlHDa2qXdnsd8VWBaYeUngtJX1go19X6pDMxTGWGCVdWCC983IBbQ7zvCw"
+                            alt="{{ vendor.business_name }}"
+                            class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
+                        <div
+                            class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center shadow-sm">
+                            <span class="material-symbols-outlined text-[10px] text-primary-pink fill-1">star</span>
+                            <span class="text-[10px] font-bold text-navy-trust ml-1">{{ vendor.avg_rating or '5.0'
+                                }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-navy-trust dark:text-white text-xs font-bold truncate">{{ vendor.business_name }}
+                        </p>
+                        <p class="text-slate-400 text-[10px] mt-0.5">{{ vendor.city }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Guest Action Bar -->
+    <div
+        class="sticky bottom-0 w-full px-4 py-4 pb-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 z-40">
+        <div class="flex gap-3">
+            <a href="{{ url_for('main.login') }}"
+                class="flex-1 bg-slate-100 dark:bg-slate-800 text-navy-trust dark:text-white text-center font-bold py-4 rounded-xl active:scale-95 transition-all">
+                Login
+            </a>
+            <a href="{{ url_for('main.register') }}"
+                class="flex-[2] bg-primary-pink text-white text-center font-bold py-4 rounded-xl shadow-lg shadow-primary-pink/20 active:scale-95 transition-all">
+                Create Account
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
