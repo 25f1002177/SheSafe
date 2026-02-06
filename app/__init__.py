@@ -45,7 +45,12 @@ def create_app(config_name='default'):
     # Register blueprints
     from app.routes import main
     app.register_blueprint(main)
-    
+
+    # Make config available in all templates
+    @app.context_processor
+    def inject_config():
+        return dict(config=app.config)
+
     # Register error handlers
     @app.errorhandler(403)
     def forbidden(e):

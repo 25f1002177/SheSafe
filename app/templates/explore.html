@@ -328,7 +328,7 @@
 
     // Load geometry library
     const script = document.createElement('script');
-    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAzECsdwJsm3S9FgHyfRJyYGY5_eJPMxV4&libraries=geometry,places&callback=initMap";
+    script.src = "https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&libraries=geometry,places&callback=initMap";
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
