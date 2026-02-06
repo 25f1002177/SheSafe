@@ -149,13 +149,6 @@ def login():
     return render_template('login.html')
 
 
-@main.route('/admin/settings')
-@admin_required
-def admin_settings():
-    """Admin settings page."""
-    return render_template('admin_settings.html', user=current_user)
-
-
 @main.route('/logout')
 @login_required
 def logout():

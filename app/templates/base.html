@@ -194,14 +194,6 @@
                     <span class="text-[10px] font-medium">Revenue</span>
                 </a>
             </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_settings' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.admin_settings') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_settings' %}fill-1{% endif %}">settings</span>
-                    <span class="text-[10px] font-medium">Settings</span>
-                </a>
-            </div>
 
             {% else %}
             <!-- Authenticated User Bottom Nav -->
