@@ -6,26 +6,51 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     """Base configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    if DATABASE_URL:
-        DATABASE_URL = DATABASE_URL.strip()
-        # Fix for SQLAlchemy 1.4+ / 2.0 where postgres:// is deprecated
-        if DATABASE_URL.startswith("postgres://"):
-            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    @staticmethod
+    def fix_database_url(url):
+        if not url or not isinstance(url, str):
+            return url
         
+        url = url.strip()
+        
+        # 1. Correct the scheme for SQLAlchemy 1.4/2.0
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        
+        # 2. Add driver explicitly
+        if url.startswith("postgresql://"):
+            url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
+            
+        # 3. Robustly encode auth part (handles @ and : in passwords)
+        try:
+            scheme_end = url.find("://")
+            if scheme_end == -1: return url
+            scheme = url[:scheme_end+3]
+            rest = url[scheme_end+3:]
+            
+            auth_end = rest.rfind("@")
+            if auth_end == -1: return url
+            auth = rest[:auth_end]
+            host_db_params = rest[auth_end+1:]
+            
+            import urllib.parse
+            colon_pos = auth.find(":")
+            if colon_pos == -1:
+                user = urllib.parse.quote_plus(urllib.parse.unquote(auth))
+                auth_part = user
+            else:
+                user = urllib.parse.quote_plus(urllib.parse.unquote(auth[:colon_pos]))
+                password = urllib.parse.quote_plus(urllib.parse.unquote(auth[colon_pos+1:]))
+                auth_part = f"{user}:{password}"
+            
+            return f"{scheme}{auth_part}@{host_db_params}"
+        except Exception:
+            return url
+
+    DATABASE_URL = fix_database_url.__func__(os.environ.get('DATABASE_URL'))
+    if DATABASE_URL:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
         
-        # Parse URL for explicit host/port to avoid Unix socket defaulting
-        # Use SQLAlchemy's own parser for robustness
-        from sqlalchemy.engine import make_url
-        try:
-            url = make_url(DATABASE_URL)
-            db_host = url.host
-            db_port = url.port or 5432
-        except Exception:
-            db_host = None
-            db_port = 5432
-            
         # Optimize for Supabase and Serverless (Vercel)
         from sqlalchemy.pool import NullPool
         SQLALCHEMY_ENGINE_OPTIONS = {
@@ -36,11 +61,6 @@ class Config:
                 'connect_timeout': 30
             }
         }
-        
-        # Only add host/port if successfully parsed
-        if db_host:
-            SQLALCHEMY_ENGINE_OPTIONS['connect_args']['host'] = db_host
-            SQLALCHEMY_ENGINE_OPTIONS['connect_args']['port'] = db_port
     else:
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'instance', 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
