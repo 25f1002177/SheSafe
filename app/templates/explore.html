@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Explore - SheSafe{% endblock %}
+
+{% block head %}
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAzECsdwJsm3S9FgHyfRJyYGY5_eJPMxV4&libraries=places"></script>
+<style>
+    #map {
+        height: 100%;
+        width: 100%;
+    }
+
+    .map-container {
+        height: calc(100vh - 80px);
+        /* Adjust based on navbar height if any, or just full height */
+        position: relative;
+    }
+
+    .search-overlay {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 400px;
+        z-index: 10;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-container overflow-hidden">
+    <!-- Search Bar Overlay -->
+    <div class="search-overlay">
+        <div
+            class="flex w-full items-stretch rounded-2xl h-14 shadow-xl border border-navy-trust/5 bg-white overflow-hidden">
+            <div class="text-primary-pink flex items-center justify-center pl-4">
+                <span class="material-symbols-outlined">search</span>
+            </div>
+            <input id="pac-input"
+                class="form-input flex w-full min-w-0 flex-1 border-none bg-white text-navy-trust focus:outline-0 focus:ring-0 placeholder:text-slate-400 px-3 text-base"
+                placeholder="Search for safe spaces..." />
+        </div>
+    </div>
+
+    <!-- Map Element -->
+    <div id="map"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let map;
+    let markers = [];
+    const vendors = [
+        {% for vendor in vendors %}
+    {
+        id: { { vendor.id } },
+        name: "{{ vendor.business_name }}",
+            lat: { { vendor.latitude } },
+        lng: { { vendor.longitude } },
+        address: "{{ vendor.address }}",
+            rating: { { vendor.average_rating or 5.0 } }
+    },
+    {% endfor %}
+    ];
+
+    function initMap() {
+        const defaultCenter = { lat: 28.6139, lng: 77.2090 }; // Delhi
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: defaultCenter,
+            zoom: 13,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false,
+            styles: [
+                {
+                    "featureType": "poi.business",
+                    "stylers": [{ "visibility": "off" }]
+                },
+                {
+                    "featureType": "poi.park",
+                    "elementType": "labels.text",
+                    "stylers": [{ "visibility": "off" }]
+                }
+            ]
+        });
+
+        // Try HTML5 geolocation
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    map.setCenter(pos);
+                    // Add current location marker
+                    new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 10,
+                            fillColor: "#4285F4",
+                            fillOpacity: 1,
+                            strokeWeight: 2,
+                            strokeColor: "white",
+                        },
+                        title: "Your Location"
+                    });
+                }
+            );
+        }
+
+        // Add vendors to map
+        vendors.forEach(vendor => {
+            const marker = new google.maps.Marker({
+                position: { lat: vendor.lat, lng: vendor.lng },
+                map: map,
+                title: vendor.name,
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/pink-dot.png'
+                }
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div class="p-2 max-w-[200px]">
+                        <h3 class="font-bold text-navy-trust text-sm">${vendor.name}</h3>
+                        <p class="text-xs text-slate-500 mt-1">${vendor.address}</p>
+                        <div class="flex items-center mt-2">
+                             <span class="material-symbols-outlined text-primary-pink text-xs fill-1">star</span>
+                             <span class="text-xs font-bold ml-1">${vendor.rating}</span>
+                        </div>
+                        <a href="/vendor/${vendor.id}" class="block mt-3 text-center bg-navy-trust text-white text-[10px] py-2 rounded-lg font-bold">Details</a>
+                    </div>
+                `
+            });
+
+            marker.addListener("click", () => {
+                infoWindow.open(map, marker);
+            });
+
+            markers.push(marker);
+        });
+
+        // Places Search
+        const input = document.getElementById("pac-input");
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        map.addListener("bounds_changed", () => {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        searchBox.addListener("places_changed", () => {
+            const places = searchBox.getPlaces();
+            if (places.length == 0) return;
+
+            const bounds = new google.maps.LatLngBounds();
+            places.forEach((place) => {
+                if (!place.geometry || !place.geometry.location) return;
+                if (place.geometry.viewport) {
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            map.fitBounds(bounds);
+        });
+    }
+
+    window.onload = initMap;
+</script>
+{% endblock %}

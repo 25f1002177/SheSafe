@@ -131,9 +131,11 @@
                     <span class="text-[10px] font-bold">Home</span>
                 </a>
             </div>
-            <div class="flex flex-col items-center gap-1 text-slate-400 w-1/5">
-                <a href="#explore" class="flex flex-col items-center gap-1">
-                    <span class="material-symbols-outlined">explore</span>
+            <div
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.explore' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
+                <a href="{{ url_for('main.explore') }}" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.explore' %}fill-1{% endif %}">explore</span>
                     <span class="text-[10px] font-medium">Explore</span>
                 </a>
             </div>

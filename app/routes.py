@@ -41,6 +41,15 @@ def landing():
     return render_template('landing.html', vendors=vendors)
 
 
+@main.route('/explore')
+@login_required
+def explore():
+    """Explore page with Google Maps."""
+    from app.models import Vendor
+    vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+    return render_template('explore.html', vendors=vendors)
+
+
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     """User registration route."""
