@@ -538,3 +538,15 @@ def complete_booking(booking_id):
     
     flash('Booking marked as completed. The user can now leave a review!', 'success')
     return redirect(url_for('main.vendor_dashboard'))
+
+@main.route('/update-db-schema')
+def update_db_schema():
+    """Temporary route to update database schema."""
+    from sqlalchemy import text
+    try:
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE vendors ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'Washroom' NOT NULL"))
+            conn.commit()
+        return "Schema updated successfully! Added 'category' column."
+    except Exception as e:
+        return f"Error updating schema: {str(e)}"
