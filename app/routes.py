@@ -149,16 +149,6 @@ def login():
 def admin_settings():
     """Admin settings page."""
     return render_template('admin_settings.html', user=current_user)
-            elif user.role == 'vendor':
-                return redirect(url_for('main.vendor_dashboard'))
-            else:
-                return redirect(url_for('main.welcome_home'))
-        else:
-            print("DEBUG: Login failed - invalid credentials")  # Debug
-            flash('Invalid email or password.', 'error')
-            return render_template('login.html')
-    
-    return render_template('login.html')
 
 
 @main.route('/logout')
