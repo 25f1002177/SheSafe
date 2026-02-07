@@ -56,130 +56,209 @@
             </div>
             <h1 class="text-navy-trust text-xl font-bold tracking-tight drop-shadow-sm">SheSafe</h1>
             <div class="flex gap-2">
-                <button
-                    class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
-                    <span class="material-symbols-outlined">tune</span>
-                </button>
-            </div>
-        </div>
+                <button {% extends "base.html" %} {% block title %}Explore - SheSafe{% endblock %} {% block head %}
+                    <style>
+                    #map {
+                    height: 100%;
+                    width: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: 0;
+                    }
 
-        <!-- Filters scroll -->
-        <div class="flex gap-2 py-1 overflow-x-auto no-scrollbar pointer-events-auto">
-            <div
-                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary-pink px-4 shadow-sm border border-pink-200 cursor-pointer active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-navy-trust text-[18px] fill-1">verified_user</span>
-                <p class="text-navy-trust text-xs font-bold whitespace-nowrap">Verified Only</p>
-            </div>
-            <div
-                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">water_drop</span>
-                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Period Care</p>
-            </div>
-            <div
-                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">child_care</span>
-                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Nursing</p>
-            </div>
-        </div>
+                    .user-location-pulse {
+                    animation: pulse-blue 2s infinite;
+                    }
 
-        <!-- Rating Prompt -->
-        <div class="mt-2 pointer-events-auto">
-            <div
-                class="bg-navy-trust p-3 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-navy-trust/20">
-                <div class="flex items-center gap-3">
-                    <div class="size-10 rounded-lg bg-primary-pink/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-primary-pink">rate_review</span>
-                    </div>
-                    <div>
-                        <p class="text-white text-[10px] font-bold opacity-60 uppercase tracking-widest">How was your
-                            visit?</p>
-                        <p class="text-white text-sm font-bold">Rate Civic Center Plaza</p>
-                    </div>
-                </div>
-                <button
-                    class="bg-primary-pink text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-primary-pink/20 active:scale-95 transition-all">Rate
-                    Now</button>
-            </div>
-        </div>
-    </div>
+                    @keyframes pulse-blue {
+                    0% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+                    }
 
-    <!-- Floating Action Buttons -->
-    <div class="absolute right-4 bottom-72 z-10 flex flex-col gap-3">
-        <button onclick="recenterMap()"
-            class="flex h-12 px-5 items-center gap-2 rounded-full bg-white text-navy-trust shadow-lg border border-slate-100 font-bold text-sm active:scale-95 transition-all">
-            <span class="material-symbols-outlined text-[20px]">my_location</span>
-            Recenter
-        </button>
-        <button
-            class="flex h-12 w-12 self-end items-center justify-center rounded-full bg-sos-red text-white shadow-xl relative active:scale-90 transition-all">
-            <span class="material-symbols-outlined text-2xl fill-1">error</span>
-            <span class="absolute -top-1 -right-1 flex h-4 w-4">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-4 w-4 bg-sos-red"></span>
-            </span>
-        </button>
-    </div>
+                    70% {
+                    transform: scale(1);
+                    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+                    }
 
-    <!-- Bottom Sheet Vendor Info -->
-    <div class="mt-auto relative z-20 px-4 pb-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-4 flex flex-col gap-4 border border-slate-100">
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto -mt-1 mb-1"></div>
-            <div class="flex items-center gap-2">
-                <span
-                    class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">Absolute
-                    Nearest</span>
-                <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Verified Vendor</span>
-            </div>
-            <div class="flex gap-4">
-                <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
-                    <img id="nearest-vendor-img" class="h-full w-full object-cover"
-                        src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop" />
-                    <div
-                        class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
-                        <span class="material-symbols-outlined text-[10px] fill-1">verified</span> VERIFIED
-                    </div>
-                </div>
-                <div class="flex flex-col flex-1 justify-between py-1">
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <h3 id="nearest-vendor-name" class="text-navy-trust font-bold text-lg leading-tight">Finding
-                                nearest...</h3>
-                            <button class="text-slate-300 hover:text-primary-pink transition-colors">
-                                <span class="material-symbols-outlined">bookmark</span>
+                    100% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+                    }
+                    }
+                    </style>
+                    {% endblock %}
+
+                    {% block content %}
+                    <div class="relative flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden bg-slate-100">
+                        <!-- Google Map Background -->
+                        <div id="map" class="absolute inset-0 z-0"></div>
+
+                        <!-- Top Overlays -->
+                        <div class="relative z-10 flex flex-col pt-12 px-4 gap-3 pointer-events-none">
+                            <div class="flex items-center justify-between pointer-events-auto">
+                                <div class="flex gap-2">
+                                    <button
+                                        class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
+                                        <span class="material-symbols-outlined">menu</span>
+                                    </button>
+                                    <button
+                                        class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
+                                        <span class="material-symbols-outlined">search</span>
+                                    </button>
+                                </div>
+                                <h1 class="text-navy-trust text-xl font-bold tracking-tight drop-shadow-sm">SheSafe</h1>
+                                <div class="flex gap-2">
+                                    <button
+                                        class="flex size-11 items-center justify-center rounded-full bg-white shadow-lg border border-gray-100 text-navy-trust active:scale-95 transition-all">
+                                        <span class="material-symbols-outlined">tune</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Filters scroll -->
+                            <div class="flex gap-2 py-1 overflow-x-auto no-scrollbar pointer-events-auto">
+                                <div id="filter-Washroom" onclick="toggleFilter('Washroom')"
+                                    class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
+                                    <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">wc</span>
+                                    <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Washroom</p>
+                                </div>
+                                <div id="filter-Period-Care" onclick="toggleFilter('Period Care')"
+                                    class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
+                                    <span
+                                        class="material-symbols-outlined text-navy-trust/70 text-[18px]">water_drop</span>
+                                    <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Period Care</p>
+                                </div>
+                                <div id="filter-Changing-Room" onclick="toggleFilter('Changing Room')"
+                                    class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
+                                    <span
+                                        class="material-symbols-outlined text-navy-trust/70 text-[18px]">checkroom</span>
+                                    <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Changing</p>
+                                </div>
+                                <div id="filter-Nursing-Room" onclick="toggleFilter('Nursing Room')"
+                                    class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
+                                    <span
+                                        class="material-symbols-outlined text-navy-trust/70 text-[18px]">child_care</span>
+                                    <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Nursing</p>
+                                </div>
+                            </div>
+
+                            <!-- Rating Prompt -->
+                            <div class="mt-2 pointer-events-auto">
+                                <div
+                                    class="bg-navy-trust p-3 rounded-2xl shadow-xl flex items-center justify-between gap-3 border border-navy-trust/20">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="size-10 rounded-lg bg-primary-pink/20 flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-primary-pink">rate_review</span>
+                                        </div>
+                                        <div>
+                                            <p
+                                                class="text-white text-[10px] font-bold opacity-60 uppercase tracking-widest">
+                                                How was your
+                                                visit?</p>
+                                            <p class="text-white text-sm font-bold">Rate Civic Center Plaza</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="bg-primary-pink text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-primary-pink/20 active:scale-95 transition-all">Rate
+                                        Now</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Action Buttons -->
+                        <div class="absolute right-4 bottom-72 z-10 flex flex-col gap-3">
+                            <button onclick="recenterMap()"
+                                class="flex h-12 px-5 items-center gap-2 rounded-full bg-white text-navy-trust shadow-lg border border-slate-100 font-bold text-sm active:scale-95 transition-all">
+                                <span class="material-symbols-outlined text-[20px]">my_location</span>
+                                Recenter
+                            </button>
+                            <button
+                                class="flex h-12 w-12 self-end items-center justify-center rounded-full bg-sos-red text-white shadow-xl relative active:scale-90 transition-all">
+                                <span class="material-symbols-outlined text-2xl fill-1">error</span>
+                                <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-4 w-4 bg-sos-red"></span>
+                                </span>
                             </button>
                         </div>
-                        <p id="nearest-vendor-address" class="text-slate-500 text-xs mt-0.5">Please wait</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
-                            <span class="material-symbols-outlined text-[16px]">directions_walk</span>
-                            <span id="nearest-vendor-dist" class="font-bold text-[11px]">--- • --- mins</span>
-                        </div>
-                        <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
-                            <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
-                            <span id="nearest-vendor-rating" class="text-navy-trust font-bold text-sm">---</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-3">
-                <a id="nearest-vendor-link" href="#"
-                    class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl bg-navy-trust text-white font-bold text-base shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
-                    <span class="material-symbols-outlined text-xl">directions</span>
-                    Directions
-                </a>
-                <button
-                    class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-base active:scale-[0.98] transition-all">
-                    <span class="material-symbols-outlined text-xl fill-1">forum</span>
-                    Reviews
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Vendor JSON Data (Robust storage) -->
-<script id="vendors-json" type="application/json">
+                        <!-- Bottom Sheet Vendor Info -->
+                        <div class="mt-auto relative z-20 px-4 pb-4">
+                            <div
+                                class="bg-white rounded-3xl shadow-2xl p-4 flex flex-col gap-4 border border-slate-100">
+                                <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto -mt-1 mb-1"></div>
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">Absolute
+                                        Nearest</span>
+                                    <span
+                                        class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Verified
+                                        Vendor</span>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div
+                                        class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
+                                        <img id="nearest-vendor-img" class="h-full w-full object-cover"
+                                            src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop" />
+                                        <div
+                                            class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
+                                            <span class="material-symbols-outlined text-[10px] fill-1">verified</span>
+                                            VERIFIED
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col flex-1 justify-between py-1">
+                                        <div>
+                                            <div class="flex justify-between items-start">
+                                                <h3 id="nearest-vendor-name"
+                                                    class="text-navy-trust font-bold text-lg leading-tight">Finding
+                                                    nearest...</h3>
+                                                <button
+                                                    class="text-slate-300 hover:text-primary-pink transition-colors">
+                                                    <span class="material-symbols-outlined">bookmark</span>
+                                                </button>
+                                            </div>
+                                            <p id="nearest-vendor-address" class="text-slate-500 text-xs mt-0.5">Please
+                                                wait</p>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
+                                                <span
+                                                    class="material-symbols-outlined text-[16px]">directions_walk</span>
+                                                <span id="nearest-vendor-dist" class="font-bold text-[11px]">--- • ---
+                                                    mins</span>
+                                            </div>
+                                            <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
+                                                <span
+                                                    class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
+                                                <span id="nearest-vendor-rating"
+                                                    class="text-navy-trust font-bold text-sm">---</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <a id="nearest-vendor-link" href="#"
+                                        class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl bg-navy-trust text-white font-bold text-base shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
+                                        <span class="material-symbols-outlined text-xl">directions</span>
+                                        Directions
+                                    </a>
+                                    <button
+                                        class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-base active:scale-[0.98] transition-all">
+                                        <span class="material-symbols-outlined text-xl fill-1">forum</span>
+                                        Reviews
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vendor JSON Data (Robust storage) -->
+                    <script id="vendors-json" type="application/json">
     [
         {% for vendor in vendors %}
         {
@@ -188,149 +267,220 @@
             "lat": {{ (vendor.latitude or 28.6139)|tojson }},
             "lng": {{ (vendor.longitude or 77.2090)|tojson }},
             "address": {{ vendor.address|tojson }},
-            "rating": {{ (vendor.average_rating or 5.0)|tojson }}
+            "rating": {{ (vendor.average_rating or 5.0)|tojson }},
+            "categories": {{ (vendor.category or "").split(", ")|tojson }}
         }{% if not loop.last %},{% endif %}
         {% endfor %}
     ]
 </script>
-{% endblock %}
+                    {% endblock %}
 
-{% block scripts %}
-<script>
-    let map;
-    let markers = [];
-    let userMarker;
+                    {% block scripts %}
+                    <script>
+                        let map;
+                        let markers = [];
+                        let userMarker;
 
-    // Parse vendors from robust JSON block
-    const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
-    console.log("Loaded vendors:", vendors.length);
+                        // Parse vendors from robust JSON block
+                        const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
+                        console.log("Loaded vendors:", vendors.length);
 
-    function initMap() {
-        const defaultCenter = { lat: 28.6139, lng: 77.2090 }; // Delhi
+                        function initMap() {
+                            const defaultCenter = { lat: 28.6139, lng: 77.2090 }; // Delhi
 
-        map = new google.maps.Map(document.getElementById("map"), {
-            center: defaultCenter,
-            zoom: 15,
-            mapId: 'SHE_SAFE_MAP',
-            disableDefaultUI: true,
-            styles: [
-                {
-                    "featureType": "poi",
-                    "stylers": [{ "visibility": "off" }]
-                },
-                {
-                    "featureType": "transit",
-                    "stylers": [{ "visibility": "off" }]
-                }
-            ]
-        });
+                            map = new google.maps.Map(document.getElementById("map"), {
+                                center: defaultCenter,
+                                zoom: 15,
+                                mapId: 'SHE_SAFE_MAP',
+                                disableDefaultUI: true,
+                                styles: [
+                                    {
+                                        "featureType": "poi",
+                                        "stylers": [{ "visibility": "off" }]
+                                    },
+                                    {
+                                        "featureType": "transit",
+                                        "stylers": [{ "visibility": "off" }]
+                                    }
+                                ]
+                            });
 
-        // Geolocation
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    };
-                    map.setCenter(pos);
+                            // Geolocation
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(
+                                    (position) => {
+                                        const pos = {
+                                            lat: position.coords.latitude,
+                                            lng: position.coords.longitude,
+                                        };
+                                        map.setCenter(pos);
 
-                    userMarker = new google.maps.Marker({
-                        position: pos,
-                        map: map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 8,
-                            fillColor: "#4285F4",
-                            fillOpacity: 1,
-                            strokeWeight: 2,
-                            strokeColor: "white",
-                        },
-                        zIndex: 100
-                    });
+                                        userMarker = new google.maps.Marker({
+                                            position: pos,
+                                            map: map,
+                                            icon: {
+                                                path: google.maps.SymbolPath.CIRCLE,
+                                                scale: 8,
+                                                fillColor: "#4285F4",
+                                                fillOpacity: 1,
+                                                strokeWeight: 2,
+                                                strokeColor: "white",
+                                            },
+                                            zIndex: 100
+                                        });
 
-                    updateNearestVendor(pos);
-                },
-                (error) => {
-                    console.error("Geolocation error:", error);
-                    updateNearestVendor({ lat: 28.948445948109907, lng: 77.09660988721876 });
-                }
-            );
-        } else {
-            updateNearestVendor(defaultCenter);
-        }
+                                        updateNearestVendor(pos);
+                                    },
+                                    (error) => {
+                                        console.error("Geolocation error:", error);
+                                        updateNearestVendor({ lat: 28.948445948109907, lng: 77.09660988721876 });
+                                    }
+                                );
+                            } else {
+                                updateNearestVendor(defaultCenter);
+                            }
 
-        // Add vendor markers
-        vendors.forEach(vendor => {
-            const marker = new google.maps.Marker({
-                position: { lat: vendor.lat, lng: vendor.lng },
-                map: map,
-                icon: {
-                    path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z M12,11.5c-1.38,0-2.5-1.12-2.5-2.5s1.12-2.5,2.5-2.5 s2.5,1.12,2.5,2.5S13.38,11.5,12,11.5z',
-                    fillColor: "#001F3F",
-                    fillOpacity: 1,
-                    strokeWeight: 2,
-                    strokeColor: "white",
-                    scale: 1.5,
-                    anchor: new google.maps.Point(12, 22),
-                    labelOrigin: new google.maps.Point(12, 9)
-                },
-                title: vendor.name
-            });
+                            // Add vendor markers
+                            renderMarkers(vendors);
+                        }
 
-            marker.addListener("click", () => {
-                map.panTo(marker.getPosition());
-                showVendorInfo(vendor);
-            });
+                        let selectedFilters = new Set();
 
-            markers.push(marker);
-        });
-    }
+                        function toggleFilter(filter) {
+                            if (selectedFilters.has(filter)) {
+                                selectedFilters.delete(filter);
+                            } else {
+                                selectedFilters.add(filter);
+                            }
+                            updateFilterUI();
+                            applyFilters();
+                        }
 
-    function showVendorInfo(vendor) {
-        document.getElementById('nearest-vendor-name').innerText = vendor.name;
-        document.getElementById('nearest-vendor-address').innerText = vendor.address;
-        document.getElementById('nearest-vendor-rating').innerText = vendor.rating;
-        document.getElementById('nearest-vendor-link').href = `/vendor/${vendor.id}`;
-    }
+                        function updateFilterUI() {
+                            document.querySelectorAll('.filter-chip').forEach(chip => {
+                                const filterName = chip.id.replace('filter-', '').replace(/-/g, ' ');
+                                if (selectedFilters.has(filterName)) {
+                                    chip.classList.remove('bg-white/90', 'border-slate-100');
+                                    chip.classList.add('bg-primary-pink', 'border-pink-200');
+                                    chip.querySelector('span').classList.remove('text-navy-trust/70');
+                                    chip.querySelector('span').classList.add('text-navy-trust', 'fill-1');
+                                    chip.querySelector('p').classList.remove('text-navy-trust/70');
+                                    chip.querySelector('p').classList.add('text-navy-trust');
+                                } else {
+                                    chip.classList.add('bg-white/90', 'border-slate-100');
+                                    chip.classList.remove('bg-primary-pink', 'border-pink-200');
+                                    chip.querySelector('span').classList.add('text-navy-trust/70');
+                                    chip.querySelector('span').classList.remove('text-navy-trust', 'fill-1');
+                                    chip.querySelector('p').classList.add('text-navy-trust/70');
+                                    chip.querySelector('p').classList.remove('text-navy-trust');
+                                }
+                            });
+                        }
 
-    function recenterMap() {
-        if (userMarker) {
-            map.panTo(userMarker.getPosition());
-            map.setZoom(15);
-        }
-    }
+                        function applyFilters() {
+                            let filteredVendors;
+                            if (selectedFilters.size === 0) {
+                                filteredVendors = vendors;
+                            } else {
+                                filteredVendors = vendors.filter(v =>
+                                    Array.from(selectedFilters).every(f => v.categories.includes(f))
+                                );
+                            }
 
-    function updateNearestVendor(userPos) {
-        if (vendors.length === 0) return;
+                            clearMarkers();
+                            renderMarkers(filteredVendors);
 
-        let nearest = vendors[0];
-        let minDist = Infinity;
+                            // Update nearest vendor based on current user position and filtered list
+                            if (userMarker) {
+                                const userPos = {
+                                    lat: userMarker.getPosition().lat(),
+                                    lng: userMarker.getPosition().lng()
+                                };
+                                updateNearestVendor(userPos, filteredVendors);
+                            }
+                        }
 
-        vendors.forEach(v => {
-            const dist = google.maps.geometry.spherical.computeDistanceBetween(
-                new google.maps.LatLng(userPos.lat, userPos.lng),
-                new google.maps.LatLng(v.lat, v.lng)
-            );
-            if (dist < minDist) {
-                minDist = dist;
-                nearest = v;
-            }
-        });
+                        function clearMarkers() {
+                            markers.forEach(m => m.setMap(null));
+                            markers = [];
+                        }
 
-        showVendorInfo(nearest);
+                        function renderMarkers(vendorsToRender) {
+                            vendorsToRender.forEach(vendor => {
+                                const marker = new google.maps.Marker({
+                                    position: { lat: vendor.lat, lng: vendor.lng },
+                                    map: map,
+                                    icon: {
+                                        path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z M12,11.5c-1.38,0-2.5-1.12-2.5-2.5s1.12-2.5,2.5-2.5 s2.5,1.12,2.5,2.5S13.38,11.5,12,11.5z',
+                                        fillColor: "#001F3F",
+                                        fillOpacity: 1,
+                                        strokeWeight: 2,
+                                        strokeColor: "white",
+                                        scale: 1.5,
+                                        anchor: new google.maps.Point(12, 22),
+                                        labelOrigin: new google.maps.Point(12, 9)
+                                    },
+                                    title: vendor.name
+                                });
 
-        // Update distance text
-        const distText = minDist < 1000 ? Math.round(minDist) + 'm' : (minDist / 1000).toFixed(1) + 'km';
-        const walkTime = Math.round(minDist / 80);
-        document.getElementById('nearest-vendor-dist').innerText = `${distText} • ${walkTime} mins`;
-    }
+                                marker.addListener("click", () => {
+                                    map.panTo(marker.getPosition());
+                                    showVendorInfo(vendor);
+                                });
 
-    // Load geometry library
-    const script = document.createElement('script');
-    script.src = "https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&libraries=geometry,places&callback=initMap";
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-</script>
-{% endblock %}
+                                markers.push(marker);
+                            });
+                        }
+
+                        function showVendorInfo(vendor) {
+                            document.getElementById('nearest-vendor-name').innerText = vendor.name;
+                            document.getElementById('nearest-vendor-address').innerText = vendor.address;
+                            document.getElementById('nearest-vendor-rating').innerText = vendor.rating;
+                            document.getElementById('nearest-vendor-link').href = `/vendor/${vendor.id}`;
+                        }
+
+                        function recenterMap() {
+                            if (userMarker) {
+                                map.panTo(userMarker.getPosition());
+                                map.setZoom(15);
+                            }
+                        }
+
+                        function updateNearestVendor(userPos, vendorsList = vendors) {
+                            if (!vendorsList || vendorsList.length === 0) {
+                                document.getElementById('nearest-vendor-name').innerText = "No matching vendors";
+                                document.getElementById('nearest-vendor-address').innerText = "Try changing filters";
+                                document.getElementById('nearest-vendor-rating').innerText = "---";
+                                document.getElementById('nearest-vendor-dist').innerText = "---";
+                                return;
+                            }
+
+                            let nearest = vendorsList[0];
+                            let minDist = Infinity;
+
+                            vendorsList.forEach(v => {
+                                const dist = google.maps.geometry.spherical.computeDistanceBetween(
+                                    new google.maps.LatLng(userPos.lat, userPos.lng),
+                                    new google.maps.LatLng(v.lat, v.lng)
+                                );
+                                if (dist < minDist) {
+                                    minDist = dist;
+                                    nearest = v;
+                                }
+                            });
+
+                            showVendorInfo(nearest);
+
+                            // Update distance text
+                            const distText = minDist < 1000 ? Math.round(minDist) + 'm' : (minDist / 1000).toFixed(1) + 'km';
+                            const walkTime = Math.round(minDist / 80);
+                            document.getElementById('nearest-vendor-dist').innerText = `${distText} • ${walkTime} mins`;
+                        }
+
+                        // Load geometry library
+                        const script = document.createElement('script');
+                        script.src = "https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&libraries=geometry,places&callback=initMap";
+                        script.defer = true;
+                        document.head.appendChild(script);
+                    </script>
+                    {% endblock %}
