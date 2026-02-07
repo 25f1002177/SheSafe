@@ -201,130 +201,175 @@
 </div>
 
 <script>
-    const femaleStaffCheck = document.getElementById('has_female_staff');
-    const staffTimings = document.getElementById('staff-timings');
-    const imgInp = document.getElementById('property_images');
-    const imgPreview = document.getElementById('image-preview');
-    const imgWarning = document.getElementById('image-count-warning');
-    const onboardForm = document.getElementById('onboarding-form'); // Corrected form ID
+    // Image Upload Logic
+    const imageInput = document.getElementById('property_images');
+    const imagePreview = document.getElementById('image-preview');
+    const warning = document.getElementById('image-count-warning');
+    const form = document.getElementById('onboarding-form');
 
-    const locBtn = document.getElementById('get-location');
-    const latInp = document.getElementById('latitude');
-    const lonInp = document.getElementById('longitude');
-    const addrInp = document.getElementById('address');
-    const mapCont = document.getElementById('mini-map-container');
-    let map, marker;
+    // Maintain a list of File objects
+    let selectedFiles = [];
 
-    femaleStaffCheck.addEventListener('change', () => {
-        staffTimings.classList.toggle('hidden', !femaleStaffCheck.checked);
-    });
+    imageInput.addEventListener('change', function (e) {
+        const files = Array.from(e.target.files);
 
-    // Image Preview and Validation
-    imgInp.addEventListener('change', () => {
-        imgPreview.innerHTML = '';
-        const files = imgInp.files;
+        files.forEach(file => {
+            // Avoid duplicates by name/size if needed, simplified here
+            selectedFiles.push(file);
 
-        if (files.length < 3) {
-            imgWarning.classList.remove('hidden');
-        } else {
-            imgWarning.classList.add('hidden');
-        }
-
-        Array.from(files).forEach(file => {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = function (event) {
                 const div = document.createElement('div');
-                div.className = 'aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700';
-                div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                imgPreview.appendChild(div);
+                div.className = 'relative aspect-square rounded-2xl overflow-hidden group border border-slate-100 dark:border-slate-800';
+                div.innerHTML = `
+                    <img src="${event.target.result}" class="w-full h-full object-cover">
+                    <button type="button" class="absolute top-1 right-1 size-6 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm text-brand-pink border border-brand-pink/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                `;
+
+                // Remove feature
+                div.querySelector('button').onclick = () => {
+                    selectedFiles = selectedFiles.filter(f => f !== file);
+                    div.remove();
+                    updateWarning();
+                };
+
+                imagePreview.appendChild(div);
+                updateWarning();
             };
             reader.readAsDataURL(file);
         });
+
+        // Reset input so the same file can be selected again if removed
+        imageInput.value = '';
     });
 
-    onboardForm.addEventListener('submit', (e) => {
-        const categories = document.querySelectorAll('input[name="categories"]:checked');
-        const files = imgInp.files;
+    function updateWarning() {
+        if (selectedFiles.length < 3) {
+            warning.classList.remove('hidden');
+        } else {
+            warning.classList.add('hidden');
+        }
+    }
 
+    form.addEventListener('submit', function (e) {
+        // Validation for images
+        if (selectedFiles.length < 3) {
+            e.preventDefault();
+            warning.classList.remove('hidden');
+            window.scrollTo({ top: warning.offsetTop - 100, behavior: 'smooth' });
+            return;
+        }
+
+        // Category Validation (moved from original)
+        const categories = document.querySelectorAll('input[name="categories"]:checked');
         if (categories.length === 0) {
             alert('Please select at least one service category.');
             e.preventDefault();
             return;
         }
 
-        if (files.length < 3) {
-            alert('Please upload at least 3 property images.');
-            imgWarning.classList.remove('hidden');
+        // Location Validation
+        const lat = document.getElementById('latitude').value;
+        const lon = document.getElementById('longitude').value;
+        if (!lat || !lon) {
             e.preventDefault();
+            alert('Please detect your location for safer navigation.');
             return;
         }
+
+        // Prepare DataTransfer items
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        imageInput.files = dataTransfer.files;
     });
 
-    function initMap() {
-        // Initial map load (will be hidden until location is detected)
-        map = new google.maps.Map(document.getElementById("mini-map"), {
-            center: { lat: 28.6139, lng: 77.2090 },
+    // Location Detection
+    const getLocBtn = document.getElementById('get-location');
+    const mapContainer = document.getElementById('mini-map-container');
+    let map, marker;
+
+    getLocBtn.addEventListener('click', function () {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+            return;
+        }
+
+        getLocBtn.disabled = true;
+        getLocBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span> Detecting...';
+
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lon;
+            mapContainer.classList.remove('hidden');
+
+            initMiniMap(lat, lon);
+
+            getLocBtn.disabled = false;
+            getLocBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span> Auto-Detect';
+
+            // Reverse geocoding (optional placeholder)
+            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key={{ config['GOOGLE_MAPS_API_KEY'] }}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.results[0]) {
+                        document.getElementById('address').value = data.results[0].formatted_address;
+                    }
+                });
+        }, (error) => {
+            alert('Unable to retrieve your location');
+            getLocBtn.disabled = false;
+            getLocBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span> Auto-Detect';
+        });
+    });
+
+    function initMiniMap(lat, lng) {
+        const coords = { lat: lat, lng: lng };
+        map = new google.maps.Map(document.getElementById('mini-map'), {
+            center: coords,
             zoom: 15,
             disableDefaultUI: true,
-        });
-
-        marker = new google.maps.Marker({
-            map: map,
-            draggable: true,
-            animation: google.maps.Animation.DROP,
-        });
-
-        // Update inputs when marker is dragged
-        marker.addListener('dragend', () => {
-            const pos = marker.getPosition();
-            latInp.value = pos.lat().toFixed(6);
-            lonInp.value = pos.lng().toFixed(6);
-            reverseGeocode(pos.lat(), pos.lng());
-        });
-    }
-
-    // Google Maps Geocoder for address
-    function reverseGeocode(lat, lng) {
-        const geocoder = new google.maps.Geocoder();
-        const latlng = { lat: parseFloat(lat), lng: parseFloat(lng) };
-        geocoder.geocode({ location: latlng }, (results, status) => {
-            if (status === "OK") {
-                if (results[0]) {
-                    addrInp.value = results[0].formatted_address;
+            styles: [
+                {
+                    "featureType": "all",
+                    "elementType": "geometry.fill",
+                    "stylers": [{ "weight": "2.00" }]
                 }
+            ]
+        });
+        marker = new google.maps.Marker({
+            position: coords,
+            map: map,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 10,
+                fillColor: "#FF4E8D",
+                fillOpacity: 1,
+                strokeWeight: 2,
+                strokeColor: "#FFFFFF"
             }
         });
     }
 
-    locBtn.addEventListener('click', () => {
-        if (navigator.geolocation) {
-            locBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Detecting...';
+    // Toggle Staff Timings
+    const hasFemaleStaff = document.getElementById('has_female_staff');
+    const staffTimingsContainer = document.getElementById('staff-timings');
 
-            navigator.geolocation.getCurrentPosition((pos) => {
-                const { latitude, longitude } = pos.coords;
-                latInp.value = latitude.toFixed(6);
-                lonInp.value = longitude.toFixed(6);
-
-                mapCont.classList.remove('hidden');
-
-                const userLoc = { lat: latitude, lng: longitude };
-                map.setCenter(userLoc);
-                marker.setPosition(userLoc);
-
-                reverseGeocode(latitude, longitude);
-
-                locBtn.innerText = 'Updated';
-                setTimeout(() => locBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span>Auto-Detect', 2000);
-            }, (err) => {
-                alert("Location access denied. Please enable GPS.");
-                locBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span>Auto-Detect';
-            });
+    hasFemaleStaff.addEventListener('change', function () {
+        if (this.checked) {
+            staffTimingsContainer.classList.remove('hidden');
+        } else {
+            staffTimingsContainer.classList.add('hidden');
         }
     });
 
     // Load Google Maps Script
     const script = document.createElement('script');
-    script.src = "https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&callback=initMap";
+    script.src = "https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&callback=initMiniMap";
     script.async = true;
     script.defer = true;
     document.body.appendChild(script);

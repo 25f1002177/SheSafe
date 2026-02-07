@@ -388,54 +388,60 @@ def vendor_onboard():
         # Combine categories into a comma-separated string
         category_str = ", ".join(categories)
 
-        # Create vendor profile
-        vendor = Vendor(
-            user_id=current_user.id,
-            business_name=business_name,
-            description=description if description else None,
-            latitude=latitude,
-            longitude=longitude,
-            address=address,
-            category=category_str,
-            has_cctv=has_cctv,
-            has_female_staff=has_female_staff,
-            female_staff_start_time=start_time,
-            female_staff_end_time=end_time,
-            is_verified=False,
-            is_active=False,
-            average_rating=0.0
-        )
-        
-        db.session.add(vendor)
-        db.session.flush() # Get vendor ID before committing to add images
+        try:
+            # Create vendor profile
+            vendor = Vendor(
+                user_id=current_user.id,
+                business_name=business_name,
+                description=description if description else None,
+                latitude=latitude,
+                longitude=longitude,
+                address=address,
+                category=category_str,
+                has_cctv=has_cctv,
+                has_female_staff=has_female_staff,
+                female_staff_start_time=start_time,
+                female_staff_end_time=end_time,
+                is_verified=False,
+                is_active=False,
+                average_rating=0.0
+            )
+            
+            db.session.add(vendor)
+            db.session.flush() # Get vendor ID before committing to add images
 
-        # Handle Image Uploads
-        from werkzeug.utils import secure_filename
-        from app.models import VendorImage
-        import uuid
+            # Handle Image Uploads
+            from werkzeug.utils import secure_filename
+            from app.models import VendorImage
+            import uuid
 
-        # Ensure upload folder exists
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
+            # Ensure upload folder exists
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
 
-        for file in image_files:
-            if file and file.filename != '' and '.' in file.filename and \
-               file.filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']:
-                
-                filename = secure_filename(file.filename)
-                unique_filename = f"{uuid.uuid4().hex}_{filename}"
-                file_path = os.path.join(upload_folder, unique_filename)
-                file.save(file_path)
-                
-                img_url = f"uploads/{unique_filename}"
-                new_image = VendorImage(vendor_id=vendor.id, image_url=img_url)
-                db.session.add(new_image)
+            for file in image_files:
+                if file and file.filename != '' and '.' in file.filename and \
+                   file.filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']:
+                    
+                    filename = secure_filename(file.filename)
+                    unique_filename = f"{uuid.uuid4().hex}_{filename}"
+                    file_path = os.path.join(upload_folder, unique_filename)
+                    file.save(file_path)
+                    
+                    img_url = f"uploads/{unique_filename}"
+                    new_image = VendorImage(vendor_id=vendor.id, image_url=img_url)
+                    db.session.add(new_image)
 
-        db.session.commit()
-        
-        flash('Vendor profile created with images! Your profile is pending verification.', 'success')
-        return redirect(url_for('main.vendor_dashboard'))
+            db.session.commit()
+            flash('Vendor profile created with images! Your profile is pending verification.', 'success')
+            return redirect(url_for('main.vendor_dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Onboarding error: {str(e)}")
+            flash(f'An error occurred during onboarding: {str(e)}', 'error')
+            return render_template('vendor_onboard.html')
     
     return render_template('vendor_onboard.html')
 
