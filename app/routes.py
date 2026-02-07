@@ -686,6 +686,7 @@ def admin_revenue():
     return render_template('admin_revenue.html',
                          user=current_user,
                          bookings=completed_bookings,
+                         total_revenue=total_revenue,
                          revenue_by_mode=revenue_by_mode)
 
 
