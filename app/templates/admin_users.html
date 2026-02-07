@@ -2,48 +2,28 @@
 
 {% block title %}Admin: User Oversight - SheSafe{% endblock %}
 
-{% block styles %}
-<style>
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-<script>
-    tailwind.config = {
-        darkMode: "class",
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#ee2b6c",
-                    "background-light": "#f8f6f6",
-                    "background-dark": "#12080b",
-                    "card-dark": "#221016",
-                    "surface-dark": "#321721",
-                },
-                fontFamily: {
-                    "display": ["Public Sans", "sans-serif"]
-                },
-            },
-        },
-    }
-</script>
-{% endblock %}
+
 
 {% block content %}
-<div class="bg-background-light dark:bg-background-dark min-h-screen -mx-5 -my-6">
+<div class="bg-blush-white dark:bg-background-dark min-h-screen">
     <!-- Top App Bar -->
-    <header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10">
+    <header
+        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10">
         <div class="flex items-center p-4 justify-between">
             <div class="flex items-center gap-3">
-                <a href="{{ url_for('main.admin_dashboard') }}" class="flex size-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+                <a href="{{ url_for('main.admin_dashboard') }}"
+                    class="flex size-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
                     <span class="material-symbols-outlined text-primary">arrow_back</span>
                 </a>
                 <div>
                     <h1 class="text-xl font-bold leading-tight tracking-tight">User Oversight</h1>
-                    <p class="text-xs text-slate-500 dark:text-primary/70 font-medium uppercase tracking-wider">{{ users|length }} Registered Users</p>
+                    <p class="text-xs text-slate-500 dark:text-primary/70 font-medium uppercase tracking-wider">{{
+                        users|length }} Registered Users</p>
                 </div>
             </div>
             <div class="flex gap-2">
-                <a href="{{ url_for('main.logout') }}" class="flex size-10 items-center justify-center rounded-full bg-surface-dark/50 text-white relative">
+                <a href="{{ url_for('main.logout') }}"
+                    class="flex size-10 items-center justify-center rounded-full bg-surface-dark/50 text-white relative">
                     <span class="material-symbols-outlined">logout</span>
                 </a>
             </div>
@@ -52,16 +32,23 @@
         <div class="px-4 pb-4 space-y-3">
             <form method="GET" action="{{ url_for('main.admin_users') }}" class="flex gap-2">
                 <label class="relative flex-1">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-primary/50">search</span>
-                    <input name="search" value="{{ search_query or '' }}" class="w-full h-11 pl-10 pr-4 rounded-xl border-none bg-slate-100 dark:bg-surface-dark text-sm focus:ring-2 focus:ring-primary/50 placeholder:text-slate-400 dark:placeholder:text-white/30" placeholder="Search by name, email or ID" type="text"/>
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-primary/50">search</span>
+                    <input name="search" value="{{ search_query or '' }}"
+                        class="w-full h-11 pl-10 pr-4 rounded-xl border-none bg-slate-100 dark:bg-surface-dark text-sm focus:ring-2 focus:ring-primary/50 placeholder:text-slate-400 dark:placeholder:text-white/30"
+                        placeholder="Search by name, email or ID" type="text" />
                 </label>
-                <a href="{{ url_for('main.admin_users') }}" class="h-11 w-11 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-white">
+                <a href="{{ url_for('main.admin_users') }}"
+                    class="h-11 w-11 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark text-slate-600 dark:text-white">
                     <span class="material-symbols-outlined">tune</span>
                 </a>
             </form>
             <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                <a href="{{ url_for('main.admin_users') }}" class="px-4 py-1.5 rounded-full {% if filter_type == 'all' or not filter_type %}bg-primary text-white{% else %}bg-slate-200 dark:bg-surface-dark text-slate-600 dark:text-white/70{% endif %} text-xs font-semibold whitespace-nowrap">All Users</a>
-                <a href="{{ url_for('main.admin_users', filter='flagged') }}" class="px-4 py-1.5 rounded-full {% if filter_type == 'flagged' %}bg-primary text-white{% else %}bg-slate-200 dark:bg-surface-dark text-slate-600 dark:text-white/70{% endif %} text-xs font-semibold whitespace-nowrap">Flagged</a>
+                <a href="{{ url_for('main.admin_users') }}"
+                    class="px-4 py-1.5 rounded-full {% if filter_type == 'all' or not filter_type %}bg-primary text-white{% else %}bg-slate-200 dark:bg-surface-dark text-slate-600 dark:text-white/70{% endif %} text-xs font-semibold whitespace-nowrap">All
+                    Users</a>
+                <a href="{{ url_for('main.admin_users', filter='flagged') }}"
+                    class="px-4 py-1.5 rounded-full {% if filter_type == 'flagged' %}bg-primary text-white{% else %}bg-slate-200 dark:bg-surface-dark text-slate-600 dark:text-white/70{% endif %} text-xs font-semibold whitespace-nowrap">Flagged</a>
             </div>
         </div>
     </header>
@@ -72,18 +59,23 @@
             <h2 class="text-lg font-bold">User Directory</h2>
             <div class="space-y-3">
                 {% for u in users %}
-                <a href="{{ url_for('main.admin_user_detail', user_id=u.id) }}" class="block bg-white dark:bg-card-dark rounded-2xl p-4 flex items-center gap-4 border border-slate-100 dark:border-white/5">
+                <a href="{{ url_for('main.admin_user_detail', user_id=u.id) }}"
+                    class="block bg-white dark:bg-card-dark rounded-2xl p-4 flex items-center gap-4 border border-slate-100 dark:border-white/5">
                     <div class="relative">
-                        <div class="size-14 rounded-full bg-cover bg-center border-2 border-primary/20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDeo91e5c1Sw9yn17KT-ssk4cqIKXGHAwA5NeUqR9Mte6cUS4Rpc74_EZx7TUwTW8enB9TUfDWrpCl09y-WT8q9KWV3qrFMlIvqnavb3oejV55oDPAO6bvSzTX_hHTcIJcU9qn7mt-G1MMiSEQlGlkqMSdxHdK2qg0ogJAWUNSUgGF4Li8k78L7mLqZKpx_KTNh_LSXOY62_LtXls_QmpyJs_Vt_BxPpDLFl_YvRe5ti7ov3_FGP5GftvScZJElX0NzH_cVQ2QEoHGk')"></div>
+                        <div class="size-14 rounded-full bg-cover bg-center border-2 border-primary/20"
+                            style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDeo91e5c1Sw9yn17KT-ssk4cqIKXGHAwA5NeUqR9Mte6cUS4Rpc74_EZx7TUwTW8enB9TUfDWrpCl09y-WT8q9KWV3qrFMlIvqnavb3oejV55oDPAO6bvSzTX_hHTcIJcU9qn7mt-G1MMiSEQlGlkqMSdxHdK2qg0ogJAWUNSUgGF4Li8k78L7mLqZKpx_KTNh_LSXOY62_LtXls_QmpyJs_Vt_BxPpDLFl_YvRe5ti7ov3_FGP5GftvScZJElX0NzH_cVQ2QEoHGk')">
+                        </div>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between">
                             <h3 class="font-bold truncate">{{ u.name }}</h3>
-                            <span class="text-[10px] bg-green-500/10 text-green-500 font-bold px-2 py-0.5 rounded">ACTIVE</span>
+                            <span
+                                class="text-[10px] bg-green-500/10 text-green-500 font-bold px-2 py-0.5 rounded">ACTIVE</span>
                         </div>
                         <div class="flex gap-4 mt-2">
                             <div>
-                                <p class="text-[10px] text-slate-500 dark:text-white/40 uppercase font-bold">Bookings</p>
+                                <p class="text-[10px] text-slate-500 dark:text-white/40 uppercase font-bold">Bookings
+                                </p>
                                 <p class="text-sm font-bold">{{ u.bookings_count }}</p>
                             </div>
                             <div class="h-6 w-px bg-slate-100 dark:bg-white/10 self-center"></div>
@@ -91,7 +83,8 @@
                                 <p class="text-[10px] text-slate-500 dark:text-white/40 uppercase font-bold">Rating</p>
                                 <div class="flex items-center gap-0.5">
                                     <span class="text-sm font-bold">{{ u.average_rating }}</span>
-                                    <span class="material-symbols-outlined text-[12px] text-amber-500 fill-current">star</span>
+                                    <span
+                                        class="material-symbols-outlined text-[12px] text-amber-500 fill-current">star</span>
                                 </div>
                             </div>
                         </div>
