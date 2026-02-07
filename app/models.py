@@ -131,14 +131,28 @@ class VendorImage(db.Model):
     @property
     def url(self):
         """Safely get image URL or Base64 data."""
-        # Use getattr to prevent crash if image_data column is missing in DB
-        data = getattr(self, 'image_data', None)
-        if data:
-            return data
+        # Extreme defense: catch any database error during column access
+        try:
+            # Check if it's already loaded to avoid query
+            if 'image_data' in self.__dict__:
+                data = self.image_data
+                if data: return data
+            
+            # Try to load it, but catch the 500/SQL error if column is missing
+            data = getattr(self, 'image_data', None)
+            if data: return data
+        except Exception:
+            # If Column missing or DB error, ignore and move to fallback
+            pass
         
         # Fallback to stored URL
-        if self.image_url:
-            return f"/static/{self.image_url}" if not self.image_url.startswith('static/') else f"/{self.image_url}"
+        try:
+            if self.image_url:
+                if self.image_url.startswith('uploads/'):
+                    return f"/{self.image_url}"
+                return f"/static/{self.image_url}" if not self.image_url.startswith('static/') else f"/{self.image_url}"
+        except Exception:
+            pass
         
         return "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop"
 
