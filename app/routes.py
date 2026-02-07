@@ -4,6 +4,9 @@ from app import db
 from app.models import User
 from app.decorators import admin_required, vendor_required, user_required
 import os
+import qrcode
+import io
+import base64
 
 main = Blueprint('main', __name__)
 
@@ -608,6 +611,45 @@ def booking_confirmation(booking_id):
         return redirect(url_for('main.index'))
         
     return render_template('booking_confirmation.html', booking=booking)
+
+
+@main.route('/booking/<int:booking_id>/qr')
+@login_required
+def booking_qr(booking_id):
+    """Generate and show QR code for a booking."""
+    from app.models import Booking
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # Ensure user can only see their own booking (unless admin or the vendor of the booking)
+    is_admin = current_user.role == 'admin'
+    is_owner = booking.user_id == current_user.id
+    is_vendor = current_user.role == 'vendor' and current_user.vendor_profile and booking.vendor_id == current_user.vendor_profile.id
+    
+    if not (is_admin or is_owner or is_vendor):
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('main.index'))
+    
+    # Generate QR data
+    qr_data = f"Booking ID: {booking.id}\nUser: {booking.user.name}\nVendor: {booking.vendor.business_name}\nDate: {booking.visit_date.strftime('%Y-%m-%d %H:%M')}\nStatus: {booking.status}"
+    
+    # Create QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Save to bytes buffer
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    qr_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    
+    return render_template('booking_qr.html', booking=booking, qr_code=qr_base64)
 
 
 @main.route('/booking/<int:booking_id>/feedback', methods=['GET', 'POST'])

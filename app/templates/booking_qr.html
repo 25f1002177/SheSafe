@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Booking QR Code - SheSafe{% endblock %}
+
+{% block content %}
+<div
+    class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-white dark:bg-background-dark">
+    <!-- Header -->
+    <div
+        class="flex items-center px-5 pt-10 pb-4 justify-between sticky top-0 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md z-40 border-b border-slate-50 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+            <a href="{{ url_for('main.user_dashboard') }}?tab=history"
+                class="flex size-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+                <span class="material-symbols-outlined text-xl">arrow_back</span>
+            </a>
+            <h1 class="text-navy-trust dark:text-white text-xl font-black tracking-tight">Booking Pass</h1>
+        </div>
+    </div>
+
+    <div class="px-5 pt-8">
+        <!-- Ticket Card -->
+        <div class="bg-navy-trust dark:bg-slate-900 rounded-[32px] overflow-hidden shadow-2xl shadow-navy-trust/20">
+            <!-- Header section of ticket -->
+            <div class="p-8 border-b-2 border-dashed border-white/10 relative">
+                <!-- Decorative Circles for hole-punch effect -->
+                <div class="absolute -bottom-3 -left-3 size-6 bg-white dark:bg-background-dark rounded-full"></div>
+                <div class="absolute -bottom-3 -right-3 size-6 bg-white dark:bg-background-dark rounded-full"></div>
+
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="size-14 rounded-2xl bg-white/10 flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined text-3xl">apartment</span>
+                    </div>
+                    <div>
+                        <h2 class="text-white text-lg font-bold leading-tight">{{ booking.vendor.business_name }}</h2>
+                        <p class="text-primary/70 text-xs font-bold uppercase tracking-widest mt-0.5">Verified Safe
+                            Space</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Date</p>
+                        <p class="text-white text-sm font-bold">{{ booking.visit_date.strftime('%b %d, %Y') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Time</p>
+                        <p class="text-white text-sm font-bold">{{ booking.visit_date.strftime('%H:%M') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Reference</p>
+                        <p class="text-white text-sm font-bold">#SAFE-{{ booking.id }}</p>
+                    </div>
+                    <div>
+                        <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Status</p>
+                        <span
+                            class="inline-block bg-primary/20 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">{{
+                            booking.status }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code section -->
+            <div class="p-8 bg-white flex flex-col items-center">
+                <div class="p-4 bg-slate-50 rounded-3xl border-2 border-slate-100 mb-6">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="Booking QR Code" class="w-48 h-48">
+                </div>
+                <p class="text-navy-trust text-[10px] font-bold uppercase tracking-widest text-center">Scan to verify
+                    booking</p>
+                <p class="text-slate-400 text-[9px] mt-2 text-center px-4">Show this QR code to the vendor upon arrival
+                    at the location.</p>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-8 space-y-4">
+            <h3 class="text-navy-trust dark:text-white font-bold text-sm px-2">Next Steps</h3>
+            <div class="flex gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
+                <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <span class="material-symbols-outlined text-lg">pin_drop</span>
+                </div>
+                <div>
+                    <h4 class="text-navy-trust dark:text-white font-bold text-xs">Reach the location</h4>
+                    <p class="text-slate-400 text-[10px] mt-1">{{ booking.vendor.address }}</p>
+                </div>
+            </div>
+            <div class="flex gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl">
+                <div class="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
+                </div>
+                <div>
+                    <h4 class="text-navy-trust dark:text-white font-bold text-xs">Show this pass</h4>
+                    <p class="text-slate-400 text-[10px] mt-1">Present this QR code to the staff member for quick
+                        verification.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
