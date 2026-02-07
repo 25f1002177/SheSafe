@@ -754,12 +754,39 @@ def update_db_schema():
     """Temporary route to update database schema."""
     from sqlalchemy import text
     try:
+        results = []
         with db.engine.connect() as conn:
-            conn.execute(text("ALTER TABLE vendors ALTER COLUMN category TYPE VARCHAR(255)"))
+            # 1. Update category column type
+            try:
+                conn.execute(text("ALTER TABLE vendors ALTER COLUMN category TYPE VARCHAR(255)"))
+                results.append("Updated vendors.category to VARCHAR(255)")
+            except Exception as e:
+                results.append(f"Note on vendors.category: {str(e)}")
+            
+            # 2. Add image_data to vendor_images
+            try:
+                conn.execute(text("SELECT image_data FROM vendor_images LIMIT 1"))
+                results.append("vendor_images.image_data already exists")
+            except Exception:
+                try:
+                    conn.execute(text("ALTER TABLE vendor_images ADD COLUMN image_data TEXT"))
+                    results.append("Added column image_data to vendor_images")
+                except Exception as e:
+                    results.append(f"Error adding image_data: {str(e)}")
+
+            # 3. Make image_url nullable
+            try:
+                # This syntax works for Postgres
+                conn.execute(text("ALTER TABLE vendor_images ALTER COLUMN image_url DROP NOT NULL"))
+                results.append("Made vendor_images.image_url nullable")
+            except Exception as e:
+                results.append(f"Note on image_url nullable: {str(e)}")
+                
             conn.commit()
-        return "Schema updated successfully! Categoriy column type updated to VARCHAR(255)."
+            
+        return "<br>".join(results) + "<br><br><b>Schema update complete! Please try the dashboards now.</b>"
     except Exception as e:
-        return f"Error updating schema: {str(e)}"
+        return f"CRITICAL Error updating schema: {str(e)}"
 
 @main.route('/create-admin')
 def create_admin():

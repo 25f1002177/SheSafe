@@ -60,14 +60,8 @@ class Vendor(db.Model):
     
     def to_dict(self):
         """Convert vendor profile to dictionary for JSON serialization."""
-        # Use getattr to avoid crash if column missing
-        first_img_obj = self.images[0] if self.images else None
-        first_image = getattr(first_img_obj, 'image_data', None) if first_img_obj else None
+        first_image = self.images[0].url if self.images else "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop"
         
-        if not first_image and first_img_obj:
-            # Fallback to URL if data not available yet
-            first_image = f"/{first_img_obj.image_url}" if first_img_obj.image_url else None
-            
         return {
             'id': self.id,
             'business_name': self.business_name,
@@ -134,5 +128,19 @@ class VendorImage(db.Model):
     image_data = db.Column(db.Text, nullable=True) # Store Base64 data
     uploaded_at = db.Column(db.DateTime, default=utcnow(), nullable=False)
     
+    @property
+    def url(self):
+        """Safely get image URL or Base64 data."""
+        # Use getattr to prevent crash if image_data column is missing in DB
+        data = getattr(self, 'image_data', None)
+        if data:
+            return data
+        
+        # Fallback to stored URL
+        if self.image_url:
+            return f"/static/{self.image_url}" if not self.image_url.startswith('static/') else f"/{self.image_url}"
+        
+        return "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop"
+
     def __repr__(self):
         return f'<VendorImage {self.id}>'
