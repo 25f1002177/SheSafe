@@ -756,7 +756,7 @@ def admin_settings():
 
 
 
-@main.route('/static/uploads/<path:filename>')
+@main.route('/uploads/<path:filename>')
 def serve_uploads(filename):
     """Serve uploaded files from /tmp on Vercel or normal static folder."""
     import os

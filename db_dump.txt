@@ -1,0 +1,13 @@
+--- VENDORS ---
+Vendor ID: 1, User ID: 2, Name: Highway Dhaba
+Vendor ID: 2, User ID: 4, Name: Green Chick Chop Kundli
+Vendor ID: 3, User ID: 5, Name: Domino's Customer Safe Zone
+Vendor ID: 4, User ID: 6, Name: Savoy Greens Rest Stop
+Vendor ID: 5, User ID: 7, Name: Parker Mall Management
+Vendor ID: 6, User ID: 8, Name: Golden Hut Restaurants & Rooms
+Vendor ID: 7, User ID: 9, Name: Dhaba Bollywood
+
+--- IMAGES ---
+Img ID: 1, Vendor ID: 1, URL: uploads/e4eec578d7e74a559df90dfe6d2e7365_gill-dhaba-bhandara-1r1wsu5srs.jpeg
+Img ID: 2, Vendor ID: 6, URL: https://lh3.googleusercontent.com/p/AF1QipONwuyOQooKIAY3UJueWReljlzJ_ZkykQpFmONf=s1600
+Img ID: 3, Vendor ID: 7, URL: https://lh3.googleusercontent.com/p/AF1QipPTyuWEXnWcbaGLE_vl3YRsvkgMlrryhuv8y08Y=s1600
