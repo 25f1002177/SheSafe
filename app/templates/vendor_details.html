@@ -9,7 +9,7 @@
     <div class="relative h-72 w-full overflow-hidden shrink-0">
         <div class="absolute inset-0 bg-slate-900/20 z-10"></div>
         <img class="h-full w-full object-cover"
-            src="{% if vendor.images %}{{ url_for('main.serve_uploads', filename=vendor.images[0].image_url.split('/')[-1]) }}{% else %}https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=2070{% endif %}"
+            src="{% if vendor.images %}{{ vendor.images[0].url }}{% else %}https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=2070{% endif %}"
             alt="{{ vendor.business_name }}">
 
         <!-- Top Controls -->
@@ -118,8 +118,7 @@
         <div class="flex gap-3 overflow-x-auto no-scrollbar pb-8">
             {% for img in vendor.images %}
             <div class="size-24 shrink-0 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
-                <img src="{{ url_for('main.serve_uploads', filename=img.image_url.split('/')[-1]) }}"
-                    class="w-full h-full object-cover">
+                <img src="{{ img.url }}" class="w-full h-full object-cover">
             </div>
             {% endfor %}
         </div>
