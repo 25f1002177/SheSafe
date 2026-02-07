@@ -92,7 +92,7 @@ class Booking(db.Model):
     
     # Relationships
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))
-    vendor = db.relationship('Vendor', backref=db.backref('bookings', lazy=True))
+    vendor = db.relationship('Vendor', backref=db.backref('bookings', lazy=True, cascade='all, delete-orphan'))
     
     def __repr__(self):
         return f'<Booking {self.id} for Vendor {self.vendor_id}>'
@@ -112,7 +112,7 @@ class Feedback(db.Model):
     
     # Relationships
     booking = db.relationship('Booking', backref=db.backref('feedback', uselist=False))
-    vendor = db.relationship('Vendor', backref=db.backref('feedbacks', lazy=True))
+    vendor = db.relationship('Vendor', backref=db.backref('feedbacks', lazy=True, cascade='all, delete-orphan'))
     
     def __repr__(self):
         return f'<Feedback {self.id} for Booking {self.booking_id}>'

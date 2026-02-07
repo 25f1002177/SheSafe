@@ -496,6 +496,33 @@ def reject_vendor(vendor_id):
     return redirect(url_for('main.admin_dashboard'))
 
 
+@main.route('/admin/vendor/<int:vendor_id>/delete', methods=['POST'])
+@admin_required
+def delete_vendor(vendor_id):
+    """Delete a vendor and their associated user account (admin only)."""
+    from app.models import Vendor
+    
+    vendor = Vendor.query.get_or_404(vendor_id)
+    business_name = vendor.business_name
+    associated_user = vendor.user
+    
+    try:
+        # Delete the vendor first (this will cascade to images, bookings, feedbacks)
+        db.session.delete(vendor)
+        
+        # Also delete the user if they are strictly a vendor
+        if associated_user and associated_user.role == 'vendor':
+            db.session.delete(associated_user)
+            
+        db.session.commit()
+        flash(f'Vendor "{business_name}" and their account have been permanently deleted.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting vendor: {str(e)}', 'error')
+        
+    return redirect(url_for('main.admin_vendors'))
+
+
 @main.route('/admin/vendor/<int:vendor_id>/disable', methods=['POST'])
 @admin_required
 def disable_vendor(vendor_id):
