@@ -435,10 +435,20 @@ def vendor_onboard():
                     filename = secure_filename(file.filename)
                     unique_filename = f"{uuid.uuid4().hex}_{filename}"
                     file_path = os.path.join(upload_folder, unique_filename)
+                    # Convert to Base64
+                    file_content = file.read()
+                    import base64
+                    base64_data = base64.b64encode(file_content).decode('utf-8')
+                    # Guess mime type from extension if file.content_type is empty
+                    mime_type = file.content_type if file.content_type else 'image/jpeg'
+                    img_data_uri = f"data:{mime_type};base64,{base64_data}"
+                    
+                    # Reset pointer to save to file system (backup)
+                    file.seek(0)
                     file.save(file_path)
                     
                     img_url = f"uploads/{unique_filename}"
-                    new_image = VendorImage(vendor_id=vendor.id, image_url=img_url)
+                    new_image = VendorImage(vendor_id=vendor.id, image_url=img_url, image_data=img_data_uri)
                     db.session.add(new_image)
 
             db.session.commit()
@@ -542,11 +552,21 @@ def upload_images():
             
             # Save file
             file_path = os.path.join(upload_folder, unique_filename)
+            
+            # Convert to Base64
+            file_content = file.read()
+            import base64
+            base64_data = base64.b64encode(file_content).decode('utf-8')
+            mime_type = file.content_type if file.content_type else 'image/jpeg'
+            img_data_uri = f"data:{mime_type};base64,{base64_data}"
+            
+            # Reset pointer to save file
+            file.seek(0)
             file.save(file_path)
             
             # Save to database (store the relative URL for easy serving)
             img_url = f"uploads/{unique_filename}"
-            new_image = VendorImage(vendor_id=current_user.vendor_profile.id, image_url=img_url)
+            new_image = VendorImage(vendor_id=current_user.vendor_profile.id, image_url=img_url, image_data=img_data_uri)
             db.session.add(new_image)
             uploaded_count += 1
             

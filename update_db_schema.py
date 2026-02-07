@@ -17,17 +17,27 @@ def update_schema():
                 print("Column 'category' already exists in 'vendors' table.")
             except Exception:
                 print("Column 'category' missing. Adding it now...")
-                # Rollback in case the previous transaction failed
-                # conn.rollback() # Not needed for connect() context manager usually, but auto-commit is tricky
-                
-                # Add the column
                 try:
-                    # PostgreSQL syntax (also works for SQLite mostly, but let's assume Postgres for Vercel)
-                    conn.execute(text("ALTER TABLE vendors ADD COLUMN category VARCHAR(50) DEFAULT 'Washroom' NOT NULL"))
+                    conn.execute(text("ALTER TABLE vendors ADD COLUMN category VARCHAR(255) DEFAULT 'Washroom' NOT NULL"))
                     conn.commit()
                     print("Successfully added 'category' column to 'vendors' table.")
                 except Exception as e:
-                    print(f"Error adding column: {e}")
+                    print(f"Error adding column category: {e}")
+
+        # Check for image_data in vendor_images
+        with db.engine.connect() as conn:
+            try:
+                conn.execute(text("SELECT image_data FROM vendor_images LIMIT 1"))
+                print("Column 'image_data' already exists in 'vendor_images' table.")
+            except Exception:
+                print("Column 'image_data' missing. Adding it now...")
+                try:
+                    conn.execute(text("ALTER TABLE vendor_images ADD COLUMN image_data TEXT"))
+                    conn.execute(text("ALTER TABLE vendor_images ALTER COLUMN image_url DROP NOT NULL"))
+                    conn.commit()
+                    print("Successfully added 'image_data' column and updated 'image_url' to nullable.")
+                except Exception as e:
+                    print(f"Error updating vendor_images: {e}")
 
 if __name__ == "__main__":
     update_schema()

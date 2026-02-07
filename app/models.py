@@ -60,6 +60,11 @@ class Vendor(db.Model):
     
     def to_dict(self):
         """Convert vendor profile to dictionary for JSON serialization."""
+        first_image = self.images[0].image_data if self.images and self.images[0].image_data else None
+        if not first_image and self.images:
+            # Fallback to URL if data not available yet
+            first_image = f"/{self.images[0].image_url}"
+            
         return {
             'id': self.id,
             'business_name': self.business_name,
@@ -70,7 +75,7 @@ class Vendor(db.Model):
             'has_cctv': self.has_cctv,
             'has_female_staff': self.has_female_staff,
             'average_rating': self.average_rating,
-            'image_url': f"/{self.images[0].image_url}" if self.images else "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop"
+            'image_url': first_image if first_image else "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop"
         }
 
     def __repr__(self):
@@ -122,8 +127,9 @@ class VendorImage(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendors.id'), nullable=False)
-    image_url = db.Column(db.String(255), nullable=False)
+    image_url = db.Column(db.String(255), nullable=True) # URL can be null if only data is used
+    image_data = db.Column(db.Text, nullable=True) # Store Base64 data
     uploaded_at = db.Column(db.DateTime, default=utcnow(), nullable=False)
     
     def __repr__(self):
-        return f'<VendorImage {self.image_url}>'
+        return f'<VendorImage {self.id}>'

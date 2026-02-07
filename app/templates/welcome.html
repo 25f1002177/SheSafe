@@ -152,7 +152,7 @@
                     "address": {{ vendor.address|tojson }},
                     "rating": {{ (vendor.average_rating or 5.0)|tojson }},
                     "reviews": {{ (vendor.feedbacks|length if vendor.feedbacks else 0)|tojson }},
-                    "image_url": {{ (("/" + vendor.images[0].image_url) if vendor.images else "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop")|tojson }}
+                    "image_url": {{ (vendor.images[0].image_data if vendor.images and vendor.images[0].image_data else (("/" + vendor.images[0].image_url) if vendor.images else "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop"))|tojson }}
                 }{% if not loop.last %},{% endif %}
                 {% endfor %}
             ]
