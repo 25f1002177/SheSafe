@@ -72,6 +72,8 @@ class Config:
 
     # Google Maps API Key
     GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
+    if not GOOGLE_MAPS_API_KEY:
+        print("WARNING: GOOGLE_MAPS_API_KEY environment variable is not set. Google Maps features will not load.")
     
     @staticmethod
     def init_app(app):
