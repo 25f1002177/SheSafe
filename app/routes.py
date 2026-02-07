@@ -291,15 +291,6 @@ def admin_user_detail(user_id):
                          bookings=bookings,
                          feedbacks=feedbacks,
                          average_rating=avg_rating)
-
-
-@main.route('/vendor/dashboard')
-@vendor_required
-def vendor_dashboard():
-    """Vendor dashboard (vendor only)."""
-    return render_template('vendor_dashboard.html', user=current_user)
-
-
 @main.route('/user/dashboard')
 @user_required
 def user_dashboard():
