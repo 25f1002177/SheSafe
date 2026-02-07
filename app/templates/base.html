@@ -68,7 +68,8 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
-        <div class="mx-4 mt-4 p-3 rounded-lg text-sm font-medium {% if category == 'error' %}bg-red-50 text-red-600 border border-red-200{% else %}bg-green-50 text-green-600 border border-green-200{% endif %}">
+        <div
+            class="mx-4 mt-4 p-3 rounded-lg text-sm font-medium {% if category == 'error' %}bg-red-50 text-red-600 border border-red-200{% else %}bg-green-50 text-green-600 border border-green-200{% endif %}">
             {{ message }}
         </div>
         {% endfor %}
@@ -192,6 +193,14 @@
                     <span
                         class="material-symbols-outlined {% if request.endpoint == 'main.admin_revenue' %}fill-1{% endif %}">account_balance_wallet</span>
                     <span class="text-[10px] font-medium">Revenue</span>
+                </a>
+            </div>
+            <div
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_settings' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
+                <a href="{{ url_for('main.admin_settings') }}" class="flex flex-col items-center gap-1">
+                    <span
+                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_settings' %}fill-1{% endif %}">settings</span>
+                    <span class="text-[10px] font-medium">Settings</span>
                 </a>
             </div>
 

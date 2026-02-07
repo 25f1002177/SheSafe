@@ -686,8 +686,14 @@ def admin_revenue():
     return render_template('admin_revenue.html',
                          user=current_user,
                          bookings=completed_bookings,
-                         total_revenue=total_revenue,
                          revenue_by_mode=revenue_by_mode)
+
+
+@main.route('/admin/settings')
+@admin_required
+def admin_settings():
+    """Admin settings page (admin only)."""
+    return render_template('admin_settings.html', user=current_user)
 
 
 
