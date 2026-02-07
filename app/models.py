@@ -60,10 +60,13 @@ class Vendor(db.Model):
     
     def to_dict(self):
         """Convert vendor profile to dictionary for JSON serialization."""
-        first_image = self.images[0].image_data if self.images and self.images[0].image_data else None
-        if not first_image and self.images:
+        # Use getattr to avoid crash if column missing
+        first_img_obj = self.images[0] if self.images else None
+        first_image = getattr(first_img_obj, 'image_data', None) if first_img_obj else None
+        
+        if not first_image and first_img_obj:
             # Fallback to URL if data not available yet
-            first_image = f"/{self.images[0].image_url}"
+            first_image = f"/{first_img_obj.image_url}" if first_img_obj.image_url else None
             
         return {
             'id': self.id,

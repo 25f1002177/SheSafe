@@ -26,6 +26,9 @@ def update_schema():
 
         # Check for image_data in vendor_images
         with db.engine.connect() as conn:
+            # Check engine type
+            is_postgres = 'postgresql' in db.engine.url.drivername
+            
             try:
                 conn.execute(text("SELECT image_data FROM vendor_images LIMIT 1"))
                 print("Column 'image_data' already exists in 'vendor_images' table.")
@@ -33,9 +36,16 @@ def update_schema():
                 print("Column 'image_data' missing. Adding it now...")
                 try:
                     conn.execute(text("ALTER TABLE vendor_images ADD COLUMN image_data TEXT"))
-                    conn.execute(text("ALTER TABLE vendor_images ALTER COLUMN image_url DROP NOT NULL"))
+                    
+                    if is_postgres:
+                        # Only PostgreSQL supports this syntax easily
+                        try:
+                            conn.execute(text("ALTER TABLE vendor_images ALTER COLUMN image_url DROP NOT NULL"))
+                        except Exception as e:
+                            print(f"Postgres-specific ALTER failed: {e}")
+                    
                     conn.commit()
-                    print("Successfully added 'image_data' column and updated 'image_url' to nullable.")
+                    print("Successfully added 'image_data' column.")
                 except Exception as e:
                     print(f"Error updating vendor_images: {e}")
 
