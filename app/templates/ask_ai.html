@@ -98,7 +98,14 @@
 </div>
 
 <script type="module">
-    import aiService from "{{ url_for('static', filename='js/aiService.js') }}";
+    import AIService from "{{ url_for('static', filename='js/aiService.js') }}";
+
+    const aiKeys = {
+        openRouter: "{{ config.OPENROUTER_API_KEY }}",
+        nvidia: "{{ config.NVIDIA_API_KEY }}",
+        siliconFlow: "{{ config.SILICONFLOW_API_KEY }}"
+    };
+    const aiService = new AIService(aiKeys);
 
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');

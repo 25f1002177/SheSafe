@@ -1,11 +1,11 @@
 // aiService.js - Centralized AI API Service for SheSafe
 
 class AIService {
-    constructor() {
+    constructor(keys = {}) {
         this.providers = [
             {
                 name: "OpenRouter",
-                apiKey: "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",
+                apiKey: keys.openRouter || "",
                 apiUrl: "https://openrouter.ai/api/v1/chat/completions",
                 models: [
                     "openrouter/auto",
@@ -17,7 +17,7 @@ class AIService {
             },
             {
                 name: "NVIDIA NIM",
-                apiKey: "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",
+                apiKey: keys.nvidia || "",
                 apiUrl: "https://integrate.api.nvidia.com/v1/chat/completions",
                 models: [
                     "meta/llama-3.1-405b-instruct",
@@ -29,7 +29,7 @@ class AIService {
             },
             {
                 name: "Ollama Cloud",
-                apiKey: "14d72f5ee2284ad1bccbf09afb177f3e.XmKGoH-DT4_GfzPx9LEe_jQ6",
+                apiKey: keys.siliconFlow || "",
                 apiUrl: "https://api.siliconflow.cn/v1/chat/completions",
                 models: [
                     "deepseek-ai/DeepSeek-V3",
@@ -157,5 +157,4 @@ class AIService {
     }
 }
 
-const aiService = new AIService();
-export default aiService;
+export default AIService;
