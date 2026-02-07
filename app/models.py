@@ -53,6 +53,7 @@ class Vendor(db.Model):
     is_verified = db.Column(db.Boolean, default=False, nullable=False)
     is_active = db.Column(db.Boolean, default=False, nullable=False)
     average_rating = db.Column(db.Float, default=0.0, nullable=False)
+    thumbnail_url = db.Column(db.String(255), nullable=True) # For verified display on welcome page
     created_at = db.Column(db.DateTime, default=utcnow(), nullable=False)
     
     # Relationship to images
@@ -83,14 +84,14 @@ class Vendor(db.Model):
             'id': self.id,
             'business_name': self.business_name,
             'address': self.address,
-            'latitude': self.latitude,
-            'longitude': self.longitude,
+            'lat': self.latitude,
+            'lng': self.longitude,
             'category': self.category,
             'has_cctv': self.has_cctv,
             'has_female_staff': self.has_female_staff,
-            'average_rating': self.average_rating,
-            'default_image': default_img,
-            'image_url': self.images[0].image_url if self.images else default_img
+            'average_rating': self.average_rating or 5.0,
+            'reviews': len(self.feedbacks) if hasattr(self, 'feedbacks') and self.feedbacks else 0,
+            'image_url': self.thumbnail_url or (self.images[0].image_url if self.images else default_img)
         }
 
     def __repr__(self):
