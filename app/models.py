@@ -69,7 +69,8 @@ class Vendor(db.Model):
             'category': self.category,
             'has_cctv': self.has_cctv,
             'has_female_staff': self.has_female_staff,
-            'average_rating': self.average_rating
+            'average_rating': self.average_rating,
+            'image_url': f"/{self.images[0].image_url}" if self.images else "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop"
         }
 
     def __repr__(self):
