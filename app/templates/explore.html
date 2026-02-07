@@ -126,60 +126,9 @@
     </div>
 
     <!-- Bottom Sheet Vendor Info -->
-    <div class="mt-auto relative z-20 px-4 pb-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-4 flex flex-col gap-4 border border-slate-100">
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto -mt-1 mb-1"></div>
-            <div class="flex items-center gap-2">
-                <span
-                    class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">Absolute
-                    Nearest</span>
-                <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Verified Vendor</span>
-            </div>
-            <div class="flex gap-4">
-                <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
-                    <img id="nearest-vendor-img" class="h-full w-full object-cover"
-                        src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop" />
-                    <div
-                        class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
-                        <span class="material-symbols-outlined text-[10px] fill-1">verified</span> VERIFIED
-                    </div>
-                </div>
-                <div class="flex flex-col flex-1 justify-between py-1">
-                    <div>
-                        <div class="flex justify-between items-start">
-                            <h3 id="nearest-vendor-name" class="text-navy-trust font-bold text-lg leading-tight">Finding
-                                nearest...</h3>
-                            <button class="text-slate-300 hover:text-primary-pink transition-colors">
-                                <span class="material-symbols-outlined">bookmark</span>
-                            </button>
-                        </div>
-                        <p id="nearest-vendor-address" class="text-slate-500 text-xs mt-0.5">Please wait</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
-                            <span class="material-symbols-outlined text-[16px]">directions_walk</span>
-                            <span id="nearest-vendor-dist" class="font-bold text-[11px]">--- • --- mins</span>
-                        </div>
-                        <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
-                            <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
-                            <span id="nearest-vendor-rating" class="text-navy-trust font-bold text-sm">---</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-3">
-                <a id="nearest-vendor-link" href="#"
-                    class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl bg-navy-trust text-white font-bold text-base shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
-                    <span class="material-symbols-outlined text-xl">directions</span>
-                    Directions
-                </a>
-                <button
-                    class="flex-1 flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-base active:scale-[0.98] transition-all">
-                    <span class="material-symbols-outlined text-xl fill-1">forum</span>
-                    Reviews
-                </button>
-            </div>
-        </div>
+    <div id="vendor-list-container"
+        class="mt-auto relative z-20 px-4 pb-6 overflow-x-auto no-scrollbar flex gap-4 snap-x">
+        <!-- Vendor cards will be dynamically injected here -->
     </div>
 </div>
 
@@ -359,10 +308,8 @@
     }
 
     function showVendorInfo(vendor) {
-        document.getElementById('nearest-vendor-name').innerText = vendor.name;
-        document.getElementById('nearest-vendor-address').innerText = vendor.address;
-        document.getElementById('nearest-vendor-rating').innerText = vendor.rating;
-        document.getElementById('nearest-vendor-link').href = `/vendor/${vendor.id}`;
+        // This function is now deprecated in favor of updateVendorList
+        // But we'll keep it as a fallback or for single updates
     }
 
     function recenterMap() {
@@ -374,33 +321,96 @@
 
     function updateNearestVendor(userPos, vendorsList = vendors) {
         if (!vendorsList || vendorsList.length === 0) {
-            document.getElementById('nearest-vendor-name').innerText = "No matching vendors";
-            document.getElementById('nearest-vendor-address').innerText = "Try changing filters";
-            document.getElementById('nearest-vendor-rating').innerText = "---";
-            document.getElementById('nearest-vendor-dist').innerText = "---";
+            document.getElementById('vendor-list-container').innerHTML = `
+                <div class="bg-white rounded-3xl shadow-2xl p-6 flex flex-col items-center justify-center gap-2 border border-slate-100 min-w-full">
+                    <span class="material-symbols-outlined text-4xl text-slate-300">search_off</span>
+                    <p class="text-navy-trust font-bold">No matching vendors</p>
+                    <p class="text-slate-500 text-xs">Try changing filters</p>
+                </div>
+            `;
             return;
         }
 
-        let nearest = vendorsList[0];
-        let minDist = Infinity;
-
-        vendorsList.forEach(v => {
+        // Calculate distances for all vendors
+        const vendorsWithDist = vendorsList.map(v => {
             const dist = google.maps.geometry.spherical.computeDistanceBetween(
                 new google.maps.LatLng(userPos.lat, userPos.lng),
                 new google.maps.LatLng(v.lat, v.lng)
             );
-            if (dist < minDist) {
-                minDist = dist;
-                nearest = v;
-            }
+            return { ...v, dist };
         });
 
-        showVendorInfo(nearest);
+        // Sort by distance
+        vendorsWithDist.sort((a, b) => a.dist - b.dist);
 
-        // Update distance text
-        const distText = minDist < 1000 ? Math.round(minDist) + 'm' : (minDist / 1000).toFixed(1) + 'km';
-        const walkTime = Math.round(minDist / 80);
-        document.getElementById('nearest-vendor-dist').innerText = `${distText} • ${walkTime} mins`;
+        renderVendorList(vendorsWithDist);
+    }
+
+    function renderVendorList(sortedVendors) {
+        const container = document.getElementById('vendor-list-container');
+        container.innerHTML = '';
+
+        sortedVendors.forEach((vendor, index) => {
+            const distText = vendor.dist < 1000 ? Math.round(vendor.dist) + 'm' : (vendor.dist / 1000).toFixed(1) + 'km';
+            const walkTime = Math.round(vendor.dist / 80);
+            const isNearest = index === 0;
+
+            const card = document.createElement('div');
+            card.className = "min-w-[85%] sm:min-w-[320px] snap-center bg-white rounded-3xl shadow-xl p-4 flex flex-col gap-4 border border-slate-100 transition-transform active:scale-[0.98]";
+            card.innerHTML = `
+                <div class="flex items-center gap-2">
+                    ${isNearest ? '<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">Absolute Nearest</span>' : ''}
+                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Verified Vendor</span>
+                </div>
+                <div class="flex gap-4">
+                    <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
+                        <img class="h-full w-full object-cover" src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200&auto=format&fit=crop" />
+                        <div class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
+                            <span class="material-symbols-outlined text-[10px] fill-1">verified</span> VERIFIED
+                        </div>
+                    </div>
+                    <div class="flex flex-col flex-1 justify-between py-1">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-navy-trust font-bold text-base leading-tight">${vendor.name}</h3>
+                                <button class="text-slate-300 hover:text-primary-pink transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">bookmark</span>
+                                </button>
+                            </div>
+                            <p class="text-slate-500 text-xs mt-0.5 truncate">${vendor.address}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
+                                <span class="material-symbols-outlined text-[16px]">directions_walk</span>
+                                <span class="font-bold text-[11px]">${distText} • ${walkTime} mins</span>
+                            </div>
+                            <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
+                                <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
+                                <span class="text-navy-trust font-bold text-sm">${vendor.rating}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a href="/vendor/${vendor.id}" class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
+                        <span class="material-symbols-outlined text-lg">directions</span>
+                        Directions
+                    </a>
+                    <button class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-sm active:scale-[0.98] transition-all">
+                        <span class="material-symbols-outlined text-lg fill-1">forum</span>
+                        Reviews
+                    </button>
+                </div>
+            `;
+
+            // Add click listener to card to pan map
+            card.onclick = (e) => {
+                if (e.target.closest('a') || e.target.closest('button')) return;
+                map.panTo({ lat: vendor.lat, lng: vendor.lng });
+            };
+
+            container.appendChild(card);
+        });
     }
 
     // Load geometry library
