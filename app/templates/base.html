@@ -103,13 +103,13 @@
                     <span class="text-[10px] font-medium">Login</span>
                 </a>
             </div>
-            <div class="flex flex-col items-center w-1/5 -mt-8 relative">
+            <a href="tel:1091" class="flex flex-col items-center w-1/5 -mt-8 relative">
                 <div
                     class="bg-sos-red size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-sos-red/30 ring-4 ring-blush-white mb-1 transition-all active:scale-95">
                     <span class="material-symbols-outlined text-3xl font-bold">emergency</span>
                 </div>
                 <span class="text-[10px] font-medium text-sos-red">SOS</span>
-            </div>
+            </a>
             <div
                 class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.register' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
                 <a href="{{ url_for('main.register') }}" class="flex flex-col items-center gap-1">
