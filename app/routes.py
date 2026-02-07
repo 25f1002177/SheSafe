@@ -417,6 +417,11 @@ def vendor_onboard():
 
             # Ensure upload folder exists
             upload_folder = current_app.config['UPLOAD_FOLDER']
+            is_vercel = os.environ.get('VERCEL') == '1'
+            
+            if is_vercel:
+                upload_folder = '/tmp/uploads'
+                
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
 
@@ -516,6 +521,10 @@ def upload_images():
 
     # Ensure upload folder exists
     upload_folder = current_app.config['UPLOAD_FOLDER']
+    is_vercel = os.environ.get('VERCEL') == '1'
+    if is_vercel:
+        upload_folder = '/tmp/uploads'
+        
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
 
@@ -746,6 +755,20 @@ def admin_settings():
     return render_template('admin_settings.html', user=current_user)
 
 
+
+@main.route('/static/uploads/<path:filename>')
+def serve_uploads(filename):
+    """Serve uploaded files from /tmp on Vercel or normal static folder."""
+    import os
+    from flask import send_from_directory
+    
+    is_vercel = os.environ.get('VERCEL') == '1'
+    if is_vercel:
+        return send_from_directory('/tmp/uploads', filename)
+    
+    # Fallback to local static uploads
+    upload_folder = os.path.join(current_app.root_path, 'static', 'uploads')
+    return send_from_directory(upload_folder, filename)
 
 @main.route('/vendor/dashboard')
 @vendor_required
