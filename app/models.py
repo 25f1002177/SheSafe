@@ -60,6 +60,25 @@ class Vendor(db.Model):
     
     def to_dict(self):
         """Convert vendor profile to dictionary for JSON serialization."""
+        # Selection logic for default images based on category or name
+        default_img = "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=400&auto=format&fit=crop" # Generic safe space
+        
+        name_lower = self.business_name.lower()
+        cat_lower = (self.category or "").lower()
+        
+        if "hospital" in name_lower or "hospital" in cat_lower or "clinic" in name_lower:
+            default_img = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=400&auto=format&fit=crop"
+        elif any(k in name_lower for k in ["petrol", "oil", "pump", "fuel", "gas"]):
+            default_img = "https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=400&auto=format&fit=crop"
+        elif any(k in name_lower for k in ["dhaba", "restaurant", "cafe", "eatery", "pizza", "food", "chick", "chop", "bistro", "bakery", "kitchen", "stop"]):
+            # interior vs exterior based on "dhaba" keyword
+            if "dhaba" in name_lower or "stop" in name_lower:
+                default_img = "https://images.unsplash.com/photo-1626132647523-66f5bf380027?q=80&w=400&auto=format&fit=crop"
+            else:
+                default_img = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=400&auto=format&fit=crop"
+        elif "mall" in name_lower or "shopping" in name_lower or "plaza" in name_lower:
+             default_img = "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?q=80&w=400&auto=format&fit=crop"
+
         return {
             'id': self.id,
             'business_name': self.business_name,
@@ -69,7 +88,9 @@ class Vendor(db.Model):
             'category': self.category,
             'has_cctv': self.has_cctv,
             'has_female_staff': self.has_female_staff,
-            'average_rating': self.average_rating
+            'average_rating': self.average_rating,
+            'default_image': default_img,
+            'image_url': self.images[0].image_url if self.images else default_img
         }
 
     def __repr__(self):
