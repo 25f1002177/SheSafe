@@ -96,30 +96,33 @@
             facilities with guaranteed hygiene standards and gender-segregated spaces for your comfort." }}
         </p>
 
-        <!-- Facilities -->
-        <h3 class="text-navy-trust dark:text-white text-lg font-bold mb-4">Included Facilities</h3>
+        <!-- Facilities/Services -->
+        <h3 class="text-navy-trust dark:text-white text-lg font-bold mb-4">Services Available</h3>
         <div class="grid grid-cols-2 gap-3 mb-8">
+            {% set categories = vendor.category.split(', ') %}
+            {% for cat in categories %}
             <div
                 class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span class="material-symbols-outlined text-brand-pink text-xl">sanitizer</span>
-                <span class="text-xs font-bold text-navy-trust dark:text-slate-300">Sanitizers</span>
+                <span class="material-symbols-outlined text-brand-pink text-xl">
+                    {% if cat == 'Washroom' %}wc{% elif cat == 'Period Care' %}sanitizer{% elif cat == 'Nursing Room'
+                    %}baby_changing_station{% elif cat == 'Changing Room' %}checkroom{% else %}verified{% endif %}
+                </span>
+                <span class="text-xs font-bold text-navy-trust dark:text-slate-300">{{ cat }}</span>
             </div>
-            <div
-                class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span class="material-symbols-outlined text-brand-pink text-xl">water_drop</span>
-                <span class="text-xs font-bold text-navy-trust dark:text-slate-300">Periods Kit</span>
-            </div>
-            <div
-                class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span class="material-symbols-outlined text-brand-pink text-xl">checkroom</span>
-                <span class="text-xs font-bold text-navy-trust dark:text-slate-300">Changing Room</span>
-            </div>
-            <div
-                class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span class="material-symbols-outlined text-brand-pink text-xl">child_care</span>
-                <span class="text-xs font-bold text-navy-trust dark:text-slate-300">Baby Care</span>
-            </div>
+            {% endfor %}
         </div>
+
+        {% if vendor.images|length > 1 %}
+        <!-- Image Gallery -->
+        <h3 class="text-navy-trust dark:text-white text-lg font-bold mb-4">Gallery</h3>
+        <div class="flex gap-3 overflow-x-auto no-scrollbar pb-8">
+            {% for img in vendor.images %}
+            <div class="size-24 shrink-0 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
+                <img src="{{ url_for('static', filename=img.image_url) }}" class="w-full h-full object-cover">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <!-- Reviews Section -->
         <div class="flex justify-between items-center mb-4">

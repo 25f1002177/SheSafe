@@ -33,148 +33,181 @@
                 <div
                     class="size-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold">
                     3</div>
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Review</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Complete</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('main.vendor_onboard') }}" enctype="multipart/form-data" id="onboarding-form"
+        class="space-y-8 px-5">
+        <!-- Business Section -->
+        <div class="space-y-6">
+            <div>
+                <label
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Business
+                    Presence</label>
+                <input type="text" name="business_name" required placeholder="Enter business or shop name"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
+            </div>
+
+            <div>
+                <label
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Short
+                    Bio</label>
+                <textarea name="description" placeholder="Briefly describe your space..."
+                    class="w-full h-32 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
+            </div>
+
+            <div>
+                <label
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-3">Major
+                    Services (Select all provided)</label>
+                <div class="grid grid-cols-2 gap-3">
+                    {% for service in ['Washroom', 'Period Care', 'Nursing Room', 'Changing Room'] %}
+                    <label
+                        class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
+                        <input type="checkbox" name="categories" value="{{ service }}"
+                            class="size-4 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
+                        <span class="text-xs font-bold text-navy-trust dark:text-white">{{ service }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
-        <form method="POST" action="{{ url_for('main.vendor_onboard') }}" class="space-y-8">
-            <!-- Business Section -->
-            <div class="space-y-6">
-                <div>
-                    <label
-                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Business
-                        Presence</label>
-                    <input type="text" name="business_name" required placeholder="Enter business or shop name"
-                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
-                </div>
-
-                <div>
-                    <label
-                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Short
-                        Bio</label>
-                    <textarea name="description" placeholder="Briefly describe your space..."
-                        class="w-full h-32 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
-                </div>
-
-                <div>
-                    <label
-                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Service
-                        Category</label>
-                    <div class="relative">
-                        <select name="category" required
-                            class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink appearance-none">
-                            <option value="" disabled selected>Select primary service...</option>
-                            <option value="Washroom">Washroom</option>
-                            <option value="Period Care">Period Care</option>
-                            <option value="Nursing">Nursing Room</option>
-                            <option value="Changing Room">Changing Room</option>
-                        </select>
-                        <span
-                            class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Location Section -->
-            <div class="space-y-6 pt-4">
-                <div class="flex justify-between items-center mb-1">
-                    <label
-                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block">Precise
-                        Location</label>
-                    <button type="button" id="get-location"
-                        class="text-brand-pink text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">my_location</span>
-                        Auto-Detect
-                    </button>
-                </div>
-
-                <div id="mini-map-container"
-                    class="hidden h-40 w-full rounded-[32px] overflow-hidden border-2 border-slate-50 dark:border-slate-800">
-                    <div id="mini-map" class="h-full w-full"></div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="latitude" name="latitude" step="any" required placeholder="Latitude"
-                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
-                    <input type="number" id="longitude" name="longitude" step="any" required placeholder="Longitude"
-                        class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
-                </div>
-
-                <div>
-                    <label
-                        class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Postal
-                        Address</label>
-                    <textarea id="address" name="address" required placeholder="Full physical address"
-                        class="w-full h-24 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
-                </div>
-            </div>
-
-            <!-- Features -->
-            <div class="space-y-4 pt-4">
+        <!-- Property Images -->
+        <div class="space-y-6 pt-4">
+            <div>
                 <label
-                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Safety
-                    Amenities</label>
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">
+                    Property Images (Min. 3 required)
+                </label>
+                <div class="relative group">
+                    <input type="file" name="property_images" id="property_images" multiple accept="image/*" required
+                        class="hidden">
+                    <label for="property_images"
+                        class="flex flex-col items-center justify-center w-full h-40 rounded-[32px] border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-brand-pink dark:hover:border-brand-pink bg-slate-50 dark:bg-slate-800 transition-all cursor-pointer">
+                        <div class="flex flex-col items-center gap-2">
+                            <span
+                                class="material-symbols-outlined text-4xl text-slate-400 group-hover:text-brand-pink">add_photo_alternate</span>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tap to upload
+                                photos</p>
+                        </div>
+                    </label>
+                </div>
+                <div id="image-preview" class="grid grid-cols-3 gap-3 mt-4">
+                    <!-- Previews will be injected here -->
+                </div>
+                <p id="image-count-warning" class="text-[10px] font-bold text-brand-pink mt-2 hidden">Please select at
+                    least 3 images.</p>
+            </div>
+        </div>
 
+        <!-- Location Section -->
+        <div class="space-y-6 pt-4">
+            <div class="flex justify-between items-center mb-1">
+                <label
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block">Precise
+                    Location</label>
+                <button type="button" id="get-location"
+                    class="text-brand-pink text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">my_location</span>
+                    Auto-Detect
+                </button>
+            </div>
+
+            <div id="mini-map-container"
+                class="hidden h-40 w-full rounded-[32px] overflow-hidden border-2 border-slate-50 dark:border-slate-800">
+                <div id="mini-map" class="h-full w-full"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <input type="number" id="latitude" name="latitude" step="any" required placeholder="Latitude"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
+                <input type="number" id="longitude" name="longitude" step="any" required placeholder="Longitude"
+                    class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
+            </div>
+
+            <div>
+                <label
+                    class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Postal
+                    Address</label>
+                <textarea id="address" name="address" required placeholder="Full physical address"
+                    class="w-full h-24 rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-sm font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink resize-none"></textarea>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="space-y-4 pt-4">
+            <label
+                class="text-[10px] font-bold text-navy-trust/50 dark:text-slate-400 uppercase tracking-widest block mb-2">Safety
+                Amenities</label>
+
+            <label
+                class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
+                <div
+                    class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-brand-pink">
+                    <span class="material-symbols-outlined">videocam</span>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[13px] font-bold text-navy-trust dark:text-white">CCTV Coverage</p>
+                    <p class="text-[10px] text-slate-400">Indoor and entry surveillance</p>
+                </div>
+                <input type="checkbox" name="has_cctv"
+                    class="size-5 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
+            </label>
+
+            <div class="space-y-3">
                 <label
                     class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
                     <div
                         class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-brand-pink">
-                        <span class="material-symbols-outlined">videocam</span>
+                        <span class="material-symbols-outlined">woman</span>
                     </div>
                     <div class="flex-1">
-                        <p class="text-[13px] font-bold text-navy-trust dark:text-white">CCTV Coverage</p>
-                        <p class="text-[10px] text-slate-400">Indoor and entry surveillance</p>
+                        <p class="text-[13px] font-bold text-navy-trust dark:text-white">Female Assistance</p>
+                        <p class="text-[10px] text-slate-400">Attendants available on site</p>
                     </div>
-                    <input type="checkbox" name="has_cctv"
+                    <input type="checkbox" id="has_female_staff" name="has_female_staff"
                         class="size-5 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
                 </label>
 
-                <div class="space-y-3">
-                    <label
-                        class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
-                        <div
-                            class="size-10 rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center text-brand-pink">
-                            <span class="material-symbols-outlined">woman</span>
+                <div id="staff-timings"
+                    class="hidden bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                    <p class="text-[10px] font-black text-brand-pink uppercase tracking-widest">Availability Hours</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[8px] font-bold text-slate-400 uppercase block mb-1">From</label>
+                            <input type="time" name="female_staff_start_time"
+                                class="w-full bg-white dark:bg-slate-900 border-none rounded-xl p-3 text-xs font-bold text-navy-trust dark:text-white">
                         </div>
-                        <div class="flex-1">
-                            <p class="text-[13px] font-bold text-navy-trust dark:text-white">Female Assistance</p>
-                            <p class="text-[10px] text-slate-400">Attendants available on site</p>
-                        </div>
-                        <input type="checkbox" id="has_female_staff" name="has_female_staff"
-                            class="size-5 rounded border-slate-200 text-brand-pink focus:ring-brand-pink">
-                    </label>
-
-                    <div id="staff-timings"
-                        class="hidden bg-slate-50 dark:bg-slate-800 p-5 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-2">
-                        <p class="text-[10px] font-black text-brand-pink uppercase tracking-widest">Availability Hours
-                        </p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[8px] font-bold text-slate-400 uppercase block mb-1">From</label>
-                                <input type="time" name="female_staff_start_time"
-                                    class="w-full bg-white dark:bg-slate-900 border-none rounded-xl p-3 text-xs font-bold text-navy-trust dark:text-white">
-                            </div>
-                            <div>
-                                <label class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Till</label>
-                                <input type="time" name="female_staff_end_time"
-                                    class="w-full bg-white dark:bg-slate-900 border-none rounded-xl p-3 text-xs font-bold text-navy-trust dark:text-white">
-                            </div>
+                        <div>
+                            <label class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Till</label>
+                            <input type="time" name="female_staff_end_time"
+                                class="w-full bg-white dark:bg-slate-900 border-none rounded-xl p-3 text-xs font-bold text-navy-trust dark:text-white">
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <button type="submit"
-                class="w-full bg-navy-trust text-white py-5 rounded-2xl font-bold text-base shadow-xl shadow-navy-trust/20 active:scale-[0.98] transition-all mt-10">
-                Submit for Verification
-            </button>
-        </form>
-    </div>
+        <button type="submit" id="submit-btn"
+            class="w-full bg-navy-trust text-white py-5 rounded-2xl font-bold text-base shadow-xl shadow-navy-trust/20 active:scale-[0.98] transition-all mt-10">
+            Submit for Verification
+        </button>
+    </form>
+
 </div>
 
 <script>
     const femaleStaffCheck = document.getElementById('has_female_staff');
     const staffTimings = document.getElementById('staff-timings');
+    const imgInp = document.getElementById('property_images');
+    const imgPreview = document.getElementById('image-preview');
+    const imgWarning = document.getElementById('image-count-warning');
+    const onboardForm = document.getElementById('onboarding-form'); // Corrected form ID
+
     const locBtn = document.getElementById('get-location');
     const latInp = document.getElementById('latitude');
     const lonInp = document.getElementById('longitude');
@@ -184,6 +217,47 @@
 
     femaleStaffCheck.addEventListener('change', () => {
         staffTimings.classList.toggle('hidden', !femaleStaffCheck.checked);
+    });
+
+    // Image Preview and Validation
+    imgInp.addEventListener('change', () => {
+        imgPreview.innerHTML = '';
+        const files = imgInp.files;
+
+        if (files.length < 3) {
+            imgWarning.classList.remove('hidden');
+        } else {
+            imgWarning.classList.add('hidden');
+        }
+
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.className = 'aspect-square rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700';
+                div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                imgPreview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    onboardForm.addEventListener('submit', (e) => {
+        const categories = document.querySelectorAll('input[name="categories"]:checked');
+        const files = imgInp.files;
+
+        if (categories.length === 0) {
+            alert('Please select at least one service category.');
+            e.preventDefault();
+            return;
+        }
+
+        if (files.length < 3) {
+            alert('Please upload at least 3 property images.');
+            imgWarning.classList.remove('hidden');
+            e.preventDefault();
+            return;
+        }
     });
 
     function initMap() {
@@ -205,7 +279,6 @@
             const pos = marker.getPosition();
             latInp.value = pos.lat().toFixed(6);
             lonInp.value = pos.lng().toFixed(6);
-            // Optional: Reverse geocode here if needed
             reverseGeocode(pos.lat(), pos.lng());
         });
     }

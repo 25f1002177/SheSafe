@@ -45,7 +45,7 @@ class Vendor(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     address = db.Column(db.String(500), nullable=False)
-    category = db.Column(db.String(50), nullable=False, default='Washroom') 
+    category = db.Column(db.String(255), nullable=False, default='Washroom') 
     has_cctv = db.Column(db.Boolean, default=False, nullable=False)
     has_female_staff = db.Column(db.Boolean, default=False, nullable=False)
     female_staff_start_time = db.Column(db.Time, nullable=True)

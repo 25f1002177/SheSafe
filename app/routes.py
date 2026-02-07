@@ -350,13 +350,23 @@ def vendor_onboard():
         female_staff_start_time = request.form.get('female_staff_start_time')
         female_staff_end_time = request.form.get('female_staff_end_time')
         
-        category = request.form.get('category')
+        categories = request.form.getlist('categories')
         
         # Validation
-        if not all([business_name, latitude, longitude, address, category]):
-            flash('Business name, location, address, and category are required.', 'error')
+        if not all([business_name, latitude, longitude, address, categories]):
+            flash('Business name, location, address, and at least one category are required.', 'error')
             return render_template('vendor_onboard.html')
         
+        # Check for images (At least 3 required)
+        if 'property_images' not in request.files:
+            flash('No images provided.', 'error')
+            return render_template('vendor_onboard.html')
+        
+        image_files = request.files.getlist('property_images')
+        if len(image_files) < 3:
+            flash('At least 3 property images are required.', 'error')
+            return render_template('vendor_onboard.html')
+
         try:
             latitude = float(latitude)
             longitude = float(longitude)
@@ -375,6 +385,9 @@ def vendor_onboard():
                 flash('Invalid time format for staff timing.', 'error')
                 return render_template('vendor_onboard.html')
         
+        # Combine categories into a comma-separated string
+        category_str = ", ".join(categories)
+
         # Create vendor profile
         vendor = Vendor(
             user_id=current_user.id,
@@ -383,7 +396,7 @@ def vendor_onboard():
             latitude=latitude,
             longitude=longitude,
             address=address,
-            category=category,
+            category=category_str,
             has_cctv=has_cctv,
             has_female_staff=has_female_staff,
             female_staff_start_time=start_time,
@@ -394,9 +407,34 @@ def vendor_onboard():
         )
         
         db.session.add(vendor)
+        db.session.flush() # Get vendor ID before committing to add images
+
+        # Handle Image Uploads
+        from werkzeug.utils import secure_filename
+        from app.models import VendorImage
+        import uuid
+
+        # Ensure upload folder exists
+        upload_folder = current_app.config['UPLOAD_FOLDER']
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        for file in image_files:
+            if file and file.filename != '' and '.' in file.filename and \
+               file.filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']:
+                
+                filename = secure_filename(file.filename)
+                unique_filename = f"{uuid.uuid4().hex}_{filename}"
+                file_path = os.path.join(upload_folder, unique_filename)
+                file.save(file_path)
+                
+                img_url = f"uploads/{unique_filename}"
+                new_image = VendorImage(vendor_id=vendor.id, image_url=img_url)
+                db.session.add(new_image)
+
         db.session.commit()
         
-        flash('Vendor profile created successfully! Your profile is pending verification.', 'success')
+        flash('Vendor profile created with images! Your profile is pending verification.', 'success')
         return redirect(url_for('main.vendor_dashboard'))
     
     return render_template('vendor_onboard.html')
@@ -470,17 +508,22 @@ def upload_images():
         flash('No images selected.', 'error')
         return redirect(url_for('main.vendor_dashboard'))
 
+    # Ensure upload folder exists
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
     uploaded_count = 0
     for file in files:
         if file and '.' in file.filename and \
-           file.filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'webp'}:
+           file.filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']:
             
             # Create unique filename to avoid collisions
             filename = secure_filename(file.filename)
             unique_filename = f"{uuid.uuid4().hex}_{filename}"
             
             # Save file
-            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            file_path = os.path.join(upload_folder, unique_filename)
             file.save(file_path)
             
             # Save to database (store the relative URL for easy serving)
@@ -635,9 +678,9 @@ def update_db_schema():
     from sqlalchemy import text
     try:
         with db.engine.connect() as conn:
-            conn.execute(text("ALTER TABLE vendors ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'Washroom' NOT NULL"))
+            conn.execute(text("ALTER TABLE vendors ALTER COLUMN category TYPE VARCHAR(255)"))
             conn.commit()
-        return "Schema updated successfully! Added 'category' column."
+        return "Schema updated successfully! Categoriy column type updated to VARCHAR(255)."
     except Exception as e:
         return f"Error updating schema: {str(e)}"
 
