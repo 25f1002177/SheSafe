@@ -98,7 +98,7 @@
 </div>
 
 <script type="module">
-    import AIService from "{{ url_for('static', filename='js/aiService.js') }}";
+    import AIService from "{{ url_for('static', filename='js/aiService.js') }}?v=geminiflash2";
 
     const aiKeys = {
         openRouter: "{{ config.OPENROUTER_API_KEY }}",

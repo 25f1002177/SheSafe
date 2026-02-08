@@ -1,0 +1,31 @@
+Status Code: 200
+Response: {
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Hello! How can I help you today?"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 2,
+    "candidatesTokenCount": 9,
+    "totalTokenCount": 11,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 2
+      }
+    ]
+  },
+  "modelVersion": "gemini-2.5-flash-preview-09-2025",
+  "responseId": "bBuIaavwEvS6juMPoOqNsAo"
+}
+

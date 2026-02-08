@@ -87,7 +87,7 @@ class AIService {
 
     async callGemini(prompt, systemPrompt) {
         const apiKey = "AIzaSyA8nrVFVmlpFSp-AJXWH2an7jau6YU9e2g";
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
 
         // Construct request body for Google's API
         const requestBody = {
