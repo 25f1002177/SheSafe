@@ -49,36 +49,7 @@
             </div>
         </section>
 
-        <!-- Verified Places Preview -->
-        <section class="px-4 py-8 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-navy-trust dark:text-white text-xl font-black">Verified Places</h3>
-                <a href="{{ url_for('main.login') }}"
-                    class="text-primary-pink text-xs font-bold uppercase tracking-widest">See All</a>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                {% for vendor in vendors[:2] %}
-                <div class="flex flex-col gap-2 group">
-                    <div class="relative overflow-hidden rounded-xl aspect-[4/3]">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9j1l_2kSYvM8tLH4PE_cuY8jGBRmQSJIZFadkIiPmYfpRTX637yW6M-v5q-tL93ZavAHbyANKmY8icYFeW7CihNbPDsXJvIZH5dBuUyRLt9FBnjdGCjhkN6-KZ2ChGj8wROFpbDgWMf3jxBGbnrRORbtU6xeISq3Qpoj2mTAUbbqYrHmsM5DPKNXQEMOSushNtwbBGYLdeN-w5YzP4EWlHDa2qXdnsd8VWBaYeUngtJX1go19X6pDMxTGWGCVdWCC983IBbQ7zvCw"
-                            alt="{{ vendor.business_name }}"
-                            class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
-                        <div
-                            class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center shadow-sm">
-                            <span class="material-symbols-outlined text-[10px] text-primary-pink fill-1">star</span>
-                            <span class="text-[10px] font-bold text-navy-trust ml-1">{{ vendor.avg_rating or '5.0'
-                                }}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-navy-trust dark:text-white text-xs font-bold truncate">{{ vendor.business_name }}
-                        </p>
-                        <p class="text-slate-400 text-[10px] mt-0.5">{{ vendor.city }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
+
     </main>
 
 </div>
