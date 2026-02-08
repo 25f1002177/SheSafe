@@ -8,7 +8,6 @@ class AIService {
                 apiKey: keys.openRouter || "",
                 apiUrl: "https://openrouter.ai/api/v1/chat/completions",
                 models: [
-                    "openrouter/auto",
                     "google/gemma-2-9b-it:free",
                     "meta-llama/llama-3.2-3b-instruct:free",
                     "microsoft/phi-3-mini-128k-instruct:free",
