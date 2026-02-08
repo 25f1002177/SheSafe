@@ -85,8 +85,66 @@ class AIService {
 
 
 
+    async callGemini(prompt, systemPrompt) {
+        const apiKey = "AIzaSyA8nrVFVmlpFSp-AJXWH2an7jau6YU9e2g";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        // Construct request body for Google's API
+        const requestBody = {
+            contents: [{
+                role: "user",
+                parts: [{ text: prompt }]
+            }],
+            generationConfig: {
+                maxOutputTokens: 1000,
+                temperature: 0.5
+            }
+        };
+
+        if (systemPrompt) {
+            requestBody.systemInstruction = {
+                parts: [{ text: systemPrompt }]
+            };
+        }
+
+        try {
+            console.log("[Gemini] Trying: gemini-1.5-flash");
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                console.warn(`[Fallback] Gemini -> HTTP ${response.status}`);
+                return null;
+            }
+
+            const data = await response.json();
+            const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (!responseText) {
+                console.warn("[Fallback] Gemini -> Empty Response");
+                return null;
+            }
+
+            console.log("[Success] Used Gemini Flash");
+            return this.cleanReasoningOutput(responseText);
+
+        } catch (error) {
+            console.error("[Network Error] Gemini:", error.message);
+            return null;
+        }
+    }
+
     async callAI(prompt, maxTokens = 1000, systemPrompt = null) {
-        // Try each provider
+        // 1. Try Gemini First (Hardcoded Priority)
+        const geminiResponse = await this.callGemini(prompt, systemPrompt);
+        if (geminiResponse) return geminiResponse;
+
+        // 2. Fallback to existing providers
         const startProviderIndex = this.currentProviderIndex;
 
         for (let p = 0; p < this.providers.length; p++) {
@@ -152,7 +210,7 @@ class AIService {
             }
         }
 
-        return "AI Error: All providers (OpenRouter, NVIDIA, SiliconFlow) failed to respond. This may be due to browser security settings or network issues.";
+        return "AI Error: All providers (Gemini, OpenRouter, NVIDIA, SiliconFlow) failed to respond. This may be due to browser security settings or network issues.";
     }
 }
 
