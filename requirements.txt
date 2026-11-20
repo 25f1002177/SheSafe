@@ -7,3 +7,4 @@ qrcode
 pillow
 requests
 razorpay==1.4.2
+setuptools>=69
