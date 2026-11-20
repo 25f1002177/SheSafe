@@ -59,6 +59,12 @@ def landing():
     return render_template('landing.html', vendors=vendors)
 
 
+def is_seed_vendor(vendor):
+    """True for seeded presentation vendors (accounts created by the populate scripts)."""
+    email = (vendor.user.email if vendor.user else '') or ''
+    return email.lower().endswith('@shesafe.com')
+
+
 @main.route('/explore')
 @login_required
 def explore():
@@ -69,8 +75,12 @@ def explore():
         from app.demo_catalog import kgp_venues
         return render_template('explore.html', venues=kgp_venues())
     from app.models import Vendor
-    vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
-    return render_template('explore_legacy.html', vendors=vendors, forced_area=(area == 'ashoka'))
+    candidates = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+    is_demo = (area == 'ashoka')
+    # Seeded presentation listings (accounts on the shesafe.com demo domain) are shown only in
+    # explicit demo mode. Primary results use genuine verified vendors only.
+    vendors = [v for v in candidates if is_seed_vendor(v) == is_demo]
+    return render_template('explore_legacy.html', vendors=vendors, forced_area=is_demo)
 
 
 @main.route('/demo/venue/<slug>')

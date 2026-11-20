@@ -42,7 +42,17 @@
             direction: ltr;
             -webkit-font-smoothing: antialiased;
         }
+        html:not(.icons-ok) .material-symbols-outlined { color: transparent !important; }
     </style>
+    <script>
+        (function () {
+            var d = document.documentElement;
+            function ok() { d.classList.add('icons-ok'); }
+            if (document.fonts && document.fonts.load) {
+                document.fonts.load('24px "Material Symbols Outlined"', 'home').then(function (f) { if (f && f.length) ok(); }, function () {});
+            }
+        })();
+    </script>
 
     <!-- PWA Support -->
     <link rel="manifest" href="{{ url_for('main.manifest') }}">

@@ -131,6 +131,7 @@
     let usingDemoArea = false;
     const FORCED_AREA = {{ 'true' if forced_area else 'false' }};
     let refPos = null;
+    const NONE_MSG = 'No verified women\'s washroom is listed yet.';
 
     // Parse vendors from robust JSON block
     const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
@@ -172,27 +173,25 @@
             showDemoAreaNotice(AREA);
         } else if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
-                    userPos = pos;
-                    map.easeTo({ center: pos });
-                    userMarker = new google.maps.Marker({ position: pos, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } });
-                    const nearestM = vendors.length ? Math.min(...vendors.map(v => distanceMeters(pos.lat, pos.lng, v.lat, v.lng))) : Infinity;
-                    if (nearestM > 50000) {
-                        noVerifiedNearby('No verified women\'s washroom within 50 km of you yet.');
-                        return;
-                    }
-                    refPos = pos;
-                    map.easeTo({ center: pos });
-                    updateNearestVendor(pos);
-                },
+                (position) => handlePosition({ lat: position.coords.latitude, lng: position.coords.longitude }),
                 (error) => {
                     console.error("Geolocation error:", error);
-                    noVerifiedNearby('Turn on location to see the closest verified women\'s washroom.');
+                    noVerifiedNearby(vendors.length ? 'Turn on location to see the closest verified women\'s washroom.' : NONE_MSG);
                 }
             );
         } else {
-            noVerifiedNearby('Turn on location to see the closest verified women\'s washroom.');
+            noVerifiedNearby(vendors.length ? 'Turn on location to see the closest verified women\'s washroom.' : NONE_MSG);
+        }
+
+        window.handlePosition = handlePosition;
+        function handlePosition(pos) {
+            userPos = pos;
+            map.easeTo({ center: pos });
+            if (userMarker) userMarker.setMap(null);
+            userMarker = new google.maps.Marker({ position: pos, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } });
+            if (!vendors.length) { noVerifiedNearby(NONE_MSG); return; }
+            refPos = pos;
+            updateNearestVendor(pos);
         }
 
         function noVerifiedNearby(msg) {
@@ -294,6 +293,8 @@
     function recenterMap() {
         if (userMarker) {
             map.easeTo({ center: userMarker.getPosition().toJSON(), zoom: 15 });
+        } else if (!FORCED_AREA) {
+            if (navigator.geolocation) navigator.geolocation.getCurrentPosition((p) => window.handlePosition({ lat: p.coords.latitude, lng: p.coords.longitude }), () => {});
         } else {
             // No browser location: recenter on the labelled demo area
             map.easeTo({ center: { lat: 28.948445948109907, lng: 77.09660988721876 }, zoom: 14 });
@@ -333,6 +334,7 @@
         sortedVendors.forEach((vendor, index) => {
             const distText = vendor.dist < 1000 ? Math.round(vendor.dist) + 'm' : (vendor.dist / 1000).toFixed(1) + 'km';
             const walkTime = Math.round(vendor.dist / 80);
+            const showEta = vendor.dist <= 5000;
             const isNearest = index === 0;
 
             const card = document.createElement('div');
@@ -359,7 +361,7 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
                                 <span class="material-symbols-outlined text-[16px]">directions_walk</span>
-                                <span class="font-bold text-[11px]">${distText} &bull; ${walkTime} mins</span>
+                                <span class="font-bold text-[11px]">${distText}${showEta ? ' &bull; ' + walkTime + ' mins' : ' away'}</span>
                             </div>
                             <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
                                 <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
