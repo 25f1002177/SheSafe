@@ -120,8 +120,8 @@
         <!-- Recommended Area -->
         <div class="px-5 pt-8">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-navy-trust text-lg font-bold">Recommended Near You</h3>
-                <button class="text-primary-pink text-sm font-semibold">See All</button>
+                <h3 id="recommended-heading" class="text-navy-trust text-lg font-bold">Recommended Near You</h3>
+                <a href="/explore" class="text-primary-pink text-sm font-semibold no-underline">See All</a>
             </div>
             <div id="recommended-list" class="space-y-4">
                 <!-- Recommended vendors will be injected here -->
@@ -213,6 +213,8 @@
             if (banner) banner.style.display = '';
             if (bannerText) bannerText.innerText = 'Location unavailable - showing demo area (Ashoka University)';
             if (label) label.innerText = 'Closest to demo area';
+            var recHeading = document.getElementById('recommended-heading');
+            if (recHeading) recHeading.innerText = 'Recommended Near Demo Area';
         } else {
             if (banner) banner.style.display = 'none';
         }

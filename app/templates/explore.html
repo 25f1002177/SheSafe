@@ -43,7 +43,7 @@
     <div id="map" class="absolute inset-0 z-0"></div>
 
     <!-- Top Overlays -->
-    <div class="relative z-10 flex flex-col pt-12 px-4 gap-3 pointer-events-none">
+    <div id="top-overlays" class="relative z-10 flex flex-col pt-12 px-4 gap-3 pointer-events-none">
         {#
         <div class="flex items-center justify-between pointer-events-auto">
             <h1 class="text-navy-trust text-xl font-bold tracking-tight drop-shadow-sm mx-auto">SheSafe</h1>
@@ -201,11 +201,11 @@
 
         function showDemoAreaNotice(demoPos) {
             const notice = document.createElement('div');
-            notice.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:20;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
+            notice.style.cssText = 'align-self:center;pointer-events:auto;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
             usingDemoArea = true;
             refPos = demoPos;
             notice.innerText = 'Location unavailable - showing demo area (Ashoka University)';
-            document.getElementById('map').appendChild(notice);
+            document.getElementById('top-overlays').appendChild(notice);
             map.easeTo({ center: [demoPos.lng, demoPos.lat] });
             updateNearestVendor(demoPos);
         }

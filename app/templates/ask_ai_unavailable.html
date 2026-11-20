@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Ask AI - SheSafe{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+    <div class="size-16 rounded-2xl bg-navy-trust/5 flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-3xl text-navy-trust">chat_bubble</span>
+    </div>
+    <h1 class="text-navy-trust text-xl font-bold mb-2">Ask AI is not available in this demo</h1>
+    <p class="text-slate-500 text-sm max-w-xs mb-6">The AI health assistant is disabled for the SheSafe pitch demo.
+        No question you enter anywhere in this demo is sent to an AI provider.</p>
+    <a href="/welcome"
+        class="bg-navy-trust text-white text-sm font-bold px-6 py-3 rounded-2xl shadow-lg shadow-navy-trust/20 no-underline active:scale-95 transition-all">Back
+        to Home</a>
+</div>
+{% endblock %}
