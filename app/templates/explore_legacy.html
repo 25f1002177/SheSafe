@@ -3,7 +3,6 @@
 {% block title %}Explore - SheSafe{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='vendor/maplibre-gl.css') }}">
 <style>
     #map {
         height: 100%;
@@ -123,9 +122,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='vendor/maplibre-gl.js') }}"></script>
 <script>
-    const MAP_STYLE = 'https://tiles.openfreemap.org/styles/dark';
     let map;
     let markers = [];
     let userMarker;
@@ -147,31 +144,13 @@
         return 2 * R * Math.asin(Math.sqrt(a));
     }
 
-    function pinElement() {
-        const el = document.createElement('div');
-        el.innerHTML = '<svg width="30" height="40" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">'
-            + '<path d="M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z" '
-            + 'fill="#001F3F" stroke="white" stroke-width="2"/>'
-            + '<circle cx="12" cy="9" r="2.5" fill="white"/></svg>';
-        el.style.cursor = 'pointer';
-        return el.firstChild;
-    }
-
     function initMap() {
-        const defaultCenter = [77.2090, 28.6139]; // Delhi [lng, lat]
-
-        map = new maplibregl.Map({
-            container: 'map',
-            style: MAP_STYLE,
-            center: defaultCenter,
-            zoom: 14,
-            attributionControl: { compact: true }
+        const defaultCenter = { lat: 28.6139, lng: 77.2090 };
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: defaultCenter, zoom: 14, disableDefaultUI: true, zoomControl: false,
+            gestureHandling: 'greedy', clickableIcons: false
         });
-        map.addControl(new maplibregl.AttributionControl({
-            customAttribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a>',
-            compact: true
-        }));
-
+        map.easeTo = function (o) { const c = o.center; map.panTo(Array.isArray(c) ? { lat: c[1], lng: c[0] } : (c.lat !== undefined && typeof c.lat === 'number' ? c : { lat: c.lat(), lng: c.lng() })); if (o.zoom) map.setZoom(o.zoom); };
         // Geolocation
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -179,14 +158,8 @@
                     const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
                     userPos = pos;
                     refPos = pos;
-                    map.easeTo({ center: [pos.lng, pos.lat] });
-
-                    const el = document.createElement('div');
-                    el.className = 'user-location-pulse';
-                    el.style.cssText = 'width:16px;height:16px;border-radius:50%;background:#4285F4;border:2px solid white;';
-                    userMarker = new maplibregl.Marker({ element: el })
-                        .setLngLat([pos.lng, pos.lat])
-                        .addTo(map);
+                    map.easeTo({ center: pos });
+                    userMarker = new google.maps.Marker({ position: pos, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } });
 
                     updateNearestVendor(pos);
                 },
@@ -204,9 +177,9 @@
             notice.style.cssText = 'align-self:center;pointer-events:auto;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
             usingDemoArea = true;
             refPos = demoPos;
-            notice.innerText = 'Location unavailable - showing demo area (Ashoka University)';
+            notice.innerText = 'Showing places near Ashoka University';
             document.getElementById('top-overlays').appendChild(notice);
-            map.easeTo({ center: [demoPos.lng, demoPos.lat] });
+            map.easeTo({ center: demoPos });
             updateNearestVendor(demoPos);
         }
 
@@ -268,30 +241,25 @@
     }
 
     function clearMarkers() {
-        markers.forEach(m => m.remove());
+        markers.forEach(m => m.setMap(null));
         markers = [];
     }
 
     function renderMarkers(vendorsToRender) {
         vendorsToRender.forEach(vendor => {
-            const marker = new maplibregl.Marker({ element: pinElement(), anchor: 'bottom' })
-                .setLngLat([vendor.lng, vendor.lat])
-                .addTo(map);
-
-            marker.getElement().addEventListener('click', () => {
-                map.easeTo({ center: [vendor.lng, vendor.lat] });
-            });
-
+            const marker = new google.maps.Marker({ position: { lat: vendor.lat, lng: vendor.lng }, map: map, title: vendor.name,
+                icon: { path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z', fillColor: '#001F3F', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2, scale: 1.6, anchor: new google.maps.Point(12, 22) } });
+            marker.addListener('click', () => { map.easeTo({ center: { lat: vendor.lat, lng: vendor.lng } }); });
             markers.push(marker);
         });
     }
 
     function recenterMap() {
         if (userMarker) {
-            map.easeTo({ center: userMarker.getLngLat(), zoom: 15 });
+            map.easeTo({ center: userMarker.getPosition().toJSON(), zoom: 15 });
         } else {
             // No browser location: recenter on the labelled demo area
-            map.easeTo({ center: [77.09660988721876, 28.948445948109907], zoom: 14 });
+            map.easeTo({ center: { lat: 28.948445948109907, lng: 77.09660988721876 }, zoom: 14 });
         }
     }
 
@@ -321,7 +289,7 @@
         const container = document.getElementById('vendor-list-container');
         container.innerHTML = '';
         if (sortedVendors.length === 0) {
-            container.innerHTML = '<div class="text-slate-500 text-sm font-bold p-4 bg-white rounded-2xl shadow">No demo venues in this category yet.</div>';
+            container.innerHTML = '<div class="text-slate-500 text-sm font-bold p-4 bg-white rounded-2xl shadow">No venues in this category yet.</div>';
             return;
         }
 
@@ -331,27 +299,26 @@
             const isNearest = index === 0;
 
             const card = document.createElement('div');
-            card.className = "min-w-[85%] sm:min-w-[320px] snap-center bg-white rounded-3xl shadow-xl p-4 flex flex-col gap-4 border border-slate-100 transition-transform active:scale-[0.98]";
+            card.className = "min-w-[90%] max-w-[90%] sm:min-w-[320px] snap-center bg-white rounded-3xl shadow-xl p-4 flex flex-col gap-4 border border-slate-100 transition-transform active:scale-[0.98]";
             card.innerHTML = `
                 <div class="flex items-center gap-2">
-                    ${isNearest ? `<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">${usingDemoArea ? 'Nearest in demo area' : 'Nearest to you'}</span>` : ''}
-                    <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded uppercase tracking-wider">Demo data</span>
+                    ${isNearest ? `<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">${usingDemoArea ? 'Nearest here' : 'Nearest to you'}</span>` : ''}
                 </div>
-                <div class="flex gap-4">
-                    <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
+                <div class="flex gap-3">
+                    <div class="relative h-20 w-20 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
                         <img class="h-full w-full object-cover" src="${vendor.image_url}" />
                     </div>
-                    <div class="flex flex-col flex-1 justify-between py-1">
+                    <div class="flex flex-col flex-1 min-w-0 justify-between gap-2">
                         <div>
                             <div class="flex justify-between items-start">
-                                <h3 class="text-navy-trust font-bold text-base leading-tight">${vendor.name}</h3>
+                                <h3 class="text-navy-trust font-bold text-base leading-tight break-words">${vendor.name}</h3>
                                 <button class="text-slate-300 hover:text-primary-pink transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">bookmark</span>
                                 </button>
                             </div>
-                            <p class="text-slate-500 text-xs mt-0.5 truncate">${vendor.address}</p>
+                            <p class="text-slate-500 text-xs mt-0.5" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${vendor.address}</p>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <div class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-lg text-green-700">
                                 <span class="material-symbols-outlined text-[16px]">directions_walk</span>
                                 <span class="font-bold text-[11px]">${distText} &bull; ${walkTime} mins</span>
@@ -377,13 +344,14 @@
 
             card.onclick = (e) => {
                 if (e.target.closest('a') || e.target.closest('button')) return;
-                map.easeTo({ center: [vendor.lng, vendor.lat] });
+                map.easeTo({ center: { lat: vendor.lat, lng: vendor.lng } });
             };
 
             container.appendChild(card);
         });
     }
 
-    initMap();
+    window.initMap = initMap;
+    (function () { const g = document.createElement('script'); g.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAeuEc8nvQYolwtloG-q2UB42DzZ_mWkJA&callback=initMap&loading=async'; g.async = true; document.head.appendChild(g); })();
 </script>
 {% endblock %}
