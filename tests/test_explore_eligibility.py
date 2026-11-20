@@ -67,7 +67,31 @@ class Booking(T):
 
     def test_pass_and_bad_token(self):
         self.c.post('/demo/book/kgp-1', data={'visit_date': '2026-11-25T10:30', 'payment_mode': 'pay_at_location'})
-        self.assertEqual(self.c.get('/demo/pass?t=bad').status_code, 403)
+        r = self.c.get('/demo/pass?t=bad'); self.assertEqual(r.status_code, 400)
+        self.assertIn('Invalid pass', r.get_data(as_text=True))
+
+    def test_scan_valid_then_used_and_tampered(self):
+        import re
+        r = self.c.post('/demo/book/kgp-1', data={'visit_date': '2026-11-25T10:30', 'payment_mode': 'pay_at_location'})
+        bid = r.headers['Location'].rsplit('/', 1)[1]
+        from app.routes import _demo_serializer
+        with self.app.test_request_context():
+            pass
+        html = self.c.get(r.headers['Location']).get_data(as_text=True)
+        self.assertIn('Booking confirmed', html)
+        with self.c.session_transaction() as s:
+            b = s['demo_bookings'][-1]
+        with self.app.app_context():
+            tok = _demo_serializer().dumps(b)
+        sc = self.app.test_client()  # a separate scanner device
+        h = sc.get('/demo/pass?t=' + tok).get_data(as_text=True)
+        self.assertIn('Valid pass', h); self.assertIn('Confirm check-in', h)
+        self.assertEqual(sc.post('/demo/pass', data={'t': tok}).status_code, 302)
+        h = sc.get('/demo/pass?t=' + tok).get_data(as_text=True)
+        self.assertIn('Already used', h); self.assertNotIn('Confirm check-in', h)
+        bad = tok[:-3] + ('AAA' if not tok.endswith('AAA') else 'BBB')
+        r = sc.get('/demo/pass?t=' + bad); self.assertEqual(r.status_code, 400)
+        self.assertIn('Invalid pass', r.get_data(as_text=True))
 
 
 class Paid(T):

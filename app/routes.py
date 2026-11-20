@@ -1445,12 +1445,33 @@ def demo_booking(bid):
                            qr=base64.b64encode(buf.getvalue()).decode())
 
 
-@main.route('/demo/pass')
-def demo_pass():
-    from itsdangerous import BadData
-    from datetime import datetime
+def _demo_pass_state(token):
+    """Return (state, booking). state: valid | used | expired | invalid."""
+    from itsdangerous import BadData, SignatureExpired
     try:
-        b = _demo_serializer().loads(request.args.get('t', ''), max_age=60 * 60 * 24 * 30)
+        b = _demo_serializer().loads(token or '', max_age=60 * 60 * 24 * 30)
+    except SignatureExpired:
+        return 'expired', None
     except BadData:
-        return render_template('error_403.html'), 403
-    return render_template('demo_pass.html', b=b, visit=datetime.fromisoformat(b['visit']))
+        return 'invalid', None
+    if not isinstance(b, dict) or 'id' not in b or 'name' not in b or 'visit' not in b:
+        return 'invalid', None
+    if b['id'] in session.get('demo_used', {}):
+        return 'used', b
+    return 'valid', b
+
+
+@main.route('/demo/pass', methods=['GET', 'POST'])
+def demo_pass():
+    from datetime import datetime
+    token = request.values.get('t', '')
+    state, b = _demo_pass_state(token)
+    if request.method == 'POST' and state == 'valid':
+        used = dict(session.get('demo_used', {}))
+        used[b['id']] = datetime.now().strftime('%d %b %Y, %I:%M %p')
+        session['demo_used'] = dict(list(used.items())[-20:])
+        return redirect(url_for('main.demo_pass', t=token))
+    visit = datetime.fromisoformat(b['visit']) if b else None
+    used_at = session.get('demo_used', {}).get(b['id']) if b else None
+    code = 200 if state in ('valid', 'used') else 400
+    return render_template('demo_pass.html', state=state, b=b, visit=visit, used_at=used_at, token=token), code
