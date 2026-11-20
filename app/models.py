@@ -89,6 +89,9 @@ class Booking(db.Model):
     payment_mode = db.Column(db.String(20), nullable=False) # 'app' or 'pay_at_location'
     amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(20), default='pending', nullable=False) # 'pending', 'confirmed', 'cancelled', 'completed'
+    payment_status = db.Column(db.String(20), default='unpaid', nullable=False) # 'unpaid', 'created', 'paid', 'failed'
+    razorpay_order_id = db.Column(db.String(64), nullable=True)
+    razorpay_payment_id = db.Column(db.String(64), nullable=True)
     
     # Relationships
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))

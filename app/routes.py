@@ -693,6 +693,21 @@ def upload_images():
     return redirect(url_for('main.vendor_dashboard'))
 
 
+# Flat demo booking fee (INR) charged when a customer chooses in-app payment.
+# The demo has no per-vendor pricing, so the fee is fixed and labelled as a demo fee.
+DEMO_BOOKING_FEE_INR = 10
+
+
+def get_razorpay_client():
+    """Return a configured Razorpay client (test-mode keys from env), or None."""
+    key_id = os.environ.get('RAZORPAY_KEY_ID')
+    key_secret = os.environ.get('RAZORPAY_KEY_SECRET')
+    if not key_id or not key_secret:
+        return None
+    import razorpay
+    return razorpay.Client(auth=(key_id, key_secret))
+
+
 @main.route('/book/<int:vendor_id>', methods=['POST'])
 @user_required
 def book_vendor(vendor_id):
@@ -704,7 +719,8 @@ def book_vendor(vendor_id):
     
     visit_date_str = request.form.get('visit_date')
     payment_mode = request.form.get('payment_mode', 'pay_at_location')
-    amount = float(request.form.get('amount', 0))
+    if payment_mode not in ('app', 'pay_at_location'):
+        payment_mode = 'pay_at_location'
     
     if not visit_date_str:
         flash('Please select a visit date.', 'error')
@@ -716,20 +732,110 @@ def book_vendor(vendor_id):
         flash('Invalid date format.', 'error')
         return redirect(url_for('main.user_dashboard'))
 
+    # Amount is fixed server-side; any client-supplied amount is ignored.
+    amount = float(DEMO_BOOKING_FEE_INR) if payment_mode == 'app' else 0.0
+
     new_booking = Booking(
         user_id=current_user.id,
         vendor_id=vendor.id,
         visit_date=visit_date,
         payment_mode=payment_mode,
         amount=amount,
-        status='pending'
+        status='pending',
+        payment_status='unpaid' if payment_mode == 'pay_at_location' else 'created'
     )
     
     db.session.add(new_booking)
     db.session.commit()
+
+    if payment_mode == 'app':
+        client = get_razorpay_client()
+        if client is None:
+            db.session.delete(new_booking)
+            db.session.commit()
+            flash('Online payment is not available right now. Please choose Pay Later instead.', 'error')
+            return redirect(url_for('main.vendor_detail', vendor_id=vendor.id))
+        try:
+            order = client.order.create({
+                'amount': int(amount * 100),
+                'currency': 'INR',
+                'receipt': f'booking_{new_booking.id}',
+                'payment_capture': 1,
+            })
+            new_booking.razorpay_order_id = order['id']
+            db.session.commit()
+        except Exception:
+            db.session.delete(new_booking)
+            db.session.commit()
+            flash('Could not start the online payment. Please try again or choose Pay Later.', 'error')
+            return redirect(url_for('main.vendor_detail', vendor_id=vendor.id))
+        return redirect(url_for('main.pay_booking', booking_id=new_booking.id))
     
     flash('Booking request sent successfully!', 'success')
     return redirect(url_for('main.booking_confirmation', booking_id=new_booking.id))
+
+
+@main.route('/booking/<int:booking_id>/pay')
+@login_required
+def pay_booking(booking_id):
+    """Checkout page for a booking's in-app payment (Razorpay test mode)."""
+    from app.models import Booking
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('main.index'))
+    if booking.payment_mode != 'app':
+        return redirect(url_for('main.booking_confirmation', booking_id=booking.id))
+    if booking.payment_status == 'paid':
+        return redirect(url_for('main.booking_confirmation', booking_id=booking.id))
+
+    client = get_razorpay_client()
+    if client is None or not booking.razorpay_order_id:
+        flash('Online payment is not available right now. Please try again later.', 'error')
+        return redirect(url_for('main.booking_confirmation', booking_id=booking.id))
+
+    return render_template('payment_checkout.html', booking=booking,
+                           razorpay_key_id=os.environ.get('RAZORPAY_KEY_ID'))
+
+
+@main.route('/booking/<int:booking_id>/pay/callback', methods=['POST'])
+@login_required
+def pay_booking_callback(booking_id):
+    """Verify the Razorpay payment signature server-side, then mark the booking paid."""
+    from app.models import Booking
+    booking = Booking.query.get_or_404(booking_id)
+    if booking.user_id != current_user.id:
+        flash('Unauthorized access.', 'error')
+        return redirect(url_for('main.index'))
+
+    payment_id = request.form.get('razorpay_payment_id', '')
+    order_id = request.form.get('razorpay_order_id', '')
+    signature = request.form.get('razorpay_signature', '')
+
+    client = get_razorpay_client()
+    if client is None or not booking.razorpay_order_id or order_id != booking.razorpay_order_id:
+        booking.payment_status = 'failed'
+        db.session.commit()
+        flash('Payment could not be verified. You have not been charged by us; please try again.', 'error')
+        return redirect(url_for('main.pay_booking', booking_id=booking.id))
+
+    try:
+        client.utility.verify_payment_signature({
+            'razorpay_order_id': order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature,
+        })
+    except Exception:
+        booking.payment_status = 'failed'
+        db.session.commit()
+        flash('Payment verification failed. You have not been charged by us; please try again.', 'error')
+        return redirect(url_for('main.pay_booking', booking_id=booking.id))
+
+    booking.payment_status = 'paid'
+    booking.razorpay_payment_id = payment_id
+    db.session.commit()
+    flash('Payment successful! Your booking is confirmed.', 'success')
+    return redirect(url_for('main.booking_confirmation', booking_id=booking.id))
 
 
 @main.route('/booking/confirmation/<int:booking_id>')
@@ -763,8 +869,9 @@ def booking_qr(booking_id):
         flash('Unauthorized access.', 'error')
         return redirect(url_for('main.index'))
     
-    # Generate QR data
-    qr_data = f"Booking ID: {booking.id}\nUser: {booking.user.name}\nVendor: {booking.vendor.business_name}\nDate: {booking.visit_date.strftime('%Y-%m-%d %H:%M')}\nStatus: {booking.status}"
+    # QR encodes the vendor verification link so a vendor can scan it with any
+    # phone camera and open the verification page directly.
+    qr_data = url_for('main.verify_booking', booking_id=booking.id, _external=True)
     
     # Create QR code
     qr = qrcode.QRCode(
@@ -862,6 +969,20 @@ def complete_booking(booking_id):
     
     flash('Booking marked as completed. The user can now leave a review!', 'success')
     return redirect(url_for('main.vendor_dashboard'))
+
+@main.route('/booking/<int:booking_id>/verify')
+@vendor_required
+def verify_booking(booking_id):
+    """Vendor-side booking verification page, reached by scanning the booking QR."""
+    from app.models import Booking
+    booking = Booking.query.get_or_404(booking_id)
+
+    vendor_profile = current_user.vendor_profile
+    if not vendor_profile or booking.vendor_id != vendor_profile.id:
+        flash('This booking belongs to a different venue.', 'error')
+        return redirect(url_for('main.vendor_dashboard'))
+
+    return render_template('verify_booking.html', booking=booking)
 
 @main.route('/vendor/bookings')
 @vendor_required

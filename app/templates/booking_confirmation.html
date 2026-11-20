@@ -96,6 +96,12 @@
             <span class="label">Payment Mode</span>
             <span class="value">{{ booking.payment_mode.replace('_', ' ').capitalize() }}</span>
         </div>
+        {% if booking.payment_mode == 'app' %}
+        <div class="receipt-row">
+            <span class="label">Payment Status</span>
+            <span class="value">{{ booking.payment_status.capitalize() }}</span>
+        </div>
+        {% endif %}
         <div class="receipt-row">
             <span class="label">Amount</span>
             <span class="value">₹{{ "%.2f"|format(booking.amount) }}</span>
@@ -106,6 +112,13 @@
         </div>
     </div>
 
+    {% if booking.payment_mode == 'app' and booking.payment_status != 'paid' %}
+    <div class="btn-container">
+        <a href="{{ url_for('main.pay_booking', booking_id=booking.id) }}" class="btn"
+            style="background: #e11d74; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Pay
+            ₹{{ "%.2f"|format(booking.amount) }} Now</a>
+    </div>
+    {% endif %}
     <div class="btn-container">
         <a href="{{ url_for('main.user_dashboard') }}" class="btn"
             style="background: #4f46e5; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Back
