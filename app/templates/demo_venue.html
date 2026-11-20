@@ -16,5 +16,5 @@
 <button type="submit" style="min-height:50px;border-radius:14px;background:#102b46;color:#fff;font-weight:800;font-size:15px">Book</button></form></section>
 <section class="detail-panel" id="sample-reviews"><h2>Customer reviews</h2>{% for review in venue.sample_reviews %}<article class="review"><strong>{{ review.persona }}</strong><span class="score">★ {{ review.score }}/5</span><p>{{ review.text }}</p></article>{% endfor %}</section>
 </div>
-<div class="route-bar"><a href="#book">Book a visit</a></div>
+
 {% endblock %}
