@@ -183,7 +183,7 @@
             {% else %}
             <!-- Authenticated User Bottom Nav -->
             <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.welcome_home' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.welcome_home' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
                 <a href="{{ url_for('main.welcome_home') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.endpoint == 'main.welcome_home' %}fill-1{% endif %}">home</span>
@@ -191,27 +191,15 @@
                 </a>
             </div>
             <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.explore' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.explore' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
                 <a href="{{ url_for('main.explore') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.endpoint == 'main.explore' %}fill-1{% endif %}">explore</span>
                     <span class="text-[10px] font-medium">Explore</span>
                 </a>
             </div>
-            <div class="flex flex-col items-center w-1/5 -mt-8 relative">
-                <a href="{{ url_for('main.ask_ai') }}" class="flex flex-col items-center">
-                    <div
-                        class="{% if request.endpoint == 'main.ask_ai' %}bg-primary-pink{% else %}bg-navy-trust{% endif %} size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-blush-white mb-1 transition-all active:scale-95">
-                        <span
-                            class="material-symbols-outlined text-3xl {% if request.endpoint == 'main.ask_ai' %}fill-1{% endif %}">chat_bubble</span>
-                    </div>
-                    <span
-                        class="text-[10px] font-bold {% if request.endpoint == 'main.ask_ai' %}text-primary-pink{% else %}text-navy-trust{% endif %}">Ask
-                        AI</span>
-                </a>
-            </div>
             <div
-                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'history' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'history' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
                 <a href="{{ url_for('main.user_dashboard', tab='history') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.args.get('tab') == 'history' %}fill-1{% endif %}">schedule</span>
@@ -219,7 +207,7 @@
                 </a>
             </div>
             <div
-                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'profile' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
+                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'profile' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
                 <a href="{{ url_for('main.user_dashboard', tab='profile') }}" class="flex flex-col items-center gap-1">
                     <span
                         class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' and request.args.get('tab') == 'profile' %}fill-1{% endif %}">person</span>
