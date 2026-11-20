@@ -68,7 +68,10 @@ def explore():
 @main.route('/ask-ai')
 @login_required
 def ask_ai():
-    """Ask AI page."""
+    """Ask AI page. Hidden (404) unless an AI provider key is configured server-side."""
+    import os
+    if not any(os.environ.get(k) for k in ('GEMINI_API_KEY', 'OPENROUTER_API_KEY', 'NVIDIA_API_KEY', 'SILICONFLOW_API_KEY')):
+        abort(404)
     return render_template('ask_ai.html')
 
 
@@ -911,8 +914,10 @@ def vendor_edit():
 @main.route('/api/ask-ai', methods=['POST'])
 @login_required
 def api_ask_ai():
-    """Server-side AI proxy. Provider keys stay on the server (env vars only)."""
+    """Server-side AI proxy. Provider keys stay on the server (env vars only). Disabled (404) without a key."""
     import os
+    if not any(os.environ.get(k) for k in ('GEMINI_API_KEY', 'OPENROUTER_API_KEY', 'NVIDIA_API_KEY', 'SILICONFLOW_API_KEY')):
+        return {'error': 'AI assistant is not configured.'}, 404
     import json as _json
     import urllib.request
     import urllib.error
