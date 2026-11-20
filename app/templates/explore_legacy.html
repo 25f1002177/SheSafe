@@ -199,10 +199,10 @@
             clearMarkers();
             const c = document.getElementById('vendor-list-container');
             c.innerHTML = `
-                <div style="min-width:100%;flex:none" class="flex flex-col gap-3 p-2">
+                <div style="width:calc(100vw - 32px);max-width:100%;box-sizing:border-box;flex:none;white-space:normal" class="flex flex-col gap-3 p-2">
                     <p class="text-navy-trust font-bold text-base">${msg}</p>
-                    <a href="/explore?area=kgp" class="flex items-center justify-center h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline">Browse real places near IIT KGP (not yet verified)</a>
-                    <a href="/explore?area=ashoka" class="flex items-center justify-center h-12 rounded-2xl border-2 border-slate-200 text-navy-trust font-bold text-sm no-underline">See demo listings near Ashoka University</a>
+                    <a href="/explore?area=kgp" class="flex items-center justify-center text-center px-3 py-2 min-h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline">Browse real places near IIT KGP (not yet verified)</a>
+                    <a href="/explore?area=ashoka" class="flex items-center justify-center text-center px-3 py-2 min-h-12 rounded-2xl border-2 border-slate-200 text-navy-trust font-bold text-sm no-underline">See demo listings near Ashoka University</a>
                 </div>`;
             layoutMap();
         }
