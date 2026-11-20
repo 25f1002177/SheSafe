@@ -1468,7 +1468,8 @@ def demo_pass():
     state, b = _demo_pass_state(token)
     if request.method == 'POST' and state == 'valid':
         used = dict(session.get('demo_used', {}))
-        used[b['id']] = datetime.now().strftime('%d %b %Y, %I:%M %p')
+        from zoneinfo import ZoneInfo
+        used[b['id']] = datetime.now(ZoneInfo('Asia/Kolkata')).strftime('%d %b %Y, %I:%M %p')
         session['demo_used'] = dict(list(used.items())[-20:])
         return redirect(url_for('main.demo_pass', t=token))
     visit = datetime.fromisoformat(b['visit']) if b else None
