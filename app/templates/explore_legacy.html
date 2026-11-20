@@ -443,4 +443,9 @@
     window.initMap = initMap;
     (function () { const g = document.createElement('script'); g.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAeuEc8nvQYolwtloG-q2UB42DzZ_mWkJA&callback=initMap&loading=async'; g.async = true; document.head.appendChild(g); })();
 </script>
+<script>
+/* Warm the pages people open next (first render on a fresh server instance is the slow one). GET only, no side effects. */
+(function(){var go=function(){['/user/dashboard?tab=history','/demo/venue/kgp-1'].forEach(function(u,i){setTimeout(function(){fetch(u,{credentials:'same-origin'}).catch(function(){});},i*700);});};
+window.addEventListener('load',function(){setTimeout(go,1800);});})();
+</script>
 {% endblock %}
