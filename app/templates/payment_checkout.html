@@ -58,6 +58,7 @@
             description: 'Demo booking fee · #SAFE-{{ booking.id }}',
             order_id: {{ booking.razorpay_order_id | tojson }},
             callback_url: {{ url_for('main.pay_booking_callback', booking_id=booking.id, _external=True) | tojson }},
+            method: {netbanking:true,card:true,upi:false,wallet:false,emi:false,paylater:false},
             redirect: true,
             prefill: {
                 name: {{ booking.user.name | tojson }},

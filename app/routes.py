@@ -740,6 +740,9 @@ def get_razorpay_auth():
     key_secret = os.environ.get('RAZORPAY_KEY_SECRET')
     if not key_id or not key_secret:
         return None
+    # Test-only guard: never create orders or open checkout with a live key.
+    if not key_id.startswith('rzp_test_'):
+        return None
     return key_id, key_secret
 
 
