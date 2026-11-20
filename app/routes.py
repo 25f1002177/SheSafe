@@ -980,9 +980,19 @@ def complete_booking(booking_id):
         flash('Unauthorized access.', 'error')
         return redirect(url_for('main.vendor_dashboard'))
     
+    if booking.status == 'completed':
+        flash('This booking was already verified.', 'info')
+        return redirect(url_for('main.vendor_dashboard'))
+    if booking.status == 'cancelled':
+        flash('This booking was cancelled and cannot be completed.', 'error')
+        return redirect(url_for('main.vendor_dashboard'))
+    if booking.payment_mode == 'app' and booking.payment_status != 'paid':
+        flash('Online payment is not completed for this booking yet. Ask the customer to pay from their booking, or accept the visit as pay-at-venue outside the app.', 'error')
+        return redirect(url_for('main.vendor_dashboard'))
+
     booking.status = 'completed'
     db.session.commit()
-    
+
     flash('Booking marked as completed. The user can now leave a review!', 'success')
     return redirect(url_for('main.vendor_dashboard'))
 

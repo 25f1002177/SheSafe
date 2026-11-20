@@ -34,7 +34,7 @@
                     class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg {% if booking.status == 'pending' %}bg-amber-50 text-amber-600{% elif booking.status == 'confirmed' %}bg-emerald-50 text-emerald-600{% elif booking.status == 'completed' %}bg-slate-100 text-slate-500{% else %}bg-rose-50 text-rose-500{% endif %}">{{
                     booking.status }}</span>
             </div>
-            {% if booking.status in ['pending', 'confirmed'] %}
+            {% if booking.status in ['pending', 'confirmed'] and not (booking.payment_mode == 'app' and booking.payment_status != 'paid') %}
             <form method="POST" action="{{ url_for('main.complete_booking', booking_id=booking.id) }}" class="mt-4">
                 <button type="submit"
                     class="w-full bg-primary text-white py-3 rounded-2xl font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-primary/20">

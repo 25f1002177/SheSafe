@@ -42,7 +42,7 @@
             class="bg-navy-trust dark:bg-slate-900 rounded-[32px] p-5 text-white shadow-xl shadow-navy-trust/10 col-span-2">
             <p class="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-1">Total Revenue</p>
             <h2 class="text-3xl font-black tabular-nums">₹{{
-                "%.2f"|format(user.vendor_profile.bookings|sum(attribute='amount')) }}</h2>
+                "%.2f"|format((user.vendor_profile.bookings | selectattr('payment_status', 'equalto', 'paid') | list + user.vendor_profile.bookings | selectattr('payment_mode', 'equalto', 'pay_at_location') | selectattr('status', 'equalto', 'completed') | list) | sum(attribute='amount')) }}</h2>
             <div class="flex items-center gap-2 mt-4 text-[11px] font-bold text-primary">
                 <span class="material-symbols-outlined text-sm">trending_up</span>
                 <span>+12.4% from last month</span>
@@ -52,7 +52,7 @@
         <div
             class="bg-white dark:bg-slate-900 rounded-[32px] p-5 border border-slate-100 dark:border-slate-800 shadow-sm">
             <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Visitors</p>
-            <h3 class="text-xl font-black text-navy-trust dark:text-white">{{ user.vendor_profile.bookings|length }}
+            <h3 class="text-xl font-black text-navy-trust dark:text-white">{{ user.vendor_profile.bookings | selectattr('status', 'equalto', 'completed') | list | length }}
             </h3>
         </div>
         <div
@@ -92,12 +92,18 @@
                     <span
                         class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg {% if booking.status == 'pending' %}bg-amber-50 text-amber-600{% else %}bg-emerald-50 text-emerald-600{% endif %} self-center">{{
                         booking.status }}</span>
+                    {% if booking.payment_mode == 'app' and booking.payment_status != 'paid' %}
+                    <span
+                        class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-rose-50 text-rose-500 self-center">Not
+                        paid</span>
+                    {% else %}
                     <form method="POST" action="{{ url_for('main.complete_booking', booking_id=booking.id) }}">
                         <button type="submit" title="Mark completed"
                             class="size-10 rounded-xl bg-primary text-white flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-primary/20">
                             <span class="material-symbols-outlined text-xl">check</span>
                         </button>
                     </form>
+                    {% endif %}
                 </div>
             </div>
             {% else %}
