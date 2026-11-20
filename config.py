@@ -70,10 +70,9 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload size
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
+    # Deprecated: maps now use OpenFreeMap/MapLibre (no API key). Kept for backward compatibility.
     # Google Maps API Key
     GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
-    if not GOOGLE_MAPS_API_KEY:
-        print("WARNING: GOOGLE_MAPS_API_KEY environment variable is not set. Google Maps features will not load.")
 
     # AI Service API Keys
     OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')

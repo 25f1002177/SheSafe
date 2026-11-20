@@ -123,9 +123,9 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <input type="number" id="latitude" name="latitude" step="any" placeholder="Latitude"
+                <input type="number" id="latitude" name="latitude" step="any" placeholder="Latitude" readonly
                     class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
-                <input type="number" id="longitude" name="longitude" step="any" placeholder="Longitude"
+                <input type="number" id="longitude" name="longitude" step="any" placeholder="Longitude" readonly
                     class="w-full rounded-2xl border-none bg-slate-50 dark:bg-slate-800 p-4 text-xs font-bold text-navy-trust dark:text-white focus:ring-2 focus:ring-brand-pink">
             </div>
 
@@ -200,6 +200,8 @@
 
 </div>
 
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/maplibre-gl.css') }}">
+<script src="{{ url_for('static', filename='vendor/maplibre-gl.js') }}"></script>
 <script>
     // Image Upload Logic
     const imageInput = document.getElementById('property_images');
@@ -313,13 +315,7 @@
             getLocBtn.innerHTML = '<span class="material-symbols-outlined text-sm">my_location</span> Auto-Detect';
 
             // Reverse geocoding (optional placeholder)
-            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key={{ config['GOOGLE_MAPS_API_KEY'] }}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.results[0]) {
-                        document.getElementById('address').value = data.results[0].formatted_address;
-                    }
-                });
+            reverseGeocode(lat, lon);
         }, (error) => {
             alert('Unable to retrieve your location');
             getLocBtn.disabled = false;
@@ -327,31 +323,43 @@
         });
     });
 
-    function initMiniMap(lat, lng) {
-        const coords = { lat: lat, lng: lng };
-        map = new google.maps.Map(document.getElementById('mini-map'), {
-            center: coords,
-            zoom: 15,
-            disableDefaultUI: true,
-            styles: [
-                {
-                    "featureType": "all",
-                    "elementType": "geometry.fill",
-                    "stylers": [{ "weight": "2.00" }]
+    function setLocation(lat, lon, geocode) {
+        document.getElementById('latitude').value = lat.toFixed(6);
+        document.getElementById('longitude').value = lon.toFixed(6);
+        if (marker) marker.setLngLat([lon, lat]);
+        if (geocode) reverseGeocode(lat, lon);
+    }
+
+    function reverseGeocode(lat, lon) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    document.getElementById('address').value = data.display_name;
                 }
-            ]
+            })
+            .catch(() => {});
+    }
+
+    function initMiniMap(lat, lng) {
+        map = new maplibregl.Map({
+            container: 'mini-map',
+            style: 'https://tiles.openfreemap.org/styles/dark',
+            center: [lng, lat],
+            zoom: 15,
+            attributionControl: { compact: true }
         });
-        marker = new google.maps.Marker({
-            position: coords,
-            map: map,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: "#FF4E8D",
-                fillOpacity: 1,
-                strokeWeight: 2,
-                strokeColor: "#FFFFFF"
-            }
+        const el = document.createElement('div');
+        el.style.cssText = 'width:20px;height:20px;border-radius:50%;background:#FF4E8D;border:2px solid #FFFFFF;cursor:grab;';
+        marker = new maplibregl.Marker({ element: el, draggable: true })
+            .setLngLat([lng, lat])
+            .addTo(map);
+        marker.on('dragend', () => {
+            const p = marker.getLngLat();
+            setLocation(p.lat, p.lng, true);
+        });
+        map.on('click', (e) => {
+            setLocation(e.lngLat.lat, e.lngLat.lng, true);
         });
     }
 
@@ -367,11 +375,5 @@
         }
     });
 
-    // Load Google Maps Script
-    const script = document.createElement('script');
-    script.src = "https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
 </script>
 {% endblock %}
