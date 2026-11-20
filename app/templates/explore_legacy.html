@@ -76,7 +76,7 @@
             </div>
 
     <!-- Floating Action Buttons -->
-    <div class="absolute right-4 bottom-72 z-10 flex flex-col gap-3">
+    <div class="absolute right-3 z-10 flex flex-col gap-3" style="top:118px">
         <button onclick="recenterMap()"
             class="flex h-12 px-5 items-center gap-2 rounded-full bg-white text-navy-trust shadow-lg border border-slate-100 font-bold text-sm active:scale-95 transition-all">
             <span class="material-symbols-outlined text-[20px]">my_location</span>
@@ -96,7 +96,7 @@
 
     <!-- Bottom Sheet Vendor Info -->
     <div id="vendor-list-container"
-        class="mt-auto relative z-20 px-4 pb-6 overflow-x-auto no-scrollbar flex gap-4 snap-x">
+        class="mt-auto relative z-20 px-4 pb-6 overflow-x-auto no-scrollbar flex gap-4 snap-x" style="background:#fff;padding-top:14px;border-radius:24px 24px 0 0;box-shadow:0 -4px 16px #0000001a">
         <!-- Vendor cards will be dynamically injected here -->
     </div>
 </div>
@@ -143,6 +143,17 @@
             Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
         return 2 * R * Math.asin(Math.sqrt(a));
     }
+
+    function layoutMap() {
+        const mapEl = document.getElementById('map');
+        const sheet = document.getElementById('vendor-list-container');
+        if (!mapEl || !sheet) return;
+        mapEl.style.height = 'auto';
+        mapEl.style.bottom = sheet.offsetHeight + 'px';
+        if (typeof google !== 'undefined' && map) google.maps.event.trigger(map, 'resize');
+    }
+    window.addEventListener('resize', layoutMap);
+    window.addEventListener('load', () => setTimeout(layoutMap, 300));
 
     function initMap() {
         const defaultCenter = { lat: 28.6139, lng: 77.2090 };
@@ -333,13 +344,13 @@
                 </div>
                 <div class="flex gap-3">
                     <a href="/vendor/${vendor.id}" class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
+                        <span class="material-symbols-outlined text-lg">calendar_month</span>
+                        Book
+                    </a>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${vendor.lat},${vendor.lng}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-sm active:scale-[0.98] transition-all no-underline">
                         <span class="material-symbols-outlined text-lg">directions</span>
                         Directions
                     </a>
-                    <button class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-sm active:scale-[0.98] transition-all">
-                        <span class="material-symbols-outlined text-lg fill-1">forum</span>
-                        Reviews
-                    </button>
                 </div>
             `;
 
@@ -350,6 +361,7 @@
 
             container.appendChild(card);
         });
+        layoutMap();
     }
 
     window.initMap = initMap;
