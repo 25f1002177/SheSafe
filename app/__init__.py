@@ -1,4 +1,5 @@
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import config
@@ -12,6 +13,8 @@ login_manager = LoginManager()
 def create_app(config_name='default'):
     """Application factory pattern."""
     app = Flask(__name__, instance_relative_config=True)
+    # Trust Vercel/Render's proxy headers so url_for(_external=True) yields https URLs
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     
     # Load configuration
     app.config.from_object(config[config_name])
