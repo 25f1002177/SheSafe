@@ -7,13 +7,14 @@
     class="relative flex min-h-screen w-full flex-col overflow-x-hidden pb-32 max-w-[430px] mx-auto bg-white dark:bg-background-dark px-5">
     {% set vendor = (role == 'vendor') %}
     {% set accent = '#0f766e' if vendor else '#cc245c' %}
-    <div style="position:sticky;top:0;z-index:30;margin:0 -20px;padding:11px 20px;background:{{ accent }};color:#fff;display:flex;align-items:center;gap:10px;font-weight:800;font-size:13px;letter-spacing:.3px">
+    <div style="height:44px"></div>
+    <div style="position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;box-sizing:border-box;z-index:30;padding:11px 20px;background:{{ accent }};color:#fff;display:flex;align-items:center;gap:10px;font-weight:800;font-size:13px;letter-spacing:.3px">
         <span class="material-symbols-outlined" style="font-size:20px">{% if vendor %}storefront{% else %}person{% endif %}</span>
         <span>{% if vendor %}VENDOR SIGN UP{% else %}CUSTOMER SIGN UP{% endif %}</span>
         <span style="margin-left:auto;font-weight:600;font-size:11px;opacity:.9">{% if vendor %}For washroom owners{% else %}For women looking for a washroom{% endif %}</span>
     </div>
     <!-- Hero / Branding -->
-    <div class="pt-16 pb-10 flex flex-col items-center text-center">
+    <div class="pt-8 pb-10 flex flex-col items-center text-center">
         <a href="{{ url_for('main.index') }}" style="background:{{ accent }}" class="size-16 rounded-[22px] flex items-center justify-center text-white mb-6 shadow-xl active:scale-95 transition-all">
             <span class="material-symbols-outlined text-3xl font-black">{% if vendor %}storefront{% else %}person{% endif %}</span>
         </a>
