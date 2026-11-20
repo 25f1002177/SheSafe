@@ -230,6 +230,13 @@
                     ${retry ? '<button type="button" onclick="recenterMap()" class="flex items-center justify-center text-center px-3 py-2 min-h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm">Use my location</button>' : ''}
                 </div>`;
             layoutMap();
+            if (retry && vendors.length) {
+                // No location yet: frame all listings so the map is populated, not blank.
+                const b = new google.maps.LatLngBounds();
+                vendors.forEach(v => b.extend({ lat: v.lat, lng: v.lng }));
+                [100, 900].forEach((ms) => setTimeout(() => { layoutMap(); google.maps.event.trigger(map, 'resize'); map.fitBounds(b, 40); }, ms));
+                renderMarkers(vendors);
+            }
         }
 
         function showDemoAreaNotice(demoPos) {
