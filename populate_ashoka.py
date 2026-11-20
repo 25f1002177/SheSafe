@@ -16,8 +16,8 @@ def populate():
         vendor_data = [
             {
                 "email": "greenchick@shesafe.com",
-                "name": "Green Chick Chop",
-                "business_name": "Green Chick Chop Kundli",
+                "name": "Highway Diner",
+                "business_name": "Highway Diner Safe Zone",
                 "lat": 28.9392,
                 "lng": 77.1158,
                 "address": "TDI City, Kundli, Sonepat, Haryana 131023",
@@ -26,8 +26,8 @@ def populate():
             },
             {
                 "email": "dominos@shesafe.com",
-                "name": "Domino's Pizza",
-                "business_name": "Domino's Customer Safe Zone",
+                "name": "Campus Cafe",
+                "business_name": "Campus Cafe Safe Zone",
                 "lat": 28.9554,
                 "lng": 77.1082,
                 "address": "Omaxe City, Sonepat, Haryana 131023",
@@ -46,8 +46,8 @@ def populate():
             },
             {
                 "email": "parker@shesafe.com",
-                "name": "Parker Mall",
-                "business_name": "Parker Mall Management",
+                "name": "City Mall",
+                "business_name": "City Mall Safe Zone",
                 "lat": 28.9375,
                 "lng": 77.1165,
                 "address": "Parker Mall, NH 1, Kundli, Sonepat, Haryana",
@@ -76,7 +76,7 @@ def populate():
                     has_female_staff=data['female_staff'],
                     is_verified=True,
                     is_active=True,
-                    average_rating=4.8
+                    average_rating=0.0
                 )
                 if data['female_staff']:
                     vendor.female_staff_start_time = time(9, 0)

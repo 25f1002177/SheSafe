@@ -31,7 +31,7 @@
         </div>
 
         <div class="px-5 py-2">
-            <div class="bg-navy-trust/5 px-4 py-2.5 rounded-xl flex items-center gap-3">
+            <div id="finding-banner" class="bg-navy-trust/5 px-4 py-2.5 rounded-xl flex items-center gap-3">
                 <div class="size-2 bg-primary-pink rounded-full animate-pulse"></div>
                 <p class="text-[11px] font-bold text-navy-trust/70 uppercase tracking-widest">Finding facilities near
                     you...</p>
@@ -212,6 +212,8 @@
 
     function updateUI(userPos) {
         if (vendors.length === 0) return;
+        const banner = document.getElementById('finding-banner');
+        if (banner) banner.style.display = 'none';
 
         // Calculate distances
         const vendorsWithDist = vendors.map(v => ({
@@ -227,8 +229,8 @@
         document.getElementById('closest-vendor-card').classList.remove('hidden');
         document.getElementById('closest-vendor-name').innerText = closest.name;
         document.getElementById('closest-vendor-dist').innerText = formatDistance(closest.distance);
-        document.getElementById('closest-vendor-rating').innerText = closest.rating;
-        document.getElementById('closest-vendor-reviews').innerText = `(${closest.reviews} reviews)`;
+        document.getElementById('closest-vendor-rating').innerText = closest.reviews > 0 ? closest.rating : 'New';
+        document.getElementById('closest-vendor-reviews').innerText = closest.reviews > 0 ? `(${closest.reviews} reviews)` : '(no ratings yet)';
         document.getElementById('closest-vendor-link').href = `/vendor/${closest.id}`;
         // Set a themed placeholder image
         document.getElementById('closest-vendor-img').style.backgroundImage = `url('${closest.image_url}')`;
@@ -248,7 +250,7 @@
                     <h4 class="font-bold text-navy-trust text-sm">${v.name}</h4>
                     <div class="flex items-center mt-0.5">
                         <span class="material-symbols-outlined text-primary-pink text-xs fill-1">star</span>
-                        <span class="text-xs font-bold ml-1 text-navy-trust">${v.rating}</span>
+                        <span class="text-xs font-bold ml-1 text-navy-trust">${v.reviews > 0 ? v.rating : 'New'}</span>
                         <span class="text-[10px] text-slate-400 ml-2">• ${formatDistance(v.distance)}</span>
                     </div>
                 </div>
