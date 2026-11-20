@@ -818,14 +818,17 @@ def pay_booking(booking_id):
 
 
 @main.route('/booking/<int:booking_id>/pay/callback', methods=['POST'])
-@login_required
 def pay_booking_callback(booking_id):
-    """Verify the Razorpay payment signature server-side, then mark the booking paid."""
+    """Verify the Razorpay payment signature server-side, then mark the booking paid.
+
+    No login_required here on purpose: Razorpay's redirect-mode callback arrives as a
+    cross-site top-level POST, so the SameSite=Lax session cookie is not attached and a
+    login check would bounce a genuine payer. Authenticity comes from the HMAC signature
+    over order_id|payment_id plus the stored order id match below; the confirmation page
+    it redirects to still requires the owning user's session.
+    """
     from app.models import Booking
     booking = Booking.query.get_or_404(booking_id)
-    if booking.user_id != current_user.id:
-        flash('Unauthorized access.', 'error')
-        return redirect(url_for('main.index'))
 
     payment_id = request.form.get('razorpay_payment_id', '')
     order_id = request.form.get('razorpay_order_id', '')
