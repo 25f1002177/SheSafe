@@ -131,6 +131,7 @@
     let userMarker;
     let userPos = null;
     let usingDemoArea = false;
+    let refPos = null;
 
     // Parse vendors from robust JSON block
     const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
@@ -177,6 +178,7 @@
                 (position) => {
                     const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
                     userPos = pos;
+                    refPos = pos;
                     map.easeTo({ center: [pos.lng, pos.lat] });
 
                     const el = document.createElement('div');
@@ -201,6 +203,7 @@
             const notice = document.createElement('div');
             notice.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:20;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
             usingDemoArea = true;
+            refPos = demoPos;
             notice.innerText = 'Location unavailable - showing demo area (Ashoka University)';
             document.getElementById('map').appendChild(notice);
             map.easeTo({ center: [demoPos.lng, demoPos.lat] });
@@ -257,8 +260,10 @@
         clearMarkers();
         renderMarkers(filteredVendors);
 
-        if (userPos) {
-            updateNearestVendor(userPos, filteredVendors);
+        if (refPos) {
+            updateNearestVendor(refPos, filteredVendors);
+        } else {
+            renderVendorList(filteredVendors);
         }
     }
 
@@ -315,6 +320,10 @@
     function renderVendorList(sortedVendors) {
         const container = document.getElementById('vendor-list-container');
         container.innerHTML = '';
+        if (sortedVendors.length === 0) {
+            container.innerHTML = '<div class="text-slate-500 text-sm font-bold p-4 bg-white rounded-2xl shadow">No demo venues in this category yet.</div>';
+            return;
+        }
 
         sortedVendors.forEach((vendor, index) => {
             const distText = vendor.dist < 1000 ? Math.round(vendor.dist) + 'm' : (vendor.dist / 1000).toFixed(1) + 'km';
