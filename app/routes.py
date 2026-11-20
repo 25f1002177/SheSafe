@@ -80,7 +80,11 @@ def explore():
     # Seeded presentation listings (accounts on the shesafe.com demo domain) are shown only in
     # explicit demo mode. Primary results use genuine verified vendors only.
     vendors = [v for v in candidates if is_seed_vendor(v) == is_demo]
-    return render_template('explore_legacy.html', vendors=vendors, forced_area=is_demo)
+    # Presentation listings (real nearby places with sample ratings) share the same map and
+    # nearest-first ranking as vendors. They are plain listings: no booking and no verified badge.
+    from app.demo_catalog import kgp_venues
+    listings = [] if is_demo else kgp_venues()
+    return render_template('explore_legacy.html', vendors=vendors, listings=listings, forced_area=is_demo)
 
 
 @main.route('/demo/venue/<slug>')

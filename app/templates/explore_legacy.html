@@ -115,7 +115,24 @@
             "rating": {{ (vendor.average_rating or 0.0)|tojson }},
             "reviews": {{ (vendor.feedbacks|length if vendor.feedbacks else 0)|tojson }},
             "categories": {{ (vendor.category or "").split(", ")|tojson }},
-            "image_url": {{ (vendor.to_dict().image_url)|tojson }}
+            "image_url": {{ (vendor.to_dict().image_url)|tojson }},
+            "verified": true
+        }{% if not loop.last or listings %},{% endif %}
+        {% endfor %}
+        {% for v in listings %}
+        {
+            "id": {{ v.slug|tojson }},
+            "kind": "listing",
+            "name": {{ v.name|tojson }},
+            "lat": {{ v.lat|tojson }},
+            "lng": {{ v.lng|tojson }},
+            "address": {{ v.address|tojson }},
+            "rating": {{ v.sample_rating|tojson }},
+            "reviews": {{ v.sample_reviews|length|tojson }},
+            "categories": ["Washroom"],
+            "maps_url": {{ v.maps_url|tojson }},
+            "details_url": "/demo/venue/{{ v.slug }}",
+            "verified": false
         }{% if not loop.last %},{% endif %}
         {% endfor %}
     ]
@@ -176,17 +193,17 @@
                 (position) => handlePosition({ lat: position.coords.latitude, lng: position.coords.longitude }),
                 (error) => {
                     console.error("Geolocation error:", error);
-                    noVerifiedNearby(vendors.length ? 'Turn on location to see the closest verified women\'s washroom.' : NONE_MSG);
+                    noVerifiedNearby('Turn on location to see the closest women\'s washroom to you.', true);
                 }
             );
         } else {
-            noVerifiedNearby(vendors.length ? 'Turn on location to see the closest verified women\'s washroom.' : NONE_MSG);
+            noVerifiedNearby('Turn on location to see the closest women\'s washroom to you.', true);
         }
 
         window.handlePosition = handlePosition;
         function handlePosition(pos) {
             userPos = pos;
-            map.easeTo({ center: pos });
+            map.setOptions({ center: pos, zoom: 15 });
             if (userMarker) userMarker.setMap(null);
             userMarker = new google.maps.Marker({ position: pos, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } });
             if (!vendors.length) { noVerifiedNearby(NONE_MSG); settleMap(pos); return; }
@@ -204,14 +221,13 @@
             }, ms));
         }
 
-        function noVerifiedNearby(msg) {
+        function noVerifiedNearby(msg, retry) {
             clearMarkers();
             const c = document.getElementById('vendor-list-container');
             c.innerHTML = `
                 <div style="width:calc(100vw - 32px);max-width:100%;box-sizing:border-box;flex:none;white-space:normal" class="flex flex-col gap-3 p-2">
                     <p class="text-navy-trust font-bold text-base">${msg}</p>
-                    <a href="/explore?area=kgp" class="flex items-center justify-center text-center px-3 py-2 min-h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline">Browse real places near IIT KGP (not yet verified)</a>
-                    <a href="/explore?area=ashoka" class="flex items-center justify-center text-center px-3 py-2 min-h-12 rounded-2xl border-2 border-slate-200 text-navy-trust font-bold text-sm no-underline">See demo listings near Ashoka University</a>
+                    ${retry ? '<button type="button" onclick="recenterMap()" class="flex items-center justify-center text-center px-3 py-2 min-h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm">Use my location</button>' : ''}
                 </div>`;
             layoutMap();
         }
@@ -302,7 +318,7 @@
 
     function recenterMap() {
         if (userMarker) {
-            map.easeTo({ center: userMarker.getPosition().toJSON(), zoom: 15 });
+            map.setOptions({ center: userMarker.getPosition().toJSON(), zoom: 15 });
         } else if (!FORCED_AREA) {
             if (navigator.geolocation) navigator.geolocation.getCurrentPosition((p) => window.handlePosition({ lat: p.coords.latitude, lng: p.coords.longitude }), () => {});
         } else {
@@ -352,6 +368,7 @@
             card.style.cssText = "min-width:88%;max-width:88%;flex:none";
             card.innerHTML = `
                 <div class="flex items-center gap-2">
+                    ${vendor.verified ? '<span class="px-2 py-0.5 bg-green-50 text-green-700 text-[9px] font-bold rounded uppercase tracking-wider">Verified</span>' : ''}
                     ${isNearest ? `<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">${usingDemoArea ? 'Nearest here' : 'Nearest to you'}</span>` : ''}
                 </div>
                 <div class="flex gap-3">
@@ -380,7 +397,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex gap-1.5">
+                ${vendor.kind === 'listing' ? `<div class="flex gap-1.5">
+                    <a href="${vendor.maps_url}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline" style="font-size:12px;min-width:0;gap:4px">
+                        <span class="material-symbols-outlined text-lg kgp-ic">directions</span>Directions
+                    </a>
+                    <a href="${vendor.details_url}" class="flex-1 flex items-center justify-center h-12 rounded-2xl border-2 border-slate-200 bg-white text-navy-trust font-bold text-sm no-underline" style="font-size:12px;min-width:0;gap:4px">
+                        <span class="material-symbols-outlined text-lg kgp-ic">star</span>Reviews
+                    </a>
+                </div>` : `<div class="flex gap-1.5">
                     <a href="/vendor/${vendor.id}" class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all" style="font-size:12px;min-width:0;padding:0 4px;gap:4px">
                         <span class="material-symbols-outlined text-lg">calendar_month</span>
                         Book
@@ -393,7 +417,7 @@
                         <span class="material-symbols-outlined text-lg kgp-ic">directions</span>
                         Directions
                     </a>
-                </div>
+                </div>`}
             `;
 
             card.onclick = (e) => {

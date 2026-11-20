@@ -40,10 +40,13 @@ class T(unittest.TestCase):
 
     def test_primary_excludes_seeds_unverified_inactive(self):
         names = listed(self.c, '/explore')
-        self.assertEqual(sorted(names), ['Real Far Chennai', 'Real Kharagpur', 'Real Kolkata'])
+        real = sorted(n for n in names if n.startswith(('Real', 'Seed')))
+        self.assertEqual(real, ['Real Far Chennai', 'Real Kharagpur', 'Real Kolkata'])
+        self.assertIn('The New Tikka', names)  # presentation listing, same map and ranking
 
     def test_demo_mode_only_seeds(self):
         self.assertEqual(listed(self.c, '/explore?area=ashoka'), ['Seed Haryana'])
+        self.assertNotIn('The New Tikka', listed(self.c, '/explore?area=ashoka'))
 
     def test_no_radius_cutoff_data_kept(self):
         self.assertIn('Real Far Chennai', listed(self.c, '/explore'))
