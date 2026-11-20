@@ -49,9 +49,9 @@
             <div class="bg-navy-trust/5 dark:bg-slate-800 rounded-2xl p-2 px-3 flex flex-col items-center">
                 <div class="flex items-center gap-1 text-brand-pink">
                     <span class="material-symbols-outlined text-sm fill-1">star</span>
-                    <span class="text-sm font-bold">{{ "%.1f"|format(vendor.average_rating) }}</span>
+                    <span class="text-sm font-bold">{% if vendor.feedbacks and vendor.feedbacks|length > 0 %}{{ "%.1f"|format(vendor.average_rating) }}{% else %}New{% endif %}</span>
                 </div>
-                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Rating</span>
+                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{% if vendor.feedbacks and vendor.feedbacks|length > 0 %}Rating{% else %}No reviews yet{% endif %}</span>
             </div>
         </div>
 
