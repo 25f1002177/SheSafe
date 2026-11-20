@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Join SheSafe{% endblock %}
+{% block content %}
+<div class="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto bg-white px-5 pb-32">
+  <div class="pt-16 pb-8 text-center">
+    <h1 class="text-navy-trust text-3xl font-black tracking-tight mb-2">Join SheSafe</h1>
+    <p class="text-slate-400 text-sm font-medium">Choose how you will use it</p>
+  </div>
+  <div class="space-y-4">
+    <a href="{{ url_for('main.register_customer') }}" class="block rounded-2xl border border-slate-100 bg-slate-50 p-5 active:scale-[0.98] transition-all">
+      <h2 class="text-navy-trust text-lg font-black">I am a customer</h2>
+      <p class="text-slate-500 text-sm mt-1">Find the closest verified women's washroom, book and pay.</p>
+    </a>
+    <a href="{{ url_for('main.register_vendor') }}" class="block rounded-2xl border border-slate-100 bg-slate-50 p-5 active:scale-[0.98] transition-all">
+      <h2 class="text-navy-trust text-lg font-black">I own a washroom</h2>
+      <p class="text-slate-500 text-sm mt-1">Register as a vendor and list your place.</p>
+    </a>
+  </div>
+  <p class="mt-auto pt-10 text-center text-slate-400 text-sm font-medium">Member already? <a href="{{ url_for('main.login') }}" class="text-brand-pink font-black ml-1">Log In</a></p>
+</div>
+{% endblock %}

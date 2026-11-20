@@ -112,3 +112,32 @@ class Paid(T):
         self.assertIn('Paid', self.c.get(r3.headers['Location']).get_data(as_text=True))
         bad = anon.post('/demo/pay/callback?t=' + tok, data={'razorpay_order_id': 'order_X1', 'razorpay_payment_id': 'pay_Y2', 'razorpay_signature': 'x'})
         self.assertIn('/demo/pay?t=', bad.headers['Location'])
+
+
+class Signup(T):
+    def test_separate_pages_and_role(self):
+        c = self.app.test_client()
+        self.assertIn('I own a washroom', c.get('/register').get_data(as_text=True))
+        cu = c.get('/register/customer').get_data(as_text=True); ve = c.get('/register/vendor').get_data(as_text=True)
+        self.assertIn('name="role" value="user"', cu); self.assertIn('name="role" value="vendor"', ve)
+        self.assertIn('Vendor sign up', ve); self.assertNotIn('Merchant', ve)
+        self.assertEqual(c.get('/register?role=vendor').headers['Location'].split('/')[-1], 'vendor')
+        r = c.post('/register', data={'name': 'V', 'email': 'v1@example.org', 'password': 'secret1', 'confirm_password': 'secret1', 'role': 'vendor'})
+        from app.models import User
+        self.assertEqual(User.query.filter_by(email='v1@example.org').first().role, 'vendor')
+
+    def test_google_role_intent_never_changes_existing(self):
+        from unittest import mock
+        from app.models import User
+        self.app.config.update(GOOGLE_OAUTH_ENABLED=True, GOOGLE_CLIENT_ID='x', GOOGLE_CLIENT_SECRET='y')
+        def run(email, intent):
+            c = self.app.test_client()
+            with c.session_transaction() as s:
+                s['google_oauth_state'] = 'st'; s['google_role_intent'] = intent
+            tok = mock.Mock(); tok.json.return_value = {'access_token': 'a'}; tok.raise_for_status = lambda: None
+            inf = mock.Mock(); inf.json.return_value = {'email': email, 'email_verified': True, 'name': 'N'}; inf.raise_for_status = lambda: None
+            with mock.patch('requests.post', return_value=tok), mock.patch('requests.get', return_value=inf):
+                c.get('/auth/google/callback?state=st&code=c')
+        run('newv@example.org', 'vendor'); self.assertEqual(User.query.filter_by(email='newv@example.org').first().role, 'vendor')
+        run('newc@example.org', 'user'); self.assertEqual(User.query.filter_by(email='newc@example.org').first().role, 'user')
+        run('newc@example.org', 'vendor'); self.assertEqual(User.query.filter_by(email='newc@example.org').first().role, 'user')

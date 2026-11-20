@@ -119,6 +119,10 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
     
+    if request.method == 'GET' and request.args.get('role') == 'vendor':
+        return redirect(url_for('main.register_vendor'))
+    if request.method == 'GET' and request.args.get('role') == 'user':
+        return redirect(url_for('main.register_customer'))
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -133,20 +137,20 @@ def register():
         # Validation
         if not all([name, email, password, confirm_password]):
             flash('All fields are required.', 'error')
-            return render_template('register.html')
+            return _register_page(role)
         
         if password != confirm_password:
             flash('Passwords do not match.', 'error')
-            return render_template('register.html')
+            return _register_page(role)
         
         if len(password) < 6:
             flash('Password must be at least 6 characters long.', 'error')
-            return render_template('register.html')
+            return _register_page(role)
         
         # Check if user already exists
         if User.query.filter_by(email=email).first():
             flash('Email already registered.', 'error')
-            return render_template('register.html')
+            return _register_page(role)
         
         # Create new user
         user = User(name=name, email=email, role=role)
@@ -158,7 +162,25 @@ def register():
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('main.login'))
     
-    return render_template('register.html')
+    return render_template('register_choice.html')
+
+
+@main.route('/register/customer')
+def register_customer():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    return _register_page('user')
+
+
+@main.route('/register/vendor')
+def register_vendor():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    return _register_page('vendor')
+
+
+def _register_page(role):
+    return render_template('register.html', role=role if role in ('user', 'vendor') else 'user')
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -214,6 +236,8 @@ def login_google():
     import secrets
     state = secrets.token_urlsafe(24)
     session['google_oauth_state'] = state
+    # Role intent only applies when this sign-in creates a brand-new account.
+    session['google_role_intent'] = 'vendor' if request.args.get('role') == 'vendor' else 'user'
     params = {
         'client_id': current_app.config['GOOGLE_CLIENT_ID'],
         'redirect_uri': url_for('main.auth_google_callback', _external=True),
@@ -263,15 +287,20 @@ def auth_google_callback():
         flash('Google did not share a verified email address.', 'error')
         return redirect(url_for('main.login'))
 
+    intent = session.pop('google_role_intent', 'user')
     user = User.query.filter_by(email=email).first()
+    existing = user is not None
     if not user:
         import secrets as _s
-        user = User(name=info.get('name') or email.split('@')[0], email=email, role='user')
+        user = User(name=info.get('name') or email.split('@')[0], email=email, role='vendor' if intent == 'vendor' else 'user')
         user.set_password(_s.token_urlsafe(32))  # password login effectively disabled for this account
         db.session.add(user)
         db.session.commit()
     login_user(user)
-    flash(f'Welcome, {user.name}!', 'success')
+    if existing and intent == 'vendor' and user.role == 'user':
+        flash('This email already has a customer account, so you are signed in as a customer.', 'info')
+    else:
+        flash(f'Welcome, {user.name}!', 'success')
     return redirect(url_for('main.dashboard'))
 
 
@@ -420,13 +449,8 @@ def admin_user_detail(user_id):
 @main.route('/user/dashboard')
 @user_required
 def user_dashboard():
-    """User dashboard (regular users only) - Shows nearby verified vendors."""
-    from app.models import Vendor
-    # Fetch verified and active vendors to show on the map/list
-    verified_vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
-    # Serialize for JS
-    vendors_json = [v.to_dict() for v in verified_vendors]
-    return render_template('user_dashboard.html', user=current_user, vendors=verified_vendors, vendors_json=vendors_json, demo_bookings=demo_bookings_for_view())
+    """User dashboard (regular users only): visit history and profile."""
+    return render_template('user_dashboard.html', user=current_user, demo_bookings=demo_bookings_for_view())
 
 
 @main.route('/vendor/<int:vendor_id>')

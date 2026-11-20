@@ -55,7 +55,8 @@ class Config:
         from sqlalchemy.pool import NullPool
         SQLALCHEMY_ENGINE_OPTIONS = {
             'poolclass': NullPool,
-            'pool_pre_ping': True,
+            # NullPool opens a fresh connection per request, so a pre-ping is a wasted round trip.
+            'pool_pre_ping': False,
             'connect_args': {
                 'sslmode': 'require',
                 'connect_timeout': 30
