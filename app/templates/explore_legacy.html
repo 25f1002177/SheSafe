@@ -76,7 +76,7 @@
             </div>
 
     <!-- Floating Action Buttons -->
-    <div class="absolute right-3 z-10 flex flex-col gap-3" style="top:118px">
+    <div id="fab" class="absolute right-3 z-10 flex flex-col gap-3" style="top:150px">
         <button onclick="recenterMap()"
             class="flex h-12 px-5 items-center gap-2 rounded-full bg-white text-navy-trust shadow-lg border border-slate-100 font-bold text-sm active:scale-95 transition-all">
             <span class="material-symbols-outlined text-[20px]">my_location</span>
@@ -150,6 +150,8 @@
         if (!mapEl || !sheet) return;
         mapEl.style.height = 'auto';
         mapEl.style.bottom = sheet.offsetHeight + 'px';
+        const to = document.getElementById('top-overlays'), fab = document.getElementById('fab');
+        if (to && fab) fab.style.top = (to.offsetTop + to.offsetHeight + 8) + 'px';
         if (typeof google !== 'undefined' && map) google.maps.event.trigger(map, 'resize');
     }
     window.addEventListener('resize', layoutMap);
@@ -190,6 +192,7 @@
             refPos = demoPos;
             notice.innerText = 'Showing places near Ashoka University';
             document.getElementById('top-overlays').appendChild(notice);
+            layoutMap();
             map.easeTo({ center: demoPos });
             updateNearestVendor(demoPos);
         }
@@ -342,10 +345,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex gap-2">
                     <a href="/vendor/${vendor.id}" class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm shadow-lg shadow-navy-trust/20 active:scale-[0.98] transition-all">
                         <span class="material-symbols-outlined text-lg">calendar_month</span>
                         Book
+                    </a>
+                    <a href="/vendor/${vendor.id}#reviews" class="flex-1 flex items-center justify-center gap-1 h-12 rounded-2xl border-2 border-slate-200 bg-white text-navy-trust font-bold text-sm active:scale-[0.98] transition-all no-underline">
+                        <span class="material-symbols-outlined text-lg">star</span>
+                        Reviews
                     </a>
                     <a href="https://www.google.com/maps/dir/?api=1&destination=${vendor.lat},${vendor.lng}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-2 h-12 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-sm active:scale-[0.98] transition-all no-underline">
                         <span class="material-symbols-outlined text-lg">directions</span>
