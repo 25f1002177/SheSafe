@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import flash, redirect, url_for, abort
+from flask import flash, redirect, url_for, abort, request
 from flask_login import current_user
 
 
@@ -12,7 +12,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             flash('Please log in to access this page.', 'error')
-            return redirect(url_for('main.login'))
+            return redirect(url_for('main.login', next=request.path))
         
         if current_user.role != 'admin':
             flash('Access denied. Admin privileges required.', 'error')
@@ -31,7 +31,7 @@ def vendor_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             flash('Please log in to access this page.', 'error')
-            return redirect(url_for('main.login'))
+            return redirect(url_for('main.login', next=request.path))
         
         if current_user.role != 'vendor':
             flash('Access denied. Vendor privileges required.', 'error')
@@ -50,7 +50,7 @@ def user_required(f):
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated:
             flash('Please log in to access this page.', 'error')
-            return redirect(url_for('main.login'))
+            return redirect(url_for('main.login', next=request.path))
         
         if current_user.role != 'user':
             flash('Access denied. User privileges required.', 'error')
