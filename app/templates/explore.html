@@ -145,7 +145,8 @@
             "lat": {{ (vendor.latitude or 28.6139)|tojson }},
             "lng": {{ (vendor.longitude or 77.2090)|tojson }},
             "address": {{ vendor.address|tojson }},
-            "rating": {{ (vendor.average_rating or 5.0)|tojson }},
+            "rating": {{ (vendor.average_rating or 0.0)|tojson }},
+            "reviews": {{ (vendor.feedbacks|length if vendor.feedbacks else 0)|tojson }},
             "categories": {{ (vendor.category or "").split(", ")|tojson }},
             "image_url": {{ (vendor.to_dict().image_url)|tojson }}
         }{% if not loop.last %},{% endif %}
@@ -371,7 +372,7 @@
                             </div>
                             <div class="flex items-center gap-1 border-l border-slate-100 pl-3">
                                 <span class="material-symbols-outlined text-primary-pink text-[18px] fill-1">star</span>
-                                <span class="text-navy-trust font-bold text-sm">${vendor.rating}</span>
+                                <span class="text-navy-trust font-bold text-sm">${vendor.reviews > 0 ? vendor.rating : 'New'}</span>
                             </div>
                         </div>
                     </div>
