@@ -6,9 +6,59 @@
 <div class="flex flex-col min-h-screen bg-blush-white dark:bg-background-dark">
     <main class="flex-1 overflow-y-auto no-scrollbar px-4 py-6 max-w-2xl mx-auto w-full">
         <h1 class="text-2xl font-extrabold mb-1 text-slate-900 dark:text-white">Privacy</h1>
-        <div class="mt-6 p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
-            <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">SheSafe is a demonstration
-                application. Its privacy information is currently being reviewed and will be published here.</p>
+        <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Last updated 20 November 2026</p>
+
+        <div class="space-y-4">
+            <div class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="text-base font-bold mb-2 text-slate-900 dark:text-white">What this is</h2>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">SheSafe is a demonstration
+                    application for venue discovery and booking. This page describes what the app currently does
+                    with information.</p>
+            </div>
+
+            <div class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="text-base font-bold mb-2 text-slate-900 dark:text-white">What is stored</h2>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">When you register, the app
+                    stores your name, email address and a cryptographic hash of your password (never the password
+                    itself). If you sign in with Google, the app receives and stores your name and email address
+                    from Google, nothing else. When a venue is onboarded, its business name, category, contact
+                    details and chosen location (coordinates and address) are stored. Bookings you make yourself
+                    are really stored; the venue listings currently shown are demo listings.</p>
+            </div>
+
+            <div class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="text-base font-bold mb-2 text-slate-900 dark:text-white">Your location on the Explore map</h2>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">If you allow location access,
+                    your browser uses it inside the page to sort venues by distance. Your coordinates are not sent
+                    to our servers and not stored by us. Note that loading the map itself sends standard web
+                    requests to the map provider (OpenFreeMap), which receives your browser's IP address and the
+                    map area you view, which may be the area around your location.</p>
+            </div>
+
+            <div class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="text-base font-bold mb-2 text-slate-900 dark:text-white">Third-party requests</h2>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">Every page loads fonts from
+                    Google Fonts. Map pages load tiles from OpenFreeMap. During vendor onboarding, your browser
+                    asks OpenStreetMap's Nominatim service for the address of the picked coordinates. If you use
+                    Google sign-in, Google handles that sign-in. Some images are loaded from svgrepo.com,
+                    googleusercontent.com and unsplash.com.</p>
+            </div>
+
+            <div class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="text-base font-bold mb-2 text-slate-900 dark:text-white">Where the app runs</h2>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">The main site is hosted on
+                    Vercel and its data is stored in a Postgres database on Neon. A second copy of the app also
+                    runs on Render (shesafe-1rad.onrender.com); anything you enter there is processed and stored by
+                    Render separately, in temporary demo storage.</p>
+            </div>
+
+            <div class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="text-base font-bold mb-2 text-slate-900 dark:text-white">This is a demo</h2>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">Venue listings are demo
+                    listings.</p>
+                <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300 mt-2">Contact:
+                    baladibakar89@gmail.com</p>
+            </div>
         </div>
     </main>
 </div>
