@@ -698,14 +698,38 @@ def upload_images():
 DEMO_BOOKING_FEE_INR = 10
 
 
-def get_razorpay_client():
-    """Return a configured Razorpay client (test-mode keys from env), or None."""
+def get_razorpay_auth():
+    """Return (key_id, key_secret) from env, or None when not configured."""
     key_id = os.environ.get('RAZORPAY_KEY_ID')
     key_secret = os.environ.get('RAZORPAY_KEY_SECRET')
     if not key_id or not key_secret:
         return None
-    import razorpay
-    return razorpay.Client(auth=(key_id, key_secret))
+    return key_id, key_secret
+
+
+def razorpay_create_order(auth, amount_paise, receipt):
+    """Create a Razorpay order via the REST API (no SDK dependency)."""
+    import requests as http
+    resp = http.post(
+        'https://api.razorpay.com/v1/orders',
+        auth=auth,
+        data={'amount': amount_paise, 'currency': 'INR', 'receipt': receipt, 'payment_capture': 1},
+        timeout=15,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+
+def razorpay_verify_signature(auth, order_id, payment_id, signature):
+    """True when the Razorpay checkout callback signature is genuine."""
+    import hmac
+    import hashlib
+    expected = hmac.new(
+        auth[1].encode(),
+        f'{order_id}|{payment_id}'.encode(),
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature or '')
 
 
 @main.route('/book/<int:vendor_id>', methods=['POST'])
@@ -749,19 +773,14 @@ def book_vendor(vendor_id):
     db.session.commit()
 
     if payment_mode == 'app':
-        client = get_razorpay_client()
-        if client is None:
+        auth = get_razorpay_auth()
+        if auth is None:
             db.session.delete(new_booking)
             db.session.commit()
             flash('Online payment is not available right now. Please choose Pay Later instead.', 'error')
             return redirect(url_for('main.vendor_detail', vendor_id=vendor.id))
         try:
-            order = client.order.create({
-                'amount': int(amount * 100),
-                'currency': 'INR',
-                'receipt': f'booking_{new_booking.id}',
-                'payment_capture': 1,
-            })
+            order = razorpay_create_order(auth, int(amount * 100), f'booking_{new_booking.id}')
             new_booking.razorpay_order_id = order['id']
             db.session.commit()
         except Exception:
@@ -789,8 +808,8 @@ def pay_booking(booking_id):
     if booking.payment_status == 'paid':
         return redirect(url_for('main.booking_confirmation', booking_id=booking.id))
 
-    client = get_razorpay_client()
-    if client is None or not booking.razorpay_order_id:
+    auth = get_razorpay_auth()
+    if auth is None or not booking.razorpay_order_id:
         flash('Online payment is not available right now. Please try again later.', 'error')
         return redirect(url_for('main.booking_confirmation', booking_id=booking.id))
 
@@ -812,20 +831,14 @@ def pay_booking_callback(booking_id):
     order_id = request.form.get('razorpay_order_id', '')
     signature = request.form.get('razorpay_signature', '')
 
-    client = get_razorpay_client()
-    if client is None or not booking.razorpay_order_id or order_id != booking.razorpay_order_id:
+    auth = get_razorpay_auth()
+    if auth is None or not booking.razorpay_order_id or order_id != booking.razorpay_order_id:
         booking.payment_status = 'failed'
         db.session.commit()
         flash('Payment could not be verified. You have not been charged by us; please try again.', 'error')
         return redirect(url_for('main.pay_booking', booking_id=booking.id))
 
-    try:
-        client.utility.verify_payment_signature({
-            'razorpay_order_id': order_id,
-            'razorpay_payment_id': payment_id,
-            'razorpay_signature': signature,
-        })
-    except Exception:
+    if not razorpay_verify_signature(auth, order_id, payment_id, signature):
         booking.payment_status = 'failed'
         db.session.commit()
         flash('Payment verification failed. You have not been charged by us; please try again.', 'error')
