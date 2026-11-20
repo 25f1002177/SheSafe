@@ -222,11 +222,19 @@
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    updateNearestVendor({ lat: 28.948445948109907, lng: 77.09660988721876 });
+                    showDemoAreaNotice({ lat: 28.948445948109907, lng: 77.09660988721876 });
                 }
             );
         } else {
-            updateNearestVendor({ lat: 28.6139, lng: 77.2090 });
+            showDemoAreaNotice({ lat: 28.948445948109907, lng: 77.09660988721876 });
+        }
+
+        function showDemoAreaNotice(demoPos) {
+            const notice = document.createElement('div');
+            notice.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:20;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
+            notice.innerText = 'Location unavailable - showing demo area (Ashoka University)';
+            document.getElementById('map').appendChild(notice);
+            updateNearestVendor(demoPos);
         }
 
         // Add vendor markers

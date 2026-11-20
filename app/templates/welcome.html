@@ -33,7 +33,7 @@
         <div class="px-5 py-2">
             <div id="finding-banner" class="bg-navy-trust/5 px-4 py-2.5 rounded-xl flex items-center gap-3">
                 <div class="size-2 bg-primary-pink rounded-full animate-pulse"></div>
-                <p class="text-[11px] font-bold text-navy-trust/70 uppercase tracking-widest">Finding facilities near
+                <p id="finding-banner-text" class="text-[11px] font-bold text-navy-trust/70 uppercase tracking-widest">Finding facilities near
                     you...</p>
             </div>
         </div>
@@ -56,7 +56,7 @@
                     <div class="flex justify-between items-end mb-4">
                         <div>
                             <p class="text-primary-pink text-[11px] font-bold uppercase tracking-widest mb-1">
-                                Closest to You • <span id="closest-vendor-dist">---</span></p>
+                                <span id="closest-vendor-label">Closest to You</span> • <span id="closest-vendor-dist">---</span></p>
                             <h3 id="closest-vendor-name" class="text-navy-trust text-xl font-bold">---</h3>
                             <div class="flex items-center gap-1 mt-1">
                                 <span class="material-symbols-outlined text-primary-pink text-sm fill-1">star</span>
@@ -181,12 +181,12 @@
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    // Use a default location (Ashoka University) if permission denied
-                    updateUI({ lat: 28.948445948109907, lng: 77.09660988721876 });
+                    // Location unavailable: clearly labelled demo area, not the user's position
+                    updateUI({ lat: 28.948445948109907, lng: 77.09660988721876 }, true);
                 }
             );
         } else {
-            updateUI({ lat: 28.9482, lng: 77.1022 });
+            updateUI({ lat: 28.9482, lng: 77.1022 }, true);
         }
     }
 
@@ -210,10 +210,18 @@
         return (dist / 1000).toFixed(1) + 'km';
     }
 
-    function updateUI(userPos) {
+    function updateUI(userPos, isDemoArea = false) {
         if (vendors.length === 0) return;
         const banner = document.getElementById('finding-banner');
-        if (banner) banner.style.display = 'none';
+        const bannerText = document.getElementById('finding-banner-text');
+        const label = document.getElementById('closest-vendor-label');
+        if (isDemoArea) {
+            if (banner) banner.style.display = '';
+            if (bannerText) bannerText.innerText = 'Location unavailable - showing demo area (Ashoka University)';
+            if (label) label.innerText = 'Closest to demo area';
+        } else {
+            if (banner) banner.style.display = 'none';
+        }
 
         // Calculate distances
         const vendorsWithDist = vendors.map(v => ({
