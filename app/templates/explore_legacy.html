@@ -189,9 +189,19 @@
             map.easeTo({ center: pos });
             if (userMarker) userMarker.setMap(null);
             userMarker = new google.maps.Marker({ position: pos, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } });
-            if (!vendors.length) { noVerifiedNearby(NONE_MSG); return; }
+            if (!vendors.length) { noVerifiedNearby(NONE_MSG); settleMap(pos); return; }
             refPos = pos;
             updateNearestVendor(pos);
+            settleMap(pos);
+        }
+
+        // Re-measure and recentre once the sheet has its final height so no tiles stay unpainted.
+        function settleMap(pos) {
+            [300, 1200].forEach((ms) => setTimeout(() => {
+                layoutMap();
+                google.maps.event.trigger(map, 'resize');
+                map.setCenter(pos);
+            }, ms));
         }
 
         function noVerifiedNearby(msg) {
