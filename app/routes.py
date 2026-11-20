@@ -62,13 +62,15 @@ def landing():
 @main.route('/explore')
 @login_required
 def explore():
-    """Campus pitch catalog, with the original booking demo kept separate."""
-    if request.args.get('area') == 'ashoka':
-        from app.models import Vendor
-        vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
-        return render_template('explore_legacy.html', vendors=vendors)
-    from app.demo_catalog import kgp_venues
-    return render_template('explore.html', venues=kgp_venues())
+    """Closest verified washroom first (location driven). area=kgp is the real-place discovery
+    catalog (not verified, no booking); area=ashoka is the demo listing area."""
+    area = request.args.get('area')
+    if area == 'kgp':
+        from app.demo_catalog import kgp_venues
+        return render_template('explore.html', venues=kgp_venues())
+    from app.models import Vendor
+    vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+    return render_template('explore_legacy.html', vendors=vendors, forced_area=(area == 'ashoka'))
 
 
 @main.route('/demo/venue/<slug>')

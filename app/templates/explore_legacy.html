@@ -129,6 +129,7 @@
     let userMarker;
     let userPos = null;
     let usingDemoArea = false;
+    const FORCED_AREA = {{ 'true' if forced_area else 'false' }};
     let refPos = null;
 
     // Parse vendors from robust JSON block
@@ -165,31 +166,45 @@
             gestureHandling: 'greedy', clickableIcons: false
         });
         map.easeTo = function (o) { const c = o.center; map.panTo(Array.isArray(c) ? { lat: c[1], lng: c[0] } : (c.lat !== undefined && typeof c.lat === 'number' ? c : { lat: c.lat(), lng: c.lng() })); if (o.zoom) map.setZoom(o.zoom); };
-        // Geolocation
-        if (navigator.geolocation) {
+        // Geolocation: closest verified washroom first. Ashoka demo area only when explicitly chosen.
+        const AREA = { lat: 28.948445948109907, lng: 77.09660988721876 };
+        if (FORCED_AREA) {
+            showDemoAreaNotice(AREA);
+        } else if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
-                    const nearestM = Math.min(...vendors.map(v => distanceMeters(pos.lat, pos.lng, v.lat, v.lng)));
-                    if (nearestM > 50000) {
-                        // Bookable places are only in the Ashoka area; do not rank them against a far-away location
-                        showDemoAreaNotice({ lat: 28.948445948109907, lng: 77.09660988721876 });
-                        return;
-                    }
                     userPos = pos;
-                    refPos = pos;
                     map.easeTo({ center: pos });
                     userMarker = new google.maps.Marker({ position: pos, map: map, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#4285F4', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } });
-
+                    const nearestM = vendors.length ? Math.min(...vendors.map(v => distanceMeters(pos.lat, pos.lng, v.lat, v.lng))) : Infinity;
+                    if (nearestM > 50000) {
+                        noVerifiedNearby('No verified women\'s washroom within 50 km of you yet.');
+                        return;
+                    }
+                    refPos = pos;
+                    map.easeTo({ center: pos });
                     updateNearestVendor(pos);
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    showDemoAreaNotice({ lat: 28.948445948109907, lng: 77.09660988721876 });
+                    noVerifiedNearby('Turn on location to see the closest verified women\'s washroom.');
                 }
             );
         } else {
-            showDemoAreaNotice({ lat: 28.948445948109907, lng: 77.09660988721876 });
+            noVerifiedNearby('Turn on location to see the closest verified women\'s washroom.');
+        }
+
+        function noVerifiedNearby(msg) {
+            clearMarkers();
+            const c = document.getElementById('vendor-list-container');
+            c.innerHTML = `
+                <div style="min-width:100%;flex:none" class="flex flex-col gap-3 p-2">
+                    <p class="text-navy-trust font-bold text-base">${msg}</p>
+                    <a href="/explore?area=kgp" class="flex items-center justify-center h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline">Browse real places at IIT KGP</a>
+                    <a href="/explore?area=ashoka" class="flex items-center justify-center h-12 rounded-2xl border-2 border-slate-200 text-navy-trust font-bold text-sm no-underline">See demo listings near Ashoka University</a>
+                </div>`;
+            layoutMap();
         }
 
         function showDemoAreaNotice(demoPos) {
@@ -242,6 +257,7 @@
     }
 
     function applyFilters() {
+        if (!FORCED_AREA && !refPos) return;
         let filteredVendors;
         if (selectedFilters.size === 0) {
             filteredVendors = vendors;
