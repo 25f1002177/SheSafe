@@ -69,10 +69,11 @@
     <div class="px-5 mb-8">
         <div class="flex justify-between items-center mb-4 px-1">
             <h3 class="text-navy-trust dark:text-white text-lg font-bold">Active Reservations</h3>
-            <span class="text-brand-pink text-xs font-bold uppercase tracking-wider">All Bookings</span>
+            <a href="{{ url_for('main.vendor_bookings') }}"
+                class="text-brand-pink text-xs font-bold uppercase tracking-wider">All Bookings</a>
         </div>
         <div class="space-y-4">
-            {% set active_bookings = user.vendor_profile.bookings | selectattr('status', 'equalto', 'upcoming') | list
+            {% set active_bookings = user.vendor_profile.bookings | selectattr('status', 'in', ['pending', 'confirmed']) | list
             %}
             {% for booking in active_bookings | sort(attribute='visit_date') %}
             <div
@@ -87,14 +88,15 @@
                     <p class="text-[10px] text-slate-400 font-medium">#SAFE-{{ booking.id }} • Today</p>
                 </div>
                 <div class="flex gap-2">
-                    <button
-                        class="size-10 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-navy-trust dark:text-white active:scale-95 transition-all">
-                        <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
-                    </button>
-                    <button
-                        class="size-10 rounded-xl bg-primary text-white flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-primary/20">
-                        <span class="material-symbols-outlined text-xl">check</span>
-                    </button>
+                    <span
+                        class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg {% if booking.status == 'pending' %}bg-amber-50 text-amber-600{% else %}bg-emerald-50 text-emerald-600{% endif %} self-center">{{
+                        booking.status }}</span>
+                    <form method="POST" action="{{ url_for('main.complete_booking', booking_id=booking.id) }}">
+                        <button type="submit" title="Mark completed"
+                            class="size-10 rounded-xl bg-primary text-white flex items-center justify-center active:scale-95 transition-all shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined text-xl">check</span>
+                        </button>
+                    </form>
                 </div>
             </div>
             {% else %}

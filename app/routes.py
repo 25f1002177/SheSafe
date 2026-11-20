@@ -776,6 +776,148 @@ def complete_booking(booking_id):
     flash('Booking marked as completed. The user can now leave a review!', 'success')
     return redirect(url_for('main.vendor_dashboard'))
 
+@main.route('/vendor/bookings')
+@vendor_required
+def vendor_bookings():
+    """List all bookings for the current vendor."""
+    from app.models import Booking
+    bookings = (Booking.query
+                .filter_by(vendor_id=current_user.vendor_profile.id)
+                .order_by(Booking.visit_date.desc())
+                .all())
+    return render_template('vendor_bookings.html', user=current_user, bookings=bookings)
+
+
+@main.route('/vendor/edit', methods=['GET', 'POST'])
+@vendor_required
+def vendor_edit():
+    """Edit the current vendor's profile (post-onboarding)."""
+    from datetime import datetime
+    vendor = current_user.vendor_profile
+    if not vendor:
+        flash('Please complete vendor onboarding first.', 'info')
+        return redirect(url_for('main.vendor_onboard'))
+
+    if request.method == 'POST':
+        vendor.business_name = request.form.get('business_name', vendor.business_name)
+        vendor.description = request.form.get('description') or None
+        vendor.address = request.form.get('address', vendor.address)
+        vendor.has_cctv = request.form.get('has_cctv') == 'on'
+        vendor.has_female_staff = request.form.get('has_female_staff') == 'on'
+        vendor.is_active = request.form.get('is_active') == 'on'
+
+        fst = request.form.get('female_staff_start_time')
+        fet = request.form.get('female_staff_end_time')
+        if vendor.has_female_staff and fst and fet:
+            try:
+                vendor.female_staff_start_time = datetime.strptime(fst, '%H:%M').time()
+                vendor.female_staff_end_time = datetime.strptime(fet, '%H:%M').time()
+            except ValueError:
+                flash('Invalid time format for staff timing.', 'error')
+                return render_template('vendor_edit.html', user=current_user, vendor=vendor)
+        elif not vendor.has_female_staff:
+            vendor.female_staff_start_time = None
+            vendor.female_staff_end_time = None
+
+        db.session.commit()
+        flash('Profile updated.', 'success')
+        return redirect(url_for('main.vendor_dashboard'))
+
+    return render_template('vendor_edit.html', user=current_user, vendor=vendor)
+
+
+@main.route('/api/ask-ai', methods=['POST'])
+@login_required
+def api_ask_ai():
+    """Server-side AI proxy. Provider keys stay on the server (env vars only)."""
+    import os
+    import json as _json
+    import urllib.request
+    import urllib.error
+
+    system_prompt = (
+        "You are SheSafe AI, a professional and empathetic expert in women's sexual and "
+        "urinary health and hygiene. Your tone is supportive, informative, and safe. Your goal "
+        "is to provide accurate health information while reminding users that you are an AI and "
+        "they should consult a doctor for clinical diagnosis. Particularly answer women sexual "
+        "and urinary health and hygeniene related questions."
+    )
+
+    data = request.get_json(silent=True) or {}
+    prompt = (data.get('prompt') or '').strip()
+    if not prompt:
+        return {'error': 'Prompt is required.'}, 400
+
+    def _post(url, payload, headers=None, timeout=20):
+        req = urllib.request.Request(
+            url,
+            data=_json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json', **(headers or {})},
+            method='POST',
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return _json.loads(resp.read().decode('utf-8'))
+
+    errors = []
+
+    # 1. Gemini (only if a server-side key is configured)
+    gemini_key = os.environ.get('GEMINI_API_KEY', '')
+    if gemini_key:
+        try:
+            url = ('https://generativelanguage.googleapis.com/v1beta/models/'
+                   'gemini-flash-latest:generateContent?key=' + gemini_key)
+            body = {
+                'contents': [{'role': 'user', 'parts': [{'text': prompt}]}],
+                'generationConfig': {'maxOutputTokens': 1000, 'temperature': 0.5},
+                'systemInstruction': {'parts': [{'text': system_prompt}]},
+            }
+            data = _post(url, body)
+            text = (data.get('candidates') or [{}])[0].get('content', {}).get('parts', [{}])[0].get('text')
+            if text:
+                return {'text': text}
+            errors.append('Gemini: empty response')
+        except Exception as e:
+            errors.append('Gemini: %s' % e)
+
+    # 2. OpenAI-compatible providers
+    chat_providers = [
+        ('OpenRouter', os.environ.get('OPENROUTER_API_KEY', ''),
+         'https://openrouter.ai/api/v1/chat/completions',
+         ['google/gemma-2-9b-it:free', 'meta-llama/llama-3.2-3b-instruct:free']),
+        ('NVIDIA NIM', os.environ.get('NVIDIA_API_KEY', ''),
+         'https://integrate.api.nvidia.com/v1/chat/completions',
+         ['meta/llama-3.1-8b-instruct']),
+        ('SiliconFlow', os.environ.get('SILICONFLOW_API_KEY', ''),
+         'https://api.siliconflow.cn/v1/chat/completions',
+         ['Qwen/Qwen2.5-7B-Instruct']),
+    ]
+    for name, key, url, models in chat_providers:
+        if not key:
+            continue
+        for model in models:
+            try:
+                body = {
+                    'model': model,
+                    'messages': [
+                        {'role': 'system', 'content': system_prompt},
+                        {'role': 'user', 'content': prompt},
+                    ],
+                    'max_tokens': 1000,
+                    'temperature': 0.5,
+                }
+                data = _post(url, body, headers={'Authorization': 'Bearer ' + key})
+                choices = data.get('choices') or []
+                text = choices[0].get('message', {}).get('content') if choices else None
+                if text:
+                    return {'text': text}
+                errors.append('%s %s: empty response' % (name, model))
+            except Exception as e:
+                errors.append('%s %s: %s' % (name, model, e))
+
+    current_app.logger.warning('ask-ai providers failed: %s', '; '.join(errors))
+    return {'error': 'The AI assistant is unavailable right now. Please try again later.'}, 502
+
+
 @main.route('/update-db-schema')
 def update_db_schema():
     """Temporary route to update database schema."""

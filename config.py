@@ -76,9 +76,9 @@ class Config:
         print("WARNING: GOOGLE_MAPS_API_KEY environment variable is not set. Google Maps features will not load.")
 
     # AI Service API Keys
-    OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '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')
-    NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY', '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')
-    SILICONFLOW_API_KEY = os.environ.get('SILICONFLOW_API_KEY', '14d72f5ee2284ad1bccbf09afb177f3e.XmKGoH-DT4_GfzPx9LEe_jQ6')
+    OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
+    NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY', '')
+    SILICONFLOW_API_KEY = os.environ.get('SILICONFLOW_API_KEY', '')
 
     @staticmethod
     def init_app(app):

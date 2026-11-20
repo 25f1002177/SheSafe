@@ -86,7 +86,7 @@ class AIService {
 
 
     async callGemini(prompt, systemPrompt) {
-        const apiKey = "AIzaSyA8nrVFVmlpFSp-AJXWH2an7jau6YU9e2g";
+        const apiKey = ""; // Key removed: AI calls now go through the server-side /api/ask-ai proxy.
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
 
         // Construct request body for Google's API

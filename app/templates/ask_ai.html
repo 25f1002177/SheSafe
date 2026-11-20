@@ -97,23 +97,12 @@
     </div>
 </div>
 
-<script type="module">
-    import AIService from "{{ url_for('static', filename='js/aiService.js') }}?v=geminiflash2";
-
-    const aiKeys = {
-        openRouter: "{{ config.OPENROUTER_API_KEY }}",
-        nvidia: "{{ config.NVIDIA_API_KEY }}",
-        siliconFlow: "{{ config.SILICONFLOW_API_KEY }}"
-    };
-    const aiService = new AIService(aiKeys);
-
+<script>
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const chatContainer = document.getElementById('chat-container');
     const blogsSection = document.getElementById('blogs-section');
-
-    const SYSTEM_PROMPT = `You are SheSafe AI, a professional and empathetic expert in women's sexual and urinary health and hygiene. Your tone is supportive, informative, and safe. Your goal is to provide accurate health information while reminding users that you are an AI and they should consult a doctor for clinical diagnosis. Particularly answer women sexual and urinary health and hygeniene related questions.`;
 
     function appendMessage(role, text) {
         const messageDiv = document.createElement('div');
@@ -174,9 +163,14 @@
         chatContainer.scrollTop = chatContainer.scrollHeight;
 
         try {
-            const response = await aiService.callAI(text, 1000, SYSTEM_PROMPT);
+            const res = await fetch("{{ url_for('main.api_ask_ai') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: text })
+            });
+            const data = await res.json();
             document.getElementById(loadingId).remove();
-            appendMessage('assistant', response);
+            appendMessage('assistant', data.text || data.error || "I'm sorry, I'm having trouble connecting right now. Please try again later.");
         } catch (error) {
             document.getElementById(loadingId).remove();
             appendMessage('assistant', "I'm sorry, I'm having trouble connecting right now. Please try again later.");
