@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy - SheSafe{% endblock %}
+
+{% block content %}
+<div class="flex flex-col min-h-screen bg-blush-white dark:bg-background-dark">
+    <main class="flex-1 overflow-y-auto no-scrollbar px-4 py-6 max-w-2xl mx-auto w-full">
+        <h1 class="text-2xl font-extrabold mb-1 text-slate-900 dark:text-white">Privacy Policy</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Last updated: November 20, 2026</p>
+
+        <div class="space-y-5 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+            <section class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="font-bold text-base mb-2 text-slate-900 dark:text-white">What SheSafe is</h2>
+                <p>SheSafe is a demonstration application that helps users discover women-safe,
+                    hygiene-verified venues and services nearby. This policy explains what information the
+                    app handles and why.</p>
+            </section>
+
+            <section class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="font-bold text-base mb-2 text-slate-900 dark:text-white">Information we collect</h2>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><span class="font-semibold">Account details:</span> your name, email address and
+                        password (stored only as a secure hash) when you register.</li>
+                    <li><span class="font-semibold">Google sign-in:</span> if you choose "Continue with
+                        Google", we receive your name, email address and profile picture from Google to
+                        create or sign in to your account. We do not receive your Google password.</li>
+                    <li><span class="font-semibold">Vendor information:</span> business name, category,
+                        location and contact details provided by merchants during onboarding.</li>
+                    <li><span class="font-semibold">Location you pick:</span> the map location you choose
+                        when exploring or onboarding, used only to show nearby venues.</li>
+                </ul>
+            </section>
+
+            <section class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="font-bold text-base mb-2 text-slate-900 dark:text-white">How we use it</h2>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>To sign you in and keep your session secure.</li>
+                    <li>To show venues and bookings relevant to you.</li>
+                    <li>To let vendors manage their listings and bookings.</li>
+                </ul>
+                <p class="mt-2">We do not sell your information, and we do not use it for advertising.</p>
+            </section>
+
+            <section class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="font-bold text-base mb-2 text-slate-900 dark:text-white">Third-party services</h2>
+                <p>The app uses Google Sign-In (optional), OpenStreetMap/OpenFreeMap map tiles, and
+                    Nominatim for address lookup. These services receive only the technical requests needed
+                    to display maps or sign you in.</p>
+            </section>
+
+            <section class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="font-bold text-base mb-2 text-slate-900 dark:text-white">Your choices</h2>
+                <p>You can stop using the app at any time. To update or delete your account information,
+                    contact us at the email below.</p>
+            </section>
+
+            <section class="p-5 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h2 class="font-bold text-base mb-2 text-slate-900 dark:text-white">Contact</h2>
+                <p>Questions about this policy: <a class="text-primary-pink font-semibold"
+                        href="mailto:baladibakar89@gmail.com">baladibakar89@gmail.com</a></p>
+            </section>
+        </div>
+    </main>
+</div>
+{% endblock %}

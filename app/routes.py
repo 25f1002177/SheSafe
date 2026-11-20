@@ -36,6 +36,18 @@ def welcome_home():
     return render_template('welcome.html', vendors=vendors)
 
 
+@main.route('/privacy')
+def privacy():
+    """Privacy policy page."""
+    return render_template('privacy.html')
+
+
+@main.route('/terms')
+def terms():
+    """Safety terms page."""
+    return render_template('terms.html')
+
+
 @main.route('/landing')
 def landing():
     """Explicit landing page for guests."""
