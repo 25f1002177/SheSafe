@@ -44,6 +44,19 @@
 
         <!-- History Content -->
         <div id="content-history" class="space-y-4 animate-in fade-in duration-300">
+            {% for b in demo_bookings %}
+            <a href="{{ url_for('main.demo_booking', bid=b.id) }}" class="block bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm relative">
+                <span class="absolute top-5 right-5 bg-blue-50 text-blue-500 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">Upcoming</span>
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="size-12 rounded-2xl bg-slate-50 flex items-center justify-center text-navy-trust shrink-0"><span class="material-symbols-outlined text-2xl">woman</span></div>
+                    <div class="pr-16"><h4 class="text-navy-trust font-bold text-base leading-tight">{{ b.name }}</h4><p class="text-slate-400 text-xs mt-1">{{ b.visit_dt.strftime('%b %d, %Y • %H:%M') }}</p></div>
+                </div>
+                <div class="flex items-center justify-between pt-4 border-t border-slate-50">
+                    <div class="flex flex-col"><span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Reference</span><span class="text-xs font-black text-navy-trust">#SAFE-{{ b.id }}</span></div>
+                    <span class="bg-navy-trust text-white text-[10px] font-bold px-4 py-2 rounded-xl">View QR Pass</span>
+                </div>
+            </a>
+            {% endfor %}
             {% for booking in user.bookings | sort(attribute='visit_date', reverse=True) %}
             <div
                 class="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
@@ -99,6 +112,7 @@
                 </div>
             </div>
             {% else %}
+            {% if not demo_bookings %}
             <div
                 class="text-center py-20 bg-slate-50/50 dark:bg-slate-900/50 rounded-[32px] border-2 border-dashed border-slate-100 dark:border-slate-800">
                 <div
@@ -112,6 +126,7 @@
                     class="inline-block mt-6 text-brand-pink text-xs font-bold uppercase tracking-widest">Find a washroom
                     now</a>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
 

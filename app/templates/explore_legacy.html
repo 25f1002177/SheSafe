@@ -405,7 +405,10 @@
                     </div>
                 </div>
                 ${vendor.kind === 'listing' ? `<div class="flex gap-1.5">
-                    <a href="${vendor.maps_url}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline" style="font-size:12px;min-width:0;gap:4px">
+                    <a href="${vendor.details_url}#book" class="flex-1 flex items-center justify-center h-12 rounded-2xl bg-navy-trust text-white font-bold text-sm no-underline" style="font-size:12px;min-width:0;gap:4px">
+                        <span class="material-symbols-outlined text-lg kgp-ic">calendar_month</span>Book
+                    </a>
+                    <a href="${vendor.maps_url}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center h-12 rounded-2xl border-2 border-primary-pink/20 bg-primary-pink/5 text-navy-trust font-bold text-sm no-underline" style="font-size:12px;min-width:0;gap:4px">
                         <span class="material-symbols-outlined text-lg kgp-ic">directions</span>Directions
                     </a>
                     <a href="${vendor.details_url}" class="flex-1 flex items-center justify-center h-12 rounded-2xl border-2 border-slate-200 bg-white text-navy-trust font-bold text-sm no-underline" style="font-size:12px;min-width:0;gap:4px">

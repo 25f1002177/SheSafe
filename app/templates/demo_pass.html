@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Visit pass - SheSafe{% endblock %}
+{% block content %}
+<div style="max-width:430px;margin:0 auto;padding:28px 20px 130px;min-height:100vh;background:#f6f8fb;color:#102b46">
+<div style="text-align:center;background:#fff;border:1px solid #e1e8ee;border-radius:20px;padding:24px"><span class="material-symbols-outlined" style="font-size:48px;color:#1e8c4e">verified_user</span>
+<h1 style="font-size:22px;font-weight:900;margin:8px 0">Visit pass</h1><h2 style="font-size:17px;font-weight:800">{{ b.name }}</h2>
+<p style="font-size:13px;color:#657b8f;margin:6px 0">{{ visit.strftime('%d %b %Y, %I:%M %p') }}</p><p style="font-size:12px;font-weight:800">Ref #SAFE-{{ b.id }}</p>
+<p style="font-size:13px;margin-top:8px">{% if b.paid %}Paid &#8377;{{ '%.2f'|format(b.amount) }}{% else %}Pay at location{% endif %}</p></div>
+</div>
+{% endblock %}

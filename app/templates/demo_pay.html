@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Payment - SheSafe{% endblock %}
+{% block content %}
+<div style="max-width:430px;margin:0 auto;padding:28px 20px 130px;min-height:100vh;background:#f6f8fb;color:#102b46">
+<a href="{{ url_for('main.kgp_demo_venue', slug=booking.slug) }}" style="font-size:13px;font-weight:800;color:#5a6e82">&larr; Back</a>
+<h1 style="font-size:26px;font-weight:900;margin:14px 0 4px">Complete payment</h1>
+<div style="background:#fff;border:1px solid #e1e8ee;border-radius:20px;padding:20px;margin-top:14px">
+<h2 style="font-size:17px;font-weight:800">{{ booking.name }}</h2>
+<p style="font-size:13px;color:#657b8f;margin-top:4px">{{ booking.visit.replace('T',' ') }}</p>
+<p style="font-size:26px;font-weight:900;margin:14px 0">&#8377;{{ '%.2f'|format(booking.amount) }}</p>
+<button id="pay-button" type="button" style="width:100%;min-height:52px;border-radius:14px;background:#cc245c;color:#fff;font-weight:800;font-size:15px">Pay with Razorpay</button>
+<p style="font-size:11px;color:#8a98a6;text-align:center;margin-top:10px">Payments run in Razorpay test mode. No real money is charged.</p></div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('pay-button').addEventListener('click',function(){
+ var rzp=new Razorpay({key:{{ razorpay_key_id|tojson }},amount:{{ (booking.amount*100)|int }},currency:'INR',name:'SheSafe',description:'Visit #SAFE-{{ booking.id }}',order_id:{{ order_id|tojson }},callback_url:{{ url_for('main.demo_pay_callback', t=token, _external=True)|tojson }},redirect:true,prefill:{name:{{ user.name|tojson }},email:{{ user.email|tojson }}},theme:{color:'#e11d74'}});
+ rzp.on('payment.failed',function(){window.location.reload();});rzp.open();});
+</script>
+</div>
+{% endblock %}

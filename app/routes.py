@@ -95,7 +95,10 @@ def kgp_demo_venue(slug):
     venue = next((v for v in kgp_venues() if v['slug'] == slug), None)
     if venue is None:
         abort(404)
-    return render_template('demo_venue.html', venue=venue)
+    from datetime import datetime, timedelta
+    from zoneinfo import ZoneInfo
+    default_visit = (datetime.now(ZoneInfo('Asia/Kolkata')) + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M')
+    return render_template('demo_venue.html', venue=venue, default_visit=default_visit, fee=DEMO_BOOKING_FEE_INR)
 
 
 @main.route('/ask-ai')
@@ -423,7 +426,7 @@ def user_dashboard():
     verified_vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
     # Serialize for JS
     vendors_json = [v.to_dict() for v in verified_vendors]
-    return render_template('user_dashboard.html', user=current_user, vendors=verified_vendors, vendors_json=vendors_json)
+    return render_template('user_dashboard.html', user=current_user, vendors=verified_vendors, vendors_json=vendors_json, demo_bookings=demo_bookings_for_view())
 
 
 @main.route('/vendor/<int:vendor_id>')
@@ -1305,3 +1308,149 @@ def vendor_dashboard():
     """Vendor dashboard (vendor only)."""
     return render_template('vendor_dashboard.html', user=current_user)
 
+
+
+# ---------------------------------------------------------------------------
+# Presentation bookings for the KGP place listings.
+# Isolated from production data: no Vendor/Booking rows are created or changed. State lives in
+# the user's signed session cookie plus signed tokens. Payment uses Razorpay TEST mode only.
+# ---------------------------------------------------------------------------
+def _demo_serializer():
+    from itsdangerous import URLSafeTimedSerializer
+    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'], salt='presentation-booking')
+
+
+def _demo_venue_or_404(slug):
+    from flask import abort
+    from app.demo_catalog import kgp_venues
+    venue = next((v for v in kgp_venues() if v['slug'] == slug), None)
+    if venue is None:
+        abort(404)
+    return venue
+
+
+def _demo_save(booking):
+    items = [b for b in session.get('demo_bookings', []) if b['id'] != booking['id']]
+    items.append(booking)
+    session['demo_bookings'] = items[-10:]
+
+
+def _demo_find(bid):
+    return next((b for b in session.get('demo_bookings', []) if b['id'] == bid), None)
+
+
+def demo_bookings_for_view():
+    from datetime import datetime
+    out = []
+    for b in sorted(session.get('demo_bookings', []), key=lambda x: x['visit'], reverse=True):
+        row = dict(b)
+        row['visit_dt'] = datetime.fromisoformat(b['visit'])
+        out.append(row)
+    return out
+
+
+@main.route('/demo/book/<slug>', methods=['POST'])
+@user_required
+def demo_book(slug):
+    import secrets
+    from datetime import datetime
+    venue = _demo_venue_or_404(slug)
+    try:
+        visit = datetime.strptime(request.form.get('visit_date', ''), '%Y-%m-%dT%H:%M')
+    except ValueError:
+        flash('Please select a visit time.', 'error')
+        return redirect(url_for('main.kgp_demo_venue', slug=slug))
+    mode = request.form.get('payment_mode', 'pay_at_location')
+    if mode not in ('app', 'pay_at_location'):
+        mode = 'pay_at_location'
+    booking = {'id': secrets.token_hex(3).upper(), 'slug': slug, 'name': venue['name'],
+               'visit': visit.isoformat(timespec='minutes'), 'mode': mode,
+               'amount': float(DEMO_BOOKING_FEE_INR) if mode == 'app' else 0.0, 'paid': False, 'pid': ''}
+    if mode == 'pay_at_location':
+        _demo_save(booking)
+        return redirect(url_for('main.demo_booking', bid=booking['id']))
+    auth = get_razorpay_auth()
+    if auth is None:
+        flash('Online payment is not available right now. Choose Pay at location.', 'error')
+        return redirect(url_for('main.kgp_demo_venue', slug=slug))
+    try:
+        order = razorpay_create_order(auth, int(booking['amount'] * 100), f"visit_{booking['id']}")
+    except Exception:
+        flash('Could not start the payment. Please try again or choose Pay at location.', 'error')
+        return redirect(url_for('main.kgp_demo_venue', slug=slug))
+    token = _demo_serializer().dumps({'b': booking, 'order': order['id']})
+    return redirect(url_for('main.demo_pay', t=token))
+
+
+@main.route('/demo/pay')
+@user_required
+def demo_pay():
+    from itsdangerous import BadData
+    try:
+        data = _demo_serializer().loads(request.args.get('t', ''), max_age=3600)
+    except BadData:
+        flash('This payment link expired. Please start again.', 'error')
+        return redirect(url_for('main.explore'))
+    return render_template('demo_pay.html', booking=data['b'], order_id=data['order'], token=request.args['t'],
+                           razorpay_key_id=os.environ.get('RAZORPAY_KEY_ID'), user=current_user)
+
+
+@main.route('/demo/pay/callback', methods=['POST'])
+def demo_pay_callback():
+    """Razorpay returns here as a cross-site POST without the session cookie, so this only
+    verifies the signature and hands a signed token to the confirm step."""
+    from itsdangerous import BadData
+    try:
+        data = _demo_serializer().loads(request.args.get('t', ''), max_age=3600)
+    except BadData:
+        return redirect(url_for('main.explore'))
+    auth = get_razorpay_auth()
+    order_id = request.form.get('razorpay_order_id', '')
+    payment_id = request.form.get('razorpay_payment_id', '')
+    ok = (auth is not None and order_id == data['order']
+          and razorpay_verify_signature(auth, order_id, payment_id, request.form.get('razorpay_signature', '')))
+    if not ok:
+        flash('Payment could not be verified. Please try again.', 'error')
+        return redirect(url_for('main.demo_pay', t=request.args.get('t', '')))
+    b = dict(data['b'], paid=True, pid=payment_id)
+    return redirect(url_for('main.demo_confirm', t=_demo_serializer().dumps(b)))
+
+
+@main.route('/demo/confirm')
+@user_required
+def demo_confirm():
+    from itsdangerous import BadData
+    try:
+        b = _demo_serializer().loads(request.args.get('t', ''), max_age=3600)
+    except BadData:
+        return redirect(url_for('main.explore'))
+    _demo_save(b)
+    flash('Payment successful. Your booking is confirmed.', 'success')
+    return redirect(url_for('main.demo_booking', bid=b['id']))
+
+
+@main.route('/demo/booking/<bid>')
+@user_required
+def demo_booking(bid):
+    from flask import abort
+    from datetime import datetime
+    b = _demo_find(bid)
+    if b is None:
+        abort(404)
+    pass_url = url_for('main.demo_pass', t=_demo_serializer().dumps(b), _external=True)
+    qr = qrcode.QRCode(version=None, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=8, border=3)
+    qr.add_data(pass_url); qr.make(fit=True)
+    buf = io.BytesIO(); qr.make_image(fill_color='black', back_color='white').save(buf, format='PNG')
+    return render_template('demo_booking.html', b=b, visit=datetime.fromisoformat(b['visit']),
+                           qr=base64.b64encode(buf.getvalue()).decode())
+
+
+@main.route('/demo/pass')
+def demo_pass():
+    from itsdangerous import BadData
+    from datetime import datetime
+    try:
+        b = _demo_serializer().loads(request.args.get('t', ''), max_age=60 * 60 * 24 * 30)
+    except BadData:
+        return render_template('error_403.html'), 403
+    return render_template('demo_pass.html', b=b, visit=datetime.fromisoformat(b['visit']))

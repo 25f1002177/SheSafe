@@ -8,7 +8,13 @@
 <div class="detail-hero"><a class="back-link" style="color:#ffd0df" href="{{ url_for('main.explore', area='kgp') }}">← Back to map</a><h1>{{ venue.name }}</h1><p class="muted">{{ venue.address }}</p><p class="muted" style="margin-top:8px">{{ venue.area }}</p></div>
 <section class="detail-panel"><div class="detail-section-title">Customer ratings</div><div class="detail-rating"><span>★</span> {{ '%.1f'|format(venue.sample_rating) }} <small style="font-size:12px;color:#657b8f">/ 5</small></div><p class="muted">Average of {{ venue.sample_reviews|length }} ratings below.</p></section>
 <section class="detail-panel"><h2>Location</h2><a class="maps-link" href="{{ venue.maps_url }}" target="_blank" rel="noopener noreferrer">View real place on Google Maps ↗</a></section>
+<section class="detail-panel" id="book"><h2>Book a visit</h2>
+<form method="post" action="{{ url_for('main.demo_book', slug=venue.slug) }}" style="display:grid;gap:12px;margin-top:10px">
+<label style="font-size:12px;font-weight:700">Visit time<input type="datetime-local" name="visit_date" value="{{ default_visit }}" required style="display:block;width:100%;margin-top:6px;padding:12px;border:1px solid #d9e1e8;border-radius:12px;font-size:15px"></label>
+<label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid #d9e1e8;border-radius:12px;font-size:13px;font-weight:700"><input type="radio" name="payment_mode" value="app" checked> Pay in app, &#8377;{{ fee }}</label>
+<label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid #d9e1e8;border-radius:12px;font-size:13px;font-weight:700"><input type="radio" name="payment_mode" value="pay_at_location"> Pay at location</label>
+<button type="submit" style="min-height:50px;border-radius:14px;background:#102b46;color:#fff;font-weight:800;font-size:15px">Book</button></form></section>
 <section class="detail-panel" id="sample-reviews"><h2>Customer reviews</h2>{% for review in venue.sample_reviews %}<article class="review"><strong>{{ review.persona }}</strong><span class="score">★ {{ review.score }}/5</span><p>{{ review.text }}</p></article>{% endfor %}</section>
 </div>
-<div class="route-bar"><a href="{{ venue.maps_url }}" target="_blank" rel="noopener noreferrer">Route on Google Maps</a></div>
+<div class="route-bar"><a href="#book">Book a visit</a></div>
 {% endblock %}
