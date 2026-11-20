@@ -1042,10 +1042,11 @@ def update_db_schema():
 def create_admin():
     """Secret route to create admin user. Call with ?token=YOUR_SECRET_TOKEN"""
     import os
-    secret_token = os.environ.get('ADMIN_CREATE_TOKEN', 'default-secret-change-me')
+    secret_token = os.environ.get('ADMIN_CREATE_TOKEN')
     provided_token = request.args.get('token', '')
 
-    if provided_token != secret_token:
+    # Fail closed: with no configured token this route is disabled entirely
+    if not secret_token or provided_token != secret_token:
         return "Unauthorized", 401
 
     admin_email = os.environ.get('ADMIN_EMAIL', 'admin@admin.com')

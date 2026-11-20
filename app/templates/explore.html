@@ -84,6 +84,7 @@
             Recenter
         </button>
         <button onclick="window.location.href='tel:1091'"
+            aria-label="Call 1091 Women's Helpline - opens your phone dialer" title="Call 1091 Women's Helpline (opens your phone dialer)"
             class="flex h-12 w-12 self-end items-center justify-center rounded-full bg-sos-red text-white shadow-xl relative active:scale-90 transition-all">
             <span class="material-symbols-outlined text-2xl fill-1">error</span>
             <span class="absolute -top-1 -right-1 flex h-4 w-4">
@@ -128,6 +129,7 @@
     let markers = [];
     let userMarker;
     let userPos = null;
+    let usingDemoArea = false;
 
     // Parse vendors from robust JSON block
     const vendors = JSON.parse(document.getElementById('vendors-json').textContent);
@@ -197,6 +199,7 @@
         function showDemoAreaNotice(demoPos) {
             const notice = document.createElement('div');
             notice.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:20;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
+            usingDemoArea = true;
             notice.innerText = 'Location unavailable - showing demo area (Ashoka University)';
             document.getElementById('map').appendChild(notice);
             map.easeTo({ center: [demoPos.lng, demoPos.lat] });
@@ -321,16 +324,12 @@
             card.className = "min-w-[85%] sm:min-w-[320px] snap-center bg-white rounded-3xl shadow-xl p-4 flex flex-col gap-4 border border-slate-100 transition-transform active:scale-[0.98]";
             card.innerHTML = `
                 <div class="flex items-center gap-2">
-                    ${isNearest ? '<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">Absolute Nearest</span>' : ''}
-                    <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Verified Vendor</span>
+                    ${isNearest ? '<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">${usingDemoArea ? 'Nearest in demo area' : 'Nearest to you'}</span>' : ''}
                     <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded uppercase tracking-wider">Demo data</span>
                 </div>
                 <div class="flex gap-4">
                     <div class="relative h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
                         <img class="h-full w-full object-cover" src="${vendor.image_url}" />
-                        <div class="absolute top-2 left-2 bg-primary-pink text-white px-2 py-0.5 rounded-full text-[8px] font-bold flex items-center gap-0.5 shadow-sm">
-                            <span class="material-symbols-outlined text-[10px] fill-1">verified</span> VERIFIED
-                        </div>
                     </div>
                     <div class="flex flex-col flex-1 justify-between py-1">
                         <div>
