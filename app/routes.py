@@ -919,6 +919,7 @@ def api_ask_ai():
 
 
 @main.route('/update-db-schema')
+@admin_required
 def update_db_schema():
     """Temporary route to update database schema."""
     from sqlalchemy import text
@@ -977,7 +978,7 @@ def create_admin():
     db.session.add(admin)
     db.session.commit()
 
-    return f"Admin created! Email: {admin_email}, Password: {admin_password}"
+    return "Admin created."
 
 
 @main.route('/admin/revenue')
