@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -69,4 +69,12 @@ def create_app(config_name='default'):
             except Exception as e:
                 print(f"Database initialization skipped or failed: {e}")
     
+    @app.after_request
+    def _cache_icon_font(resp):
+        # Small self-hosted icon font: cache hard so icons never wait on the network twice
+        if request.path.startswith('/static/fonts/'):
+            resp.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+            resp.headers['Content-Type'] = 'font/woff2'
+        return resp
+
     return app

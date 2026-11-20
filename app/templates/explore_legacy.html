@@ -170,6 +170,12 @@
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    const nearestM = Math.min(...vendors.map(v => distanceMeters(pos.lat, pos.lng, v.lat, v.lng)));
+                    if (nearestM > 50000) {
+                        // Bookable places are only in the Ashoka area; do not rank them against a far-away location
+                        showDemoAreaNotice({ lat: 28.948445948109907, lng: 77.09660988721876 });
+                        return;
+                    }
                     userPos = pos;
                     refPos = pos;
                     map.easeTo({ center: pos });
@@ -191,7 +197,7 @@
             notice.style.cssText = 'align-self:center;pointer-events:auto;background:#fff;color:#334155;font-size:11px;font-weight:700;padding:6px 12px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.15);';
             usingDemoArea = true;
             refPos = demoPos;
-            notice.innerText = 'Showing places near Ashoka University';
+            notice.innerText = 'Bookable places are near Ashoka University';
             document.getElementById('top-overlays').appendChild(notice);
             layoutMap();
             map.easeTo({ center: demoPos });
