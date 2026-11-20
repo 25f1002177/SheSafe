@@ -70,7 +70,9 @@ def explore():
 def ask_ai():
     """Ask AI page. Hidden (404) unless an AI provider key is configured server-side."""
     import os
-    if not any(os.environ.get(k) for k in ('GEMINI_API_KEY', 'OPENROUTER_API_KEY', 'NVIDIA_API_KEY', 'SILICONFLOW_API_KEY')):
+    ai_enabled = os.environ.get('AI_ENABLED') == '1' and any(
+        os.environ.get(k) for k in ('GEMINI_API_KEY', 'OPENROUTER_API_KEY', 'NVIDIA_API_KEY', 'SILICONFLOW_API_KEY'))
+    if not ai_enabled:
         return render_template('ask_ai_unavailable.html'), 200
     return render_template('ask_ai.html')
 
@@ -916,7 +918,9 @@ def vendor_edit():
 def api_ask_ai():
     """Server-side AI proxy. Provider keys stay on the server (env vars only). Disabled (404) without a key."""
     import os
-    if not any(os.environ.get(k) for k in ('GEMINI_API_KEY', 'OPENROUTER_API_KEY', 'NVIDIA_API_KEY', 'SILICONFLOW_API_KEY')):
+    ai_enabled = os.environ.get('AI_ENABLED') == '1' and any(
+        os.environ.get(k) for k in ('GEMINI_API_KEY', 'OPENROUTER_API_KEY', 'NVIDIA_API_KEY', 'SILICONFLOW_API_KEY'))
+    if not ai_enabled:
         return {'error': 'The AI assistant is not available in this demo.'}, 503
     import json as _json
     import urllib.request
