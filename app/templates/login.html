@@ -33,35 +33,27 @@
             </div>
         </div>
 
-        <div class="flex justify-end px-1">
-            <a href="#" class="text-[11px] font-black text-primary uppercase tracking-wider">Forgot Password?</a>
-        </div>
-
         <button type="submit"
             class="w-full bg-navy-trust text-white py-5 rounded-2xl font-bold text-base shadow-xl shadow-navy-trust/20 active:scale-[0.98] transition-all">
             Sign In
         </button>
     </form>
 
-    <!-- Social Login (Visual) -->
+    {% if config.GOOGLE_OAUTH_ENABLED %}
     <div class="mt-12 space-y-6">
         <div class="flex items-center gap-4">
             <div class="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Or Continue with</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Or</span>
             <div class="h-px flex-1 bg-slate-100 dark:bg-slate-800"></div>
         </div>
 
-        <div class="flex gap-4">
-            <button
-                class="flex-1 flex items-center justify-center py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="size-5">
-            </button>
-            <button
-                class="flex-1 flex items-center justify-center py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 active:scale-95 transition-all">
-                <img src="{{ url_for('static', filename='img/apple-logo.png') }}" class="size-5 dark:invert">
-            </button>
-        </div>
+        <a href="{{ url_for('main.login_google') }}"
+            class="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 active:scale-[0.98] transition-all shadow-sm">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="size-5" alt="Google">
+            <span class="text-sm font-bold text-navy-trust dark:text-white">Continue with Google</span>
+        </a>
     </div>
+    {% endif %}
 
     <!-- Footer -->
     <div class="mt-auto pt-10 text-center">

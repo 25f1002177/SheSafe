@@ -152,6 +152,76 @@ def login():
     return render_template('login.html')
 
 
+@main.route('/login/google')
+def login_google():
+    """Start Google OAuth sign-in."""
+    if not current_app.config.get('GOOGLE_OAUTH_ENABLED'):
+        flash('Google sign-in is not available right now. Please use email.', 'info')
+        return redirect(url_for('main.login'))
+    import secrets
+    state = secrets.token_urlsafe(24)
+    session['google_oauth_state'] = state
+    params = {
+        'client_id': current_app.config['GOOGLE_CLIENT_ID'],
+        'redirect_uri': url_for('main.auth_google_callback', _external=True),
+        'response_type': 'code',
+        'scope': 'openid email profile',
+        'state': state,
+        'prompt': 'select_account',
+    }
+    from urllib.parse import urlencode
+    return redirect('https://accounts.google.com/o/oauth2/v2/auth?' + urlencode(params))
+
+
+@main.route('/auth/google/callback')
+def auth_google_callback():
+    """Complete Google OAuth sign-in: verify, find-or-create user, log in."""
+    if not current_app.config.get('GOOGLE_OAUTH_ENABLED'):
+        return redirect(url_for('main.login'))
+    if request.args.get('state') != session.pop('google_oauth_state', None):
+        flash('Sign-in could not be verified. Please try again.', 'error')
+        return redirect(url_for('main.login'))
+    code = request.args.get('code')
+    if not code:
+        flash('Google sign-in was cancelled.', 'info')
+        return redirect(url_for('main.login'))
+    import requests
+    try:
+        token_resp = requests.post('https://oauth2.googleapis.com/token', data={
+            'code': code,
+            'client_id': current_app.config['GOOGLE_CLIENT_ID'],
+            'client_secret': current_app.config['GOOGLE_CLIENT_SECRET'],
+            'redirect_uri': url_for('main.auth_google_callback', _external=True),
+            'grant_type': 'authorization_code',
+        }, timeout=10)
+        token_resp.raise_for_status()
+        access_token = token_resp.json().get('access_token')
+        info_resp = requests.get('https://openidconnect.googleapis.com/v1/userinfo',
+                                 headers={'Authorization': f'Bearer {access_token}'}, timeout=10)
+        info_resp.raise_for_status()
+        info = info_resp.json()
+    except Exception:
+        current_app.logger.exception('Google OAuth exchange failed')
+        flash('Google sign-in failed. Please use email or try again.', 'error')
+        return redirect(url_for('main.login'))
+
+    email = (info.get('email') or '').strip().lower()
+    if not email or not info.get('email_verified', False):
+        flash('Google did not share a verified email address.', 'error')
+        return redirect(url_for('main.login'))
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        import secrets as _s
+        user = User(name=info.get('name') or email.split('@')[0], email=email, role='user')
+        user.set_password(_s.token_urlsafe(32))  # password login effectively disabled for this account
+        db.session.add(user)
+        db.session.commit()
+    login_user(user)
+    flash(f'Welcome, {user.name}!', 'success')
+    return redirect(url_for('main.dashboard'))
+
+
 @main.route('/logout')
 @login_required
 def logout():

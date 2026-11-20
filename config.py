@@ -74,6 +74,11 @@ class Config:
     # Google Maps API Key
     GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
 
+    # Google OAuth (Sign in with Google). If unset, the Google button is hidden.
+    GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+    GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+    GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+
     # AI Service API Keys
     OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
     NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY', '')
