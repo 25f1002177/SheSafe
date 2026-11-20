@@ -10,6 +10,5 @@
 <section class="detail-panel"><div class="detail-section-title">Customer ratings</div><div class="detail-rating"><span>★</span> {{ '%.1f'|format(venue.sample_rating) }} <small style="font-size:12px;color:#657b8f">/ 5 · Sample rating</small></div><p class="muted">Average of {{ venue.sample_reviews|length }} ratings below.</p></section>
 <section class="detail-panel"><h2>Location</h2><a class="maps-link" href="{{ venue.maps_url }}" target="_blank" rel="noopener noreferrer">View real place on Google Maps ↗</a><p class="source">Demo data for pitch. Location from Google Maps.</p></section>
 <section class="detail-panel" id="sample-reviews"><h2>Customer reviews</h2>{% for review in venue.sample_reviews %}<article class="review"><strong>{{ review.persona }}</strong><span class="score">★ {{ review.score }}/5</span><p>{{ review.text }}</p></article>{% endfor %}</section>
-<p class="source">The names and map coordinates identify real places, not partnerships. These examples are kept separate from actual bookings and customer feedback.</p>
 </div>
 {% endblock %}
