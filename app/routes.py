@@ -30,10 +30,13 @@ def index():
 @main.route('/welcome')
 @login_required
 def welcome_home():
-    """Authenticated user homepage."""
-    from app.models import Vendor
-    vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
-    return render_template('welcome.html', vendors=vendors)
+    """Authenticated homepage with a clearly labelled local pitch entry."""
+    if request.args.get('area') == 'ashoka':
+        from app.models import Vendor
+        vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+        return render_template('welcome_legacy.html', vendors=vendors)
+    from app.demo_catalog import kgp_venues
+    return render_template('welcome.html', venues=kgp_venues())
 
 
 @main.route('/privacy')
@@ -59,10 +62,24 @@ def landing():
 @main.route('/explore')
 @login_required
 def explore():
-    """Explore page with Google Maps."""
-    from app.models import Vendor
-    vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
-    return render_template('explore.html', vendors=vendors)
+    """Campus pitch catalog, with the original booking demo kept separate."""
+    if request.args.get('area') == 'ashoka':
+        from app.models import Vendor
+        vendors = Vendor.query.filter_by(is_verified=True, is_active=True).all()
+        return render_template('explore_legacy.html', vendors=vendors)
+    from app.demo_catalog import kgp_venues
+    return render_template('explore.html', venues=kgp_venues())
+
+
+@main.route('/demo/venue/<slug>')
+@login_required
+def kgp_demo_venue(slug):
+    from flask import abort
+    from app.demo_catalog import kgp_venues
+    venue = next((v for v in kgp_venues() if v['slug'] == slug), None)
+    if venue is None:
+        abort(404)
+    return render_template('demo_venue.html', venue=venue)
 
 
 @main.route('/ask-ai')

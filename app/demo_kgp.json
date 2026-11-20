@@ -1,0 +1,212 @@
+[
+  {
+    "slug": "kgp-1",
+    "name": "The New Tikka",
+    "address": "8884+CVM Tikka, IIT Main Rd, IIT Kharagpur, Campus, Kharagpur, West Bengal 721302, India",
+    "lat": 22.316076,
+    "lng": 87.30716,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=The+New+Tikka&query_place_id=ChIJ4-Tm0t9FHToR2WWbRHCsLts",
+    "place_id": "ChIJ4-Tm0t9FHToR2WWbRHCsLts",
+    "area": "Inside IIT KGP",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.3,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 5,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 4,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 4,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  },
+  {
+    "slug": "kgp-2",
+    "name": "Dreamland Restaurant",
+    "address": "IIT Campus, 1BR -19, IIT Kharagpur, Kharagpur, West Bengal 721302, India",
+    "lat": 22.313814,
+    "lng": 87.30575209999999,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=Dreamland+Restaurant&query_place_id=ChIJP8JimgFEHToR32pvWUFDKbc",
+    "place_id": "ChIJP8JimgFEHToR32pvWUFDKbc",
+    "area": "Inside IIT KGP",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.3,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 4,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 4,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 5,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  },
+  {
+    "slug": "kgp-3",
+    "name": "SmartPind",
+    "address": "Scholar Canvas Stadium, IIT Avenue Road, near Cafe Coffee Day, IIT Kharagpur, Kharagpur, West Bengal 721302, India",
+    "lat": 22.3191332,
+    "lng": 87.3055112,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=SmartPind&query_place_id=ChIJl65oItVFHToRZJJW3N1hggk",
+    "place_id": "ChIJl65oItVFHToRZJJW3N1hggk",
+    "area": "Inside IIT KGP",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.7,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 5,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 5,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 4,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  },
+  {
+    "slug": "kgp-4",
+    "name": "PAN Loop Fast Food Center",
+    "address": "Near Patel Hall, Shop No Oval-2, IIT Campus, P.o, IIT Kharagpur, Technology, Kharagpur, West Bengal 721302, India",
+    "lat": 22.3190758,
+    "lng": 87.3000653,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=PAN+Loop+Fast+Food+Center&query_place_id=ChIJNRH16fhDHToR3WKIubJq0iM",
+    "place_id": "ChIJNRH16fhDHToR3WKIubJq0iM",
+    "area": "Inside IIT KGP",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.0,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 4,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 4,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 4,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  },
+  {
+    "slug": "kgp-5",
+    "name": "Vegies restaurant",
+    "address": "IIT Kharagpur, Kharagpur, West Bengal 721302, India",
+    "lat": 22.3192279,
+    "lng": 87.3049783,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=Vegies+restaurant&query_place_id=ChIJ3Udxt-JFHToRKln09pmQSiA",
+    "place_id": "ChIJ3Udxt-JFHToRKln09pmQSiA",
+    "area": "Inside IIT KGP",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.3,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 4,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 5,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 4,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  },
+  {
+    "slug": "kgp-6",
+    "name": "Food City",
+    "address": "Shop No. RKH-1, IIT Opp. R.K.Hall, IIT Kharagpur, Kharagpur, West Bengal 721302, India",
+    "lat": 22.321004,
+    "lng": 87.3072972,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=Food+City&query_place_id=ChIJLRqszwVEHToR2yp_g-NVBxg",
+    "place_id": "ChIJLRqszwVEHToR2yp_g-NVBxg",
+    "area": "Inside IIT KGP",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.7,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 5,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 4,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 5,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  },
+  {
+    "slug": "kgp-7",
+    "name": "Food Studio || Restaurant in Kharagpur || Near IIT Kharagpur",
+    "address": "REGENT MALL, near kharagpur, Jhapatapur, South Side, Kharagpur, West Bengal 721301, India",
+    "lat": 22.3286773,
+    "lng": 87.3263317,
+    "maps_url": "https://www.google.com/maps/search/?api=1&query=Food+Studio+%7C%7C+Restaurant+in+Kharagpur+%7C%7C+Near+IIT+Kharagpur&query_place_id=ChIJUbENP9RFHToRqUUaJrYKpMc",
+    "place_id": "ChIJUbENP9RFHToRqUUaJrYKpMc",
+    "area": "Near campus",
+    "category": "Restaurant / cafe",
+    "sample_rating": 4.7,
+    "sample_reviews": [
+      {
+        "persona": "Sample traveller A",
+        "score": 4,
+        "text": "In this imagined visit, finding the entrance on the map was straightforward."
+      },
+      {
+        "persona": "Sample traveller B",
+        "score": 5,
+        "text": "For this fictional visit, the check-in felt simple. Clearer entrance signs would help."
+      },
+      {
+        "persona": "Sample traveller C",
+        "score": 5,
+        "text": "In this sample scenario, a short stop fitted well between sessions."
+      }
+    ],
+    "checked_on": "20 November 2026"
+  }
+]
