@@ -357,6 +357,34 @@
         }
     }
 
+    // Need-aware ranking: when facility filters are active, rank by facility match +
+    // walking distance + genuine feedback (confidence-weighted). Listing sample ratings are
+    // presentation data and never count as feedback evidence.
+    let rankedMode = false;
+
+    function rankScore(v) {
+        const filters = Array.from(selectedFilters);
+        const matched = filters.filter(f => v.categories.includes(f)).length;
+        const facility = filters.length ? matched / filters.length : 0;
+        const walk = v.dist / 80;
+        const distScore = 1 / (1 + walk / 10); // 1.0 at 0 min, 0.5 at a 10-min walk
+        let fb = null;
+        if (v.kind !== 'listing' && v.reviews > 0) {
+            const m = 5, C = 3.5; // Bayesian confidence: few reviews pull toward the prior
+            fb = ((v.reviews / (v.reviews + m)) * v.rating + (m / (v.reviews + m)) * C) / 5;
+        }
+        return 0.55 * facility + 0.30 * distScore + 0.15 * (fb !== null ? fb : 0.5);
+    }
+
+    function matchReasons(v) {
+        const reasons = [];
+        const matched = Array.from(selectedFilters).filter(f => v.categories.includes(f));
+        if (matched.length) reasons.push('Matches ' + matched.join(' + '));
+        if (v.dist <= 5000) reasons.push(Math.max(1, Math.round(v.dist / 80)) + ' min walk');
+        if (v.kind !== 'listing' && v.reviews > 0) reasons.push('Rated ' + Number(v.rating).toFixed(1) + ' by ' + v.reviews + (v.reviews === 1 ? ' woman' : ' women'));
+        return reasons.join(' • ');
+    }
+
     function updateNearestVendor(userPosArg, vendorsList = vendors) {
         if (!vendorsList || vendorsList.length === 0) {
             document.getElementById('vendor-list-container').innerHTML = `
@@ -374,7 +402,12 @@
             return { ...v, dist };
         });
 
-        vendorsWithDist.sort((a, b) => a.dist - b.dist);
+        rankedMode = selectedFilters.size > 0;
+        if (rankedMode) {
+            vendorsWithDist.sort((a, b) => rankScore(b) - rankScore(a) || a.dist - b.dist);
+        } else {
+            vendorsWithDist.sort((a, b) => a.dist - b.dist);
+        }
 
         renderVendorList(vendorsWithDist);
     }
@@ -391,7 +424,6 @@
             const distText = vendor.dist < 1000 ? Math.round(vendor.dist) + 'm' : (vendor.dist / 1000).toFixed(1) + 'km';
             const walkTime = Math.round(vendor.dist / 80);
             const showEta = vendor.dist <= 5000;
-            const isNearest = index === 0;
 
             const card = document.createElement('div');
             card.className = "min-w-[90%] max-w-[90%] sm:min-w-[320px] snap-center bg-white rounded-3xl shadow-xl p-4 flex flex-col gap-4 border border-slate-100 transition-transform active:scale-[0.98]";
@@ -400,8 +432,11 @@
             card.innerHTML = `
                 <div class="flex items-center gap-2">
                     ${vendor.verified ? '<span class="px-2 py-0.5 bg-green-50 text-green-700 text-[9px] font-bold rounded uppercase tracking-wider">Verified</span>' : ''}
-                    ${isNearest ? `<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">${usingDemoArea ? 'Nearest here' : 'Nearest to you'}</span>` : ''}
+                    ${index === 0 ? (rankedMode
+                        ? '<span class="px-2 py-0.5 bg-pink-50 text-primary-pink text-[9px] font-bold rounded uppercase tracking-wider">Best match</span>'
+                        : `<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[9px] font-bold rounded uppercase tracking-wider">${usingDemoArea ? 'Nearest here' : 'Nearest to you'}</span>`) : ''}
                 </div>
+                ${rankedMode && matchReasons(vendor) ? `<p class="text-[11px] text-slate-500 font-medium leading-snug">${matchReasons(vendor)}</p>` : ''}
                 <div class="flex gap-3">
                     <div style="width:80px;height:80px;flex:none" class="relative shrink-0 rounded-2xl overflow-hidden shadow-inner bg-slate-100">
                         <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#fdeaf1"><span class="material-symbols-outlined" style="font-size:36px;color:#cc285f">woman</span></div>
