@@ -23,7 +23,7 @@
 }
 
 /* ---------- shared primitives ---------- */
-.ss-shell{padding:0 0 150px;background:var(--ss-bg);color:var(--ss-text);min-height:100vh;max-width:480px;margin:0 auto;font-family:'Public Sans','Plus Jakarta Sans',system-ui,sans-serif}
+.ss-shell{padding:0 0 176px;background:var(--ss-bg);color:var(--ss-text);min-height:100vh;max-width:480px;margin:0 auto;font-family:'Public Sans','Plus Jakarta Sans',system-ui,sans-serif}
 .ss-card{background:var(--ss-card);border:1px solid var(--ss-line);border-radius:var(--ss-radius);box-shadow:var(--ss-shadow)}
 .ss-eyebrow{font-size:10px;letter-spacing:1.6px;font-weight:800;text-transform:uppercase;color:var(--ss-rose)}
 .ss-muted{color:var(--ss-muted)}

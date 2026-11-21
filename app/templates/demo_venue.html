@@ -36,7 +36,7 @@
         <div class="ss-bigscore"><b>{{ '%.1f'|format(venue.sample_rating) }}<span class="material-symbols-outlined">star</span></b><small>out of 5</small></div>
         <div class="ss-bars">
             <div class="ss-bar-row"><span>Average rating</span><span>{{ '%.1f'|format(venue.sample_rating) }}</span><div class="track"><div class="fill" style="width:{{ (venue.sample_rating / 5 * 100) | round | int }}%"></div></div></div>
-            <div class="ss-bar-row"><span>Reviews</span><span>{{ venue.sample_reviews|length }}</span><div class="track"><div class="fill" style="width:{{ [venue.sample_reviews|length * 10, 100] | min }}%;background:var(--ss-rose)"></div></div></div>
+            <div class="ss-bar-row"><span>Reviews</span><span>{{ venue.sample_reviews|length }}</span></div>
         </div>
     </div>
 </section>
