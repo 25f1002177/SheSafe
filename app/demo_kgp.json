@@ -208,5 +208,66 @@
    }
   ],
   "checked_on": "20 November 2026"
+ },
+ {
+  "slug": "kgp-8",
+  "name": "The Pink Lounge",
+  "address": "Near Main Gate, IIT Kharagpur Campus, Kharagpur, West Bengal 721302",
+  "lat": 22.3195,
+  "lng": 87.3115,
+  "maps_url": "https://www.google.com/maps/search/?api=1&query=22.3195,87.3115",
+  "place_id": null,
+  "area": "Inside IIT KGP",
+  "category": "Women's rest lounge",
+  "categories": [
+   "Washroom",
+   "Period Care",
+   "Changing Room",
+   "Nursing Room"
+  ],
+  "sample_rating": 4.6,
+  "sample_reviews": [
+   {
+    "persona": "Student",
+    "score": 5,
+    "text": "Free sanitary napkins at the counter and a clean changing room. Felt thoughtfully set up."
+   },
+   {
+    "persona": "Visitor",
+    "score": 4,
+    "text": "Quiet lounge with a proper nursing room. Slightly hard to spot from the main road."
+   }
+  ],
+  "checked_on": null
+ },
+ {
+  "slug": "kgp-9",
+  "name": "Campus Care Point",
+  "address": "Scholars Avenue, IIT Kharagpur Campus, Kharagpur, West Bengal 721302",
+  "lat": 22.3202,
+  "lng": 87.3085,
+  "maps_url": "https://www.google.com/maps/search/?api=1&query=22.3202,87.3085",
+  "place_id": null,
+  "area": "Inside IIT KGP",
+  "category": "Women's rest stop",
+  "categories": [
+   "Washroom",
+   "Period Care",
+   "Nursing Room"
+  ],
+  "sample_rating": 4.4,
+  "sample_reviews": [
+   {
+    "persona": "Research scholar",
+    "score": 4,
+    "text": "Handy period-care supplies near the academic complex. Nursing room available on request."
+   },
+   {
+    "persona": "Student",
+    "score": 5,
+    "text": "Clean washroom and quick access during class breaks."
+   }
+  ],
+  "checked_on": null
  }
 ]

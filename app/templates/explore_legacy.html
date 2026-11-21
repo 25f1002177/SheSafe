@@ -129,7 +129,7 @@
             "address": {{ v.address|tojson }},
             "rating": {{ v.sample_rating|tojson }},
             "reviews": {{ v.sample_reviews|length|tojson }},
-            "categories": ["Washroom"],
+            "categories": {{ (v.categories|default(['Washroom']))|tojson }},
             "maps_url": {{ v.maps_url|tojson }},
             "details_url": "/demo/venue/{{ v.slug }}",
             "verified": false
