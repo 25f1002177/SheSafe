@@ -29,6 +29,22 @@
                 class="mt-1 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-navy-trust dark:text-white">
         </div>
 
+        <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Facilities you provide</label>
+            <p class="text-[11px] text-slate-400 mt-1 mb-2">These power the Explore filters. Period care means free sanitary napkins available.</p>
+            <div class="grid grid-cols-2 gap-2">
+                {% set current = vendor.category.split(', ') %}
+                {% for service, hint in [('Washroom','Washroom access'), ('Period Care','Free sanitary napkins'), ('Changing Room','Changing room'), ('Nursing Room','Nursing room')] %}
+                <label
+                    class="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl cursor-pointer has-[:checked]:ring-2 has-[:checked]:ring-brand-pink transition-all">
+                    <input type="checkbox" name="categories" value="{{ service }}" {% if service in current %}checked{% endif %}
+                        class="size-4 accent-pink-500">
+                    <span class="text-xs font-bold text-navy-trust dark:text-white">{{ service }}<br><span class="font-medium text-slate-400">{{ hint }}</span></span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
         <label
             class="flex items-center justify-between bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 px-4 py-3">
             <span class="text-sm font-bold text-navy-trust dark:text-white">CCTV Secure</span>

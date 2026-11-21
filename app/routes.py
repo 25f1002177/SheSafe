@@ -1103,6 +1103,11 @@ def vendor_edit():
         vendor.has_female_staff = request.form.get('has_female_staff') == 'on'
         vendor.is_active = request.form.get('is_active') == 'on'
 
+        allowed_categories = ['Washroom', 'Period Care', 'Nursing Room', 'Changing Room']
+        categories = [c for c in request.form.getlist('categories') if c in allowed_categories]
+        if categories:
+            vendor.category = ", ".join(categories)
+
         fst = request.form.get('female_staff_start_time')
         fet = request.form.get('female_staff_end_time')
         if vendor.has_female_staff and fst and fet:
