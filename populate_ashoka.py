@@ -22,7 +22,8 @@ def populate():
                 "lng": 77.1158,
                 "address": "TDI City, Kundli, Sonepat, Haryana 131023",
                 "cctv": True,
-                "female_staff": True
+                "female_staff": True,
+                "categories": "Washroom, Changing Room"
             },
             {
                 "email": "dominos@shesafe.com",
@@ -32,7 +33,8 @@ def populate():
                 "lng": 77.1082,
                 "address": "Omaxe City, Sonepat, Haryana 131023",
                 "cctv": True,
-                "female_staff": False
+                "female_staff": False,
+                "categories": "Washroom, Period Care"
             },
             {
                 "email": "savoy@shesafe.com",
@@ -42,7 +44,8 @@ def populate():
                 "lng": 77.1189,
                 "address": "NH 1, Kundli, Sonepat, Haryana 131023",
                 "cctv": True,
-                "female_staff": True
+                "female_staff": True,
+                "categories": "Washroom, Nursing Room"
             },
             {
                 "email": "parker@shesafe.com",
@@ -52,7 +55,8 @@ def populate():
                 "lng": 77.1165,
                 "address": "Parker Mall, NH 1, Kundli, Sonepat, Haryana",
                 "cctv": True,
-                "female_staff": True
+                "female_staff": True,
+                "categories": "Washroom, Period Care, Changing Room, Nursing Room"
             }
         ]
 
@@ -82,6 +86,7 @@ def populate():
                     vendor.female_staff_start_time = time(9, 0)
                     vendor.female_staff_end_time = time(21, 0)
                 db.session.add(vendor)
+            vendor.category = data.get('categories', 'Washroom')
         
         db.session.commit()
         print("Successfully populated vendors near Ashoka University.")
