@@ -4,80 +4,29 @@
 
 {% block styles %}
 <style>
-    .confirmation-container {
-        max-width: 600px;
-        margin: 4rem auto;
-        padding: 2.5rem;
-        background: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .success-icon {
-        font-size: 4rem;
-        color: #1e8c1e;
-        margin-bottom: 1.5rem;
-    }
-
-    .receipt {
-        margin: 2rem 0;
-        padding: 2rem;
-        background: #f8faff;
-        border-radius: 12px;
-        text-align: left;
-        border: 1px dashed #ced4da;
-    }
-
-    .receipt-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    .receipt-row:last-child {
-        border-bottom: none;
-    }
-
-    .label {
-        color: #666;
-        font-weight: 500;
-    }
-
-    .value {
-        color: #333;
-        font-weight: 600;
-    }
-
-    .btn-container {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 2rem;
-    }
-
-    .badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-
-    .badge-pending {
-        background: #fff3cd;
-        color: #856404;
-    }
+    .bc-wrap { padding: 34px 16px 150px; max-width: 480px; margin: 0 auto; }
+    .bc-hero { text-align: center; }
+    .bc-hero .ic { display:inline-flex;width:72px;height:72px;border-radius:50%;background:var(--ss-green-bg);align-items:center;justify-content:center }
+    .bc-hero h2 { font-size: 24px; font-weight: 900; margin: 12px 0 4px; letter-spacing:-.01em; color: var(--ss-text) }
+    .bc-hero p { font-size: 13.5px; color: var(--ss-muted); font-weight: 600 }
+    .receipt { margin: 20px 0 0; padding: 20px; background: #fff; border-radius: var(--ss-radius); border:1px solid var(--ss-line); box-shadow: var(--ss-shadow) }
+    .receipt-row { display: flex; justify-content: space-between; gap:12px; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid #f0f3f7; font-size: 13.5px }
+    .receipt-row:last-child { border-bottom: none; margin-bottom: 0 }
+    .label { color: var(--ss-muted); font-weight: 600 }
+    .value { color: var(--ss-text); font-weight: 800; text-align: right }
+    .btn-container { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap }
+    .badge { padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing:.4px }
+    .badge-pending { background: var(--ss-amber-bg); color: var(--ss-amber) }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="confirmation-container">
-    <div class="success-icon">✅</div>
-    <h2 style="color: #1e8c1e; margin-bottom: 0.5rem;">Booking Confirmed!</h2>
-    <p style="color: #666;">Your request has been sent to the vendor.</p>
+<div class="bc-wrap">
+    <div class="bc-hero">
+        <span class="ic"><span class="material-symbols-outlined" style="font-size:40px;color:var(--ss-green)">check_circle</span></span>
+        <h2>Booking confirmed</h2>
+        <p>Your request has been sent to the venue.</p>
+    </div>
 
     <div class="receipt">
         <div class="receipt-row">
@@ -114,17 +63,14 @@
 
     {% if booking.payment_mode == 'app' and booking.payment_status != 'paid' %}
     <div class="btn-container">
-        <a href="{{ url_for('main.pay_booking', booking_id=booking.id) }}" class="btn"
-            style="background: #e11d74; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Pay
+        <a href="{{ url_for('main.pay_booking', booking_id=booking.id) }}" class="ss-btn ss-btn-rose">Pay
             ₹{{ "%.2f"|format(booking.amount) }} Now</a>
     </div>
     {% endif %}
     <div class="btn-container">
-        <a href="{{ url_for('main.user_dashboard') }}" class="btn"
-            style="background: #4f46e5; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Back
+        <a href="{{ url_for('main.user_dashboard') }}" class="ss-btn ss-btn-navy">Back
             to Dashboard</a>
-        <a href="javascript:window.print()" class="btn"
-            style="background: white; color: #333; border: 1px solid #ddd; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600;">Print
+        <a href="javascript:window.print()" class="ss-btn ss-btn-ghost">Print
             Receipt</a>
     </div>
 </div>

@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Payment - SheSafe{% endblock %}
 {% block content %}
-<div style="max-width:430px;margin:0 auto;padding:28px 20px 130px;min-height:100vh;background:#f6f8fb;color:#102b46">
-<a href="{{ url_for('main.kgp_demo_venue', slug=booking.slug) }}" style="font-size:13px;font-weight:800;color:#5a6e82">&larr; Back</a>
-<h1 style="font-size:26px;font-weight:900;margin:14px 0 4px">Complete payment</h1>
-<div style="background:#fff;border:1px solid #e1e8ee;border-radius:20px;padding:20px;margin-top:14px">
-<h2 style="font-size:17px;font-weight:800">{{ booking.name }}</h2>
-<p style="font-size:13px;color:#657b8f;margin-top:4px">{{ booking.visit.replace('T',' ') }}</p>
-<p style="font-size:26px;font-weight:900;margin:14px 0">&#8377;{{ '%.2f'|format(booking.amount) }}</p>
-<button id="pay-button" type="button" style="width:100%;min-height:52px;border-radius:14px;background:#cc245c;color:#fff;font-weight:800;font-size:15px">Pay with Razorpay</button>
-<p style="font-size:11px;color:#8a98a6;text-align:center;margin-top:10px">Test mode: pick Netbanking or Card. No real money is charged.</p></div>
+<div class="ss-shell" style="padding-top:20px">
+<div style="padding:0 20px"><a href="{{ url_for('main.kgp_demo_venue', slug=booking.slug) }}" style="font-size:13px;font-weight:800;color:var(--ss-muted);text-decoration:none">&larr; Back</a>
+<h1 style="font-size:25px;font-weight:900;margin:14px 0 4px;letter-spacing:-.01em">Complete payment</h1></div>
+<div class="ss-card" style="margin:14px 16px 0;padding:22px">
+<span class="ss-pill"><span class="material-symbols-outlined" style="font-size:14px">payments</span> Booking fee</span>
+<h2 style="font-size:19px;font-weight:900;margin:14px 0 0">{{ booking.name }}</h2>
+<p style="font-size:13px;color:var(--ss-muted);margin-top:5px">{{ booking.visit.replace('T',' &middot; ') }}</p>
+<p style="font-size:30px;font-weight:900;margin:16px 0;letter-spacing:-.02em">&#8377;{{ '%.2f'|format(booking.amount) }}</p>
+<button id="pay-button" type="button" class="ss-btn ss-btn-rose ss-btn-block" style="min-height:52px;font-size:15px;border:0">Pay with Razorpay</button>
+<p style="font-size:11px;color:#8a98a6;text-align:center;margin-top:12px">Test mode: pick Netbanking or Card. No real money is charged.</p></div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 document.getElementById('pay-button').addEventListener('click',function(){

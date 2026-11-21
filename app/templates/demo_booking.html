@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Booking - SheSafe{% endblock %}
 {% block content %}
-<div style="max-width:430px;margin:0 auto;padding:28px 20px 130px;min-height:100vh;background:#f6f8fb;color:#102b46">
-<div style="text-align:center"><span class="material-symbols-outlined" style="font-size:54px;color:#1e8c4e">check_circle</span>
-<h1 style="font-size:25px;font-weight:900;margin:6px 0">Booking confirmed</h1>
-<p style="font-size:13px;color:#657b8f">{% if b.paid %}Paid &#8377;{{ '%.2f'|format(b.amount) }}{% else %}Pay at location{% endif %}</p></div>
-<div style="background:#fff;border:1px solid #e1e8ee;border-radius:20px;padding:20px;margin-top:18px;text-align:center">
-<h2 style="font-size:18px;font-weight:800">{{ b.name }}</h2>
-<p style="font-size:13px;color:#657b8f;margin:4px 0">{{ visit.strftime('%d %b %Y, %I:%M %p') }}</p>
-<p style="font-size:12px;font-weight:800;margin-top:6px">Ref #SAFE-{{ b.id }}</p>
-<img alt="Visit pass QR code" src="data:image/png;base64,{{ qr }}" style="width:200px;height:200px;margin:16px auto 0;display:block">
-<p style="font-size:11px;color:#8a98a6;margin-top:8px">Show this pass at the washroom.</p></div>
-<a href="{{ url_for('main.user_dashboard', tab='history') }}" style="display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:14px;background:#102b46;color:#fff;font-weight:800;margin-top:16px">View in History</a>
+<div class="ss-shell" style="padding-top:34px">
+<div style="text-align:center;padding:0 20px">
+<span style="display:inline-flex;width:72px;height:72px;border-radius:50%;background:var(--ss-green-bg);align-items:center;justify-content:center"><span class="material-symbols-outlined" style="font-size:40px;color:var(--ss-green)">check_circle</span></span>
+<h1 style="font-size:24px;font-weight:900;margin:12px 0 4px;letter-spacing:-.01em">Booking confirmed</h1>
+<p style="font-size:13.5px;color:var(--ss-muted);font-weight:600">{% if b.paid %}Paid &#8377;{{ '%.2f'|format(b.amount) }}{% else %}Pay at location{% endif %}</p></div>
+<div class="ss-card" style="margin:20px 16px 0;padding:22px;text-align:center">
+<h2 style="font-size:19px;font-weight:900;margin:0">{{ b.name }}</h2>
+<p style="font-size:13px;color:var(--ss-muted);margin:6px 0 0">{{ visit.strftime('%d %b %Y, %I:%M %p') }}</p>
+<span class="ss-pill" style="margin-top:10px">Ref #SAFE-{{ b.id }}</span>
+<div style="background:#fff;border:1px solid var(--ss-line);border-radius:18px;padding:14px;margin-top:16px;display:inline-block"><img alt="Visit pass QR code" src="data:image/png;base64,{{ qr }}" style="width:190px;height:190px;display:block"></div>
+<p style="font-size:11.5px;color:#8a98a6;margin-top:10px">Show this pass at the washroom.</p></div>
+<div style="padding:0 16px"><a href="{{ url_for('main.user_dashboard', tab='history') }}" class="ss-btn ss-btn-navy ss-btn-block" style="min-height:52px;margin-top:16px;font-size:15px">View in History</a></div>
 </div>
 {% endblock %}

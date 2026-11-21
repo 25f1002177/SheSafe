@@ -7,6 +7,7 @@
     <title>{% block title %}SheSafe{% endblock %}</title>
     <!-- Precompiled Tailwind CSS (replaces the Play CDN JIT for faster page loads) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.build.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shesafe-modern.css') }}">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,170 +98,54 @@
         </main>
 
         {% block bottom_nav %}
-        <nav
-            class="fixed bottom-0 w-full max-w-[430px] bg-white/95 backdrop-blur-md border-t border-slate-100 px-4 py-3 pb-8 flex justify-between items-end z-50">
+        <nav class="ss-navbar" aria-label="Primary">
             {% if not current_user.is_authenticated %}
-            <!-- Guest Bottom Nav -->
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.index' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.index' %}fill-1{% endif %}">home</span>
-                    <span class="text-[10px] font-bold">Home</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.login' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.login') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.login' %}fill-1{% endif %}">login</span>
-                    <span class="text-[10px] font-medium">Login</span>
-                </a>
-            </div>
-            <a href="tel:112" aria-label="Call 112, India's national emergency number - opens your phone dialer" title="Call 112, India's national emergency number (opens your phone dialer)" class="flex flex-col items-center w-1/5 -mt-8 relative">
-                <div
-                    class="bg-sos-red size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-sos-red/30 ring-4 ring-blush-white mb-1 transition-all active:scale-95">
-                    <span class="material-symbols-outlined text-3xl font-bold">emergency</span>
-                </div>
-                <span class="text-[10px] font-medium text-sos-red">SOS</span>
-            </a>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint in ('main.register','main.register_customer','main.register_vendor') %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.register') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint in ('main.register','main.register_customer','main.register_vendor') %}fill-1{% endif %}">person_add</span>
-                    <span class="text-[10px] font-medium">Join</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.vendor_landing' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.vendor_landing') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.vendor_landing' %}fill-1{% endif %}">storefront</span>
-                    <span class="text-[10px] font-medium">Vendor</span>
-                </a>
-            </div>
+            <a href="{{ url_for('main.index') }}" class="ss-navitem {% if request.endpoint == 'main.index' %}active{% endif %}">
+                <span class="material-symbols-outlined">home</span>Home</a>
+            <a href="{{ url_for('main.login') }}" class="ss-navitem {% if request.endpoint == 'main.login' %}active{% endif %}">
+                <span class="material-symbols-outlined">login</span>Login</a>
+            <a href="tel:112" aria-label="Call 112, India's national emergency number - opens your phone dialer" title="Call 112, India's national emergency number (opens your phone dialer)" class="ss-navfab sos">
+                <span class="fab"><span class="material-symbols-outlined">emergency</span></span><small>SOS</small></a>
+            <a href="{{ url_for('main.register') }}" class="ss-navitem {% if request.endpoint in ('main.register','main.register_customer','main.register_vendor') %}active{% endif %}">
+                <span class="material-symbols-outlined">person_add</span>Join</a>
+            <a href="{{ url_for('main.vendor_landing') }}" class="ss-navitem {% if request.endpoint == 'main.vendor_landing' %}active{% endif %}">
+                <span class="material-symbols-outlined">storefront</span>Vendor</a>
 
             {% else %}
             {% if current_user.role == 'vendor' %}
-            <!-- Vendor Bottom Nav -->
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.vendor_dashboard' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.vendor_dashboard') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.vendor_dashboard' %}fill-1{% endif %}">store</span>
-                    <span class="text-[10px] font-bold">Dashboard</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.vendor_bookings' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.vendor_bookings') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.vendor_bookings' %}fill-1{% endif %}">calendar_month</span>
-                    <span class="text-[10px] font-medium">Bookings</span>
-                </a>
-            </div>
-            <div class="flex flex-col items-center w-1/4 -mt-8 relative">
-                <a href="{{ url_for('main.vendor_edit') }}" class="flex flex-col items-center">
-                    <div
-                        class="bg-navy-trust size-14 rounded-full flex items-center justify-center text-white shadow-lg shadow-navy-trust/30 ring-4 ring-blush-white mb-1 transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-3xl">edit_square</span>
-                    </div>
-                    <span class="text-[10px] font-bold text-navy-trust">Manage</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.logout' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.logout') }}" class="flex flex-col items-center gap-1">
-                    <span class="material-symbols-outlined">logout</span>
-                    <span class="text-[10px] font-medium">Logout</span>
-                </a>
-            </div>
+            <a href="{{ url_for('main.vendor_dashboard') }}" class="ss-navitem {% if request.endpoint == 'main.vendor_dashboard' %}active{% endif %}">
+                <span class="material-symbols-outlined">store</span>Dashboard</a>
+            <a href="{{ url_for('main.vendor_bookings') }}" class="ss-navitem {% if request.endpoint == 'main.vendor_bookings' %}active{% endif %}">
+                <span class="material-symbols-outlined">calendar_month</span>Bookings</a>
+            <a href="{{ url_for('main.vendor_edit') }}" class="ss-navfab manage">
+                <span class="fab"><span class="material-symbols-outlined">edit_square</span></span><small>Manage</small></a>
+            <a href="{{ url_for('main.logout') }}" class="ss-navitem">
+                <span class="material-symbols-outlined">logout</span>Logout</a>
 
             {% elif current_user.role == 'admin' %}
-            <!-- Admin Bottom Nav -->
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_dashboard' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.admin_dashboard') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_dashboard' %}fill-1{% endif %}">dashboard</span>
-                    <span class="text-[10px] font-bold">Overview</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_vendors' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.admin_vendors') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_vendors' %}fill-1{% endif %}">storefront</span>
-                    <span class="text-[10px] font-medium">Vendors</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_users' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.admin_users') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_users' %}fill-1{% endif %}">group</span>
-                    <span class="text-[10px] font-medium">Users</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_revenue' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.admin_revenue') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_revenue' %}fill-1{% endif %}">account_balance_wallet</span>
-                    <span class="text-[10px] font-medium">Revenue</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.admin_settings' %}text-navy-trust{% else %}text-slate-400{% endif %} w-1/5">
-                <a href="{{ url_for('main.admin_settings') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.admin_settings' %}fill-1{% endif %}">settings</span>
-                    <span class="text-[10px] font-medium">Settings</span>
-                </a>
-            </div>
+            <a href="{{ url_for('main.admin_dashboard') }}" class="ss-navitem {% if request.endpoint == 'main.admin_dashboard' %}active{% endif %}">
+                <span class="material-symbols-outlined">dashboard</span>Overview</a>
+            <a href="{{ url_for('main.admin_vendors') }}" class="ss-navitem {% if request.endpoint == 'main.admin_vendors' %}active{% endif %}">
+                <span class="material-symbols-outlined">storefront</span>Vendors</a>
+            <a href="{{ url_for('main.admin_users') }}" class="ss-navitem {% if request.endpoint == 'main.admin_users' %}active{% endif %}">
+                <span class="material-symbols-outlined">group</span>Users</a>
+            <a href="{{ url_for('main.admin_revenue') }}" class="ss-navitem {% if request.endpoint == 'main.admin_revenue' %}active{% endif %}">
+                <span class="material-symbols-outlined">account_balance_wallet</span>Revenue</a>
+            <a href="{{ url_for('main.admin_settings') }}" class="ss-navitem {% if request.endpoint == 'main.admin_settings' %}active{% endif %}">
+                <span class="material-symbols-outlined">settings</span>Settings</a>
 
             {% else %}
-            <!-- Authenticated User Bottom Nav -->
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.welcome_home' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.welcome_home') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.welcome_home' %}fill-1{% endif %}">home</span>
-                    <span class="text-[10px] font-bold">Home</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.endpoint == 'main.explore' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.explore') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.explore' %}fill-1{% endif %}">explore</span>
-                    <span class="text-[10px] font-medium">Explore</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'history' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.user_dashboard', tab='history') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.args.get('tab') == 'history' %}fill-1{% endif %}">schedule</span>
-                    <span class="text-[10px] font-medium">History</span>
-                </a>
-            </div>
-            <div
-                class="flex flex-col items-center gap-1 {% if request.args.get('tab') == 'profile' %}text-primary-pink{% else %}text-slate-400{% endif %} w-1/4">
-                <a href="{{ url_for('main.user_dashboard', tab='profile') }}" class="flex flex-col items-center gap-1">
-                    <span
-                        class="material-symbols-outlined {% if request.endpoint == 'main.user_dashboard' and request.args.get('tab') == 'profile' %}fill-1{% endif %}">person</span>
-                    <span class="text-[10px] font-medium">Profile</span>
-                </a>
-            </div>
+            <a href="{{ url_for('main.welcome_home') }}" class="ss-navitem {% if request.endpoint == 'main.welcome_home' %}active{% endif %}">
+                <span class="material-symbols-outlined">home</span>Home</a>
+            <a href="{{ url_for('main.explore') }}" class="ss-navitem {% if request.endpoint == 'main.explore' %}active{% endif %}">
+                <span class="material-symbols-outlined">explore</span>Explore</a>
+            <a href="{{ url_for('main.user_dashboard', tab='history') }}" class="ss-navitem {% if request.args.get('tab') == 'history' %}active{% endif %}">
+                <span class="material-symbols-outlined">schedule</span>History</a>
+            <a href="{{ url_for('main.user_dashboard', tab='profile') }}" class="ss-navitem {% if request.args.get('tab') == 'profile' %}active{% endif %}">
+                <span class="material-symbols-outlined">person</span>Profile</a>
             {% endif %}
             {% endif %}
         </nav>
-        <!-- iOS Indicator -->
-        <div
-            class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-navy-trust/10 dark:bg-white/20 rounded-full z-[60]">
-        </div>
         {% endblock %}
     </div>
 

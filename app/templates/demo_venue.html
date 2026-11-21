@@ -1,20 +1,65 @@
 {% extends "base.html" %}
 {% block title %}{{ venue.name }} - SheSafe{% endblock %}
 {% block styles %}<style>
-.local-detail{padding:24px 20px 125px;background:#f6f8fb;min-height:100vh;color:#102b46}.back-link{font-size:12px;font-weight:800;color:#5a6e82}.detail-hero{padding:25px 0 18px}.detail-hero h1{font-size:27px;font-weight:900;line-height:1.2;margin:12px 0}.tag{display:inline-block;background:#fff0f4;color:#c4265e;border-radius:20px;padding:6px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}.local-detail p{font-size:12px;line-height:1.6}.muted{color:#657b8f}.detail-notice{background:#fff1d9;color:#775213;padding:15px;border-radius:15px;font-size:12px;line-height:1.6;margin-bottom:16px}.detail-panel{padding:18px;background:white;border:1px solid #e1e8ee;border-radius:20px;margin-bottom:14px}.detail-panel h2{font-size:16px;font-weight:800;margin-bottom:8px}.detail-rating{font-size:30px;font-weight:900}.detail-rating span{color:#d22965}.facts{font-size:12px;margin:12px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px}.facts dt{color:#687f91}.facts dd{font-weight:700;text-align:right}.maps-link{display:block;background:#102b46;color:white;text-align:center;border-radius:12px;padding:12px;font-size:12px;font-weight:800;margin-top:15px}.review{padding:16px 0;border-top:1px solid #edf1f5}.review strong{font-size:12px}.review .score{float:right;color:#ca285f;font-size:12px;font-weight:800}.fiction{font-size:10px;color:#a75915;font-weight:700;margin:4px 0}.source{font-size:11px;color:#63798b;margin-top:15px}.source a{text-decoration:underline}.detail-section-title{font-size:10px;letter-spacing:1px;font-weight:800;text-transform:uppercase;color:#c4265e;margin-bottom:8px}
-.local-detail{padding:0 16px 170px;max-width:480px;margin:0 auto}.back-link{display:flex;align-items:center;min-height:44px;font-size:14px}.detail-hero{background:linear-gradient(160deg,#102b46,#1b4268);margin:0 -16px;padding:18px 20px 24px;border-radius:0 0 26px 26px;color:white}.detail-hero h1{font-size:28px;margin:4px 0 8px}.detail-hero .muted{color:#d5e1ec;font-size:14px}.local-detail p{font-size:14px}.detail-panel{margin-top:14px;border-radius:20px}.detail-panel h2{font-size:18px}.review strong{font-size:14px}.review .score{font-size:14px}.detail-section-title{font-size:12px}.maps-link{min-height:48px;display:flex;align-items:center;justify-content:center;font-size:15px;border-radius:14px}.route-bar{position:fixed;left:0;right:0;bottom:96px;z-index:20;padding:0 16px;max-width:430px;margin:0 auto}.route-bar a{display:flex;min-height:52px;align-items:center;justify-content:center;background:#cc245c;color:white;border-radius:16px;font-weight:800;font-size:16px;box-shadow:0 8px 20px #cc245c55}</style>{% endblock %}
+.dv-back{display:inline-flex;align-items:center;gap:6px;margin:16px 16px 0;font-size:12.5px;font-weight:800;color:var(--ss-muted);text-decoration:none}
+.dv-back .material-symbols-outlined{font-size:17px}
+.dv-hero{margin:12px 16px 0;border-radius:24px;background:var(--ss-grad-hero);color:#fff;padding:22px 20px;box-shadow:var(--ss-shadow-lg)}
+.dv-hero h1{font-size:26px;font-weight:900;margin:12px 0 8px;letter-spacing:-.01em;line-height:1.15}
+.dv-hero p{font-size:13px;color:#e3d5df;display:flex;gap:6px;align-items:flex-start;margin:6px 0 0;line-height:1.45}
+.dv-hero p .material-symbols-outlined{font-size:16px;flex:none}
+.ss-scorecard{padding:16px}
+.dv-section-title{font-size:11px;letter-spacing:1.2px;font-weight:800;text-transform:uppercase;color:var(--ss-rose);margin-bottom:10px}
+.dv-panel{margin:12px 16px 0;padding:18px}
+.dv-panel h2{font-size:17px;font-weight:900;margin:0 0 10px;letter-spacing:-.01em}
+.review{display:flex;gap:12px;padding:15px 0;border-top:1px solid #f0f3f7}
+.review:first-of-type{border-top:0}
+.review .who{flex:1}
+.review strong{font-size:13.5px}
+.review .score{color:var(--ss-rose);font-size:12px;font-weight:800;white-space:nowrap}
+.review p{font-size:13px;line-height:1.55;color:#42566a;margin:5px 0 0}
+.review .persona{font-size:10.5px;font-weight:800;color:var(--ss-navy);background:#eef2f8;border-radius:6px;padding:2px 7px;display:inline-block;margin-top:4px}
+.dv-bookbar{position:fixed;left:50%;transform:translateX(-50%);bottom:86px;z-index:40;width:calc(100% - 32px);max-width:398px}
+.dv-bookbar a{display:flex;min-height:52px;align-items:center;justify-content:center;gap:8px;background:var(--ss-grad-rose);color:#fff;border-radius:999px;font-weight:800;font-size:15px;text-decoration:none;box-shadow:0 12px 28px rgba(204,36,92,.45)}
+@media (min-width:520px){.dv-bookbar{bottom:24px}}
+</style>{% endblock %}
 {% block content %}
-<div class="local-detail">
-<div class="detail-hero"><a class="back-link" style="color:#ffd0df" href="{{ url_for('main.explore', area='kgp') }}">← Back to map</a><h1>{{ venue.name }}</h1><p class="muted">{{ venue.address }}</p><p class="muted" style="margin-top:8px">{{ venue.area }}</p></div>
-<section class="detail-panel"><div class="detail-section-title">Customer ratings</div><div class="detail-rating"><span>★</span> {{ '%.1f'|format(venue.sample_rating) }} <small style="font-size:12px;color:#657b8f">/ 5</small></div><p class="muted">Average of {{ venue.sample_reviews|length }} ratings below.</p></section>
-<section class="detail-panel"><h2>Location</h2><a class="maps-link" href="{{ venue.maps_url }}" target="_blank" rel="noopener noreferrer">View real place on Google Maps ↗</a></section>
-<section class="detail-panel" id="book"><h2>Book a visit</h2>
-<form method="post" action="{{ url_for('main.demo_book', slug=venue.slug) }}" style="display:grid;gap:12px;margin-top:10px">
-<label style="font-size:12px;font-weight:700">Visit time<input type="datetime-local" name="visit_date" value="{{ default_visit }}" required style="display:block;width:100%;margin-top:6px;padding:12px;border:1px solid #d9e1e8;border-radius:12px;font-size:15px"></label>
-<label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid #d9e1e8;border-radius:12px;font-size:13px;font-weight:700"><input type="radio" name="payment_mode" value="app" checked> Pay in app, &#8377;{{ fee }}</label>
-<label style="display:flex;gap:10px;align-items:center;padding:12px;border:1px solid #d9e1e8;border-radius:12px;font-size:13px;font-weight:700"><input type="radio" name="payment_mode" value="pay_at_location"> Pay at location</label>
-<button type="submit" style="min-height:50px;border-radius:14px;background:#102b46;color:#fff;font-weight:800;font-size:15px">Book</button></form></section>
-<section class="detail-panel" id="sample-reviews"><h2>Customer reviews</h2>{% for review in venue.sample_reviews %}<article class="review"><strong>{{ review.persona }}</strong><span class="score">★ {{ review.score }}/5</span><p>{{ review.text }}</p></article>{% endfor %}</section>
+<div class="ss-shell">
+<a class="dv-back" href="{{ url_for('main.explore', area='kgp') }}"><span class="material-symbols-outlined">arrow_back</span> Back to map</a>
+<div class="dv-hero">
+    <span class="ss-glass"><span class="material-symbols-outlined">location_on</span> {{ venue.area }}</span>
+    <h1>{{ venue.name }}</h1>
+    <p><span class="material-symbols-outlined">pin_drop</span>{{ venue.address }}</p>
 </div>
 
+<section class="ss-card dv-panel"><div class="dv-section-title">Customer ratings</div>
+    <div class="ss-scorecard" style="padding:0">
+        <div class="ss-bigscore"><b>{{ '%.1f'|format(venue.sample_rating) }}<span class="material-symbols-outlined">star</span></b><small>out of 5</small></div>
+        <div class="ss-bars">
+            <div class="ss-bar-row"><span>Average rating</span><span>{{ '%.1f'|format(venue.sample_rating) }}</span><div class="track"><div class="fill" style="width:{{ (venue.sample_rating / 5 * 100) | round | int }}%"></div></div></div>
+            <div class="ss-bar-row"><span>Reviews</span><span>{{ venue.sample_reviews|length }}</span><div class="track"><div class="fill" style="width:{{ [venue.sample_reviews|length * 10, 100] | min }}%;background:var(--ss-rose)"></div></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="ss-card dv-panel"><h2>Location</h2>
+    <a class="ss-btn ss-btn-navy ss-btn-block" href="{{ venue.maps_url }}" target="_blank" rel="noopener noreferrer"><span class="material-symbols-outlined">directions</span> View real place on Google Maps</a>
+</section>
+
+<section class="ss-card dv-panel" id="book"><h2>Book a visit</h2>
+<form method="post" action="{{ url_for('main.demo_book', slug=venue.slug) }}" style="display:grid;gap:12px;margin-top:6px">
+<label style="font-size:12.5px;font-weight:800">Visit time<input class="ss-input" type="datetime-local" name="visit_date" value="{{ default_visit }}" required></label>
+<label class="ss-radio"><input type="radio" name="payment_mode" value="app" checked> Pay in app, &#8377;{{ fee }}</label>
+<label class="ss-radio"><input type="radio" name="payment_mode" value="pay_at_location"> Pay at location</label>
+<button type="submit" class="ss-btn ss-btn-navy ss-btn-block" style="min-height:52px;font-size:15px">Book</button></form></section>
+
+<section class="ss-card dv-panel" id="sample-reviews" style="margin-bottom:14px"><h2>Customer reviews</h2>
+{% for review in venue.sample_reviews %}<article class="review"><span class="ss-avatar" style="width:34px;height:34px;font-size:13px">{{ review.persona[0] }}</span><div class="who"><strong>{{ review.persona }}</strong> <span class="score">&#9733; {{ review.score }}/5</span><p>{{ review.text }}</p></div></article>{% endfor %}
+</section>
+
+<div class="dv-bookbar"><a href="#book"><span class="material-symbols-outlined">schedule</span> Book a visit</a></div>
+</div>
+<script>
+(function(){var bar=document.querySelector('.dv-bookbar'),book=document.getElementById('book');if(!bar||!book)return;
+if('IntersectionObserver' in window){new IntersectionObserver(function(e){bar.style.opacity=e[0].isIntersecting?'0':'1';bar.style.pointerEvents=e[0].isIntersecting?'none':'auto';bar.style.transition='opacity .18s ease';},{threshold:.12}).observe(book);}})();
+</script>
 {% endblock %}

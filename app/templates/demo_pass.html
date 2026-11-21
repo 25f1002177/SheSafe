@@ -2,36 +2,36 @@
 {% block title %}Verify pass - SheSafe{% endblock %}
 {% block content %}
 {% set ok = state == 'valid' %}
-<div style="max-width:430px;margin:0 auto;padding:28px 20px 130px;min-height:100vh;background:#f6f8fb;color:#102b46">
-<div style="text-align:center;background:#fff;border:1px solid #e1e8ee;border-radius:20px;padding:24px">
+<div class="ss-shell" style="padding-top:34px">
+<div class="ss-card" style="margin:0 16px;padding:26px 22px;text-align:center">
 {% if state == 'valid' %}
-<span class="material-symbols-outlined" style="font-size:52px;color:#1e8c4e">verified_user</span>
-<h1 style="font-size:22px;font-weight:900;margin:8px 0;color:#1e8c4e">Valid pass</h1>
+<span style="display:inline-flex;width:76px;height:76px;border-radius:50%;background:var(--ss-green-bg);align-items:center;justify-content:center"><span class="material-symbols-outlined" style="font-size:42px;color:var(--ss-green)">verified_user</span></span>
+<h1 style="font-size:23px;font-weight:900;margin:14px 0 4px;color:var(--ss-green);letter-spacing:-.01em">Valid pass</h1>
 {% elif state == 'used' %}
-<svg style="display:block;margin:0 auto" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#b7791f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l3 3 5-6"/></svg>
-<h1 style="font-size:22px;font-weight:900;margin:8px 0;color:#b7791f">Already used</h1>
+<span style="display:inline-flex;width:76px;height:76px;border-radius:50%;background:var(--ss-amber-bg);align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#b7791f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l3 3 5-6"/></svg></span>
+<h1 style="font-size:23px;font-weight:900;margin:14px 0 4px;color:var(--ss-amber);letter-spacing:-.01em">Already used</h1>
 {% elif state == 'expired' %}
-<svg style="display:block;margin:0 auto" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#b7791f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 2"/></svg>
-<h1 style="font-size:22px;font-weight:900;margin:8px 0;color:#b7791f">Pass expired</h1>
+<span style="display:inline-flex;width:76px;height:76px;border-radius:50%;background:var(--ss-amber-bg);align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#b7791f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 2"/></svg></span>
+<h1 style="font-size:23px;font-weight:900;margin:14px 0 4px;color:var(--ss-amber);letter-spacing:-.01em">Pass expired</h1>
 {% else %}
-<svg style="display:block;margin:0 auto" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
-<h1 style="font-size:22px;font-weight:900;margin:8px 0;color:#c0392b">Invalid pass</h1>
+<span style="display:inline-flex;width:76px;height:76px;border-radius:50%;background:#fbe7e7;align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9 9l6 6M15 9l-6 6"/></svg></span>
+<h1 style="font-size:23px;font-weight:900;margin:14px 0 4px;color:#c0392b;letter-spacing:-.01em">Invalid pass</h1>
 {% endif %}
 {% if b %}
-<h2 style="font-size:17px;font-weight:800">{{ b.name }}</h2>
-<p style="font-size:13px;color:#657b8f;margin:6px 0">{{ visit.strftime('%d %b %Y, %I:%M %p') }}</p>
-<p style="font-size:12px;font-weight:800">Ref #SAFE-{{ b.id }}</p>
-<p style="font-size:13px;margin-top:8px">{% if b.paid %}Paid &#8377;{{ '%.2f'|format(b.amount) }}{% else %}Pay at location{% endif %}</p>
-{% if state == 'used' %}<p style="font-size:13px;color:#657b8f">Checked in {{ used_at }}</p>{% endif %}
+<h2 style="font-size:18px;font-weight:900;margin:14px 0 0">{{ b.name }}</h2>
+<p style="font-size:13px;color:var(--ss-muted);margin:6px 0">{{ visit.strftime('%d %b %Y, %I:%M %p') }}</p>
+<span class="ss-pill">Ref #SAFE-{{ b.id }}</span>
+<p style="font-size:13.5px;margin-top:12px;font-weight:700">{% if b.paid %}Paid &#8377;{{ '%.2f'|format(b.amount) }}{% else %}Pay at location{% endif %}</p>
+{% if state == 'used' %}<p style="font-size:13px;color:var(--ss-muted)">Checked in {{ used_at }}</p>{% endif %}
 {% elif state == 'expired' %}
-<p style="font-size:13px;color:#657b8f;margin-top:8px">This pass is past its validity period.</p>
+<p style="font-size:13px;color:var(--ss-muted);margin-top:8px">This pass is past its validity period.</p>
 {% else %}
-<p style="font-size:13px;color:#657b8f;margin-top:8px">This code was not issued by SheSafe or has been altered.</p>
+<p style="font-size:13px;color:var(--ss-muted);margin-top:8px">This code was not issued by SheSafe or has been altered.</p>
 {% endif %}
 </div>
 {% if ok %}
-<form method="post" style="margin-top:16px"><input type="hidden" name="t" value="{{ token }}">
-<button type="submit" style="width:100%;height:50px;border:0;border-radius:14px;background:#102b46;color:#fff;font-weight:800;font-size:15px">Confirm check-in</button></form>
+<form method="post" style="margin:16px 16px 0"><input type="hidden" name="t" value="{{ token }}">
+<button type="submit" class="ss-btn ss-btn-navy ss-btn-block" style="min-height:52px;font-size:15px">Confirm check-in</button></form>
 {% endif %}
 </div>
 {% endblock %}
