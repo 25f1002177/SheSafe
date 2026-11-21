@@ -57,21 +57,7 @@
                 <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">woman</span>
                 <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Washroom</p>
             </div>
-            <div id="filter-Period-Care" onclick="toggleFilter('Period Care')"
-                class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">water_drop</span>
-                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Period Care</p>
-            </div>
-            <div id="filter-Changing-Room" onclick="toggleFilter('Changing Room')"
-                class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">checkroom</span>
-                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Changing</p>
-            </div>
-            <div id="filter-Nursing-Room" onclick="toggleFilter('Nursing Room')"
-                class="filter-chip flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/90 backdrop-blur-md px-4 shadow-sm border border-slate-100 cursor-pointer active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-navy-trust/70 text-[18px]">child_care</span>
-                <p class="text-navy-trust/70 text-xs font-bold whitespace-nowrap">Nursing</p>
-            </div>
+            <!-- Only amenities real vendors actually provide get a filter chip. -->
         </div>
 
             </div>
@@ -142,7 +128,7 @@
 {% block scripts %}
 <script>
     let map;
-    let markers = [];
+    let markerPairs = [];
     let userMarker;
     let userPos = null;
     let usingDemoArea = false;
@@ -309,17 +295,40 @@
         }
     }
 
+    function pinIcon(color, scale) {
+        return { path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z', fillColor: color, fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2, scale: scale, anchor: new google.maps.Point(12, 22) };
+    }
+
+    function vendorKey(v) { return String(v.id); }
+    let selectedKey = null;
+    let lastRendered = [];
+
+    function selectVendor(vendor, opts) {
+        opts = opts || {};
+        selectedKey = vendorKey(vendor);
+        markerPairs.forEach(p => {
+            const sel = vendorKey(p.vendor) === selectedKey;
+            p.marker.setIcon(pinIcon(sel ? '#cc285f' : '#001F3F', sel ? 2.1 : 1.6));
+            p.marker.setZIndex(sel ? 1000 : 1);
+        });
+        if (opts.center !== false && typeof map !== 'undefined' && map) map.easeTo({ center: { lat: vendor.lat, lng: vendor.lng } });
+        if (opts.scroll) {
+            const card = document.querySelector('[data-vendor-key="' + selectedKey + '"]');
+            const container = document.getElementById('vendor-list-container');
+            if (card && container) container.scrollTo({ left: card.offsetLeft - (container.clientWidth - card.clientWidth) / 2, behavior: 'smooth' });
+        }
+    }
+
     function clearMarkers() {
-        markers.forEach(m => m.setMap(null));
-        markers = [];
+        markerPairs.forEach(p => p.marker.setMap(null));
+        markerPairs = [];
     }
 
     function renderMarkers(vendorsToRender) {
         vendorsToRender.forEach(vendor => {
-            const marker = new google.maps.Marker({ position: { lat: vendor.lat, lng: vendor.lng }, map: map, title: vendor.name,
-                icon: { path: 'M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7-7.75,7-13C19,5.13,15.87,2,12,2z', fillColor: '#001F3F', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2, scale: 1.6, anchor: new google.maps.Point(12, 22) } });
-            marker.addListener('click', () => { map.easeTo({ center: { lat: vendor.lat, lng: vendor.lng } }); });
-            markers.push(marker);
+            const marker = new google.maps.Marker({ position: { lat: vendor.lat, lng: vendor.lng }, map: map, title: vendor.name, icon: pinIcon('#001F3F', 1.6) });
+            marker.addListener('click', () => { selectVendor(vendor, { scroll: true, center: true }); });
+            markerPairs.push({ vendor: vendor, marker: marker });
         });
     }
 
@@ -373,6 +382,7 @@
             const card = document.createElement('div');
             card.className = "min-w-[90%] max-w-[90%] sm:min-w-[320px] snap-center bg-white rounded-3xl shadow-xl p-4 flex flex-col gap-4 border border-slate-100 transition-transform active:scale-[0.98]";
             card.style.cssText = "min-width:88%;max-width:88%;flex:none";
+            card.dataset.vendorKey = vendorKey(vendor);
             card.innerHTML = `
                 <div class="flex items-center gap-2">
                     ${vendor.verified ? '<span class="px-2 py-0.5 bg-green-50 text-green-700 text-[9px] font-bold rounded uppercase tracking-wider">Verified</span>' : ''}
@@ -432,13 +442,38 @@
 
             card.onclick = (e) => {
                 if (e.target.closest('a') || e.target.closest('button')) return;
-                map.easeTo({ center: { lat: vendor.lat, lng: vendor.lng } });
+                selectVendor(vendor, { center: true });
             };
 
             container.appendChild(card);
         });
+        lastRendered = sortedVendors;
+        if (sortedVendors.length) selectVendor(sortedVendors[0], { center: false });
         layoutMap();
     }
+
+    // Sliding between cards selects that vendor: highlight its pin and center the map on it.
+    (function () {
+        const container = document.getElementById('vendor-list-container');
+        let scrollT = null;
+        container.addEventListener('scroll', () => {
+            if (scrollT) clearTimeout(scrollT);
+            scrollT = setTimeout(() => {
+                const cards = Array.from(container.querySelectorAll('[data-vendor-key]'));
+                if (!cards.length) return;
+                const mid = container.getBoundingClientRect().left + container.clientWidth / 2;
+                let best = null, bd = Infinity;
+                cards.forEach(c => {
+                    const r = c.getBoundingClientRect();
+                    const d = Math.abs(r.left + r.width / 2 - mid);
+                    if (d < bd) { bd = d; best = c; }
+                });
+                if (!best) return;
+                const v = lastRendered.find(x => vendorKey(x) === best.dataset.vendorKey);
+                if (v && vendorKey(v) !== selectedKey) selectVendor(v, { center: true });
+            }, 140);
+        });
+    })();
 
     window.initMap = initMap;
     (function () { const g = document.createElement('script'); g.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAeuEc8nvQYolwtloG-q2UB42DzZ_mWkJA&callback=initMap&loading=async'; g.async = true; document.head.appendChild(g); })();
